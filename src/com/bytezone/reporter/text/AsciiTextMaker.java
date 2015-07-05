@@ -1,4 +1,4 @@
-package com.bytezone.text;
+package com.bytezone.reporter.text;
 
 public class AsciiTextMaker implements TextMaker
 {

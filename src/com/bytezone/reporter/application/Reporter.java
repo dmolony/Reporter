@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import com.bytezone.record.CrlfRecordMaker;
+import com.bytezone.reporter.record.CrlfRecordMaker;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;

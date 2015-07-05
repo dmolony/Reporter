@@ -1,4 +1,4 @@
-package com.bytezone.format;
+package com.bytezone.reporter.format;
 
 public interface RecordFormatter
 {
