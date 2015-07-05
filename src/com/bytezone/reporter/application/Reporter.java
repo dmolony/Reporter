@@ -4,12 +4,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import com.bytezone.reporter.record.CrlfRecordMaker;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -34,6 +36,8 @@ public class Reporter extends Application
   private static final String[] files = { "DENIS-000.src", "DBALIB.src" };
 
   private final TextArea textArea = new TextArea ();
+  private WindowSaver windowSaver;
+  private Preferences prefs;
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -73,73 +77,102 @@ public class Reporter extends Application
     Label lblFormat = new Label ("Format");
     Label lblPrint = new Label ("Paging");
 
-    lblSplit.setAlignment (Pos.CENTER);
-    lblFormat.setAlignment (Pos.CENTER);
-    lblPrint.setAlignment (Pos.CENTER);
+    // lblSplit.setAlignment (Pos.CENTER);
+    // lblFormat.setAlignment (Pos.CENTER);
+    // lblPrint.setAlignment (Pos.CENTER);
 
     ToggleGroup group1 = new ToggleGroup ();
-    RadioButton btnCrlf = new RadioButton ("CRLF");
-    btnCrlf.setToggleGroup (group1);
+    EventHandler<ActionEvent> evt1 = e -> setRecordMaker ();
+
+    RadioButton btnCrlf = addRadioButton ("CRLF", group1, evt1);
     btnCrlf.setSelected (true);
-    RadioButton btnCR = new RadioButton ("CR");
-    btnCR.setToggleGroup (group1);
-    RadioButton btnLF = new RadioButton ("LF");
-    btnLF.setToggleGroup (group1);
-    RadioButton btnVB = new RadioButton ("VB");
-    btnVB.setToggleGroup (group1);
-    RadioButton btnRDW = new RadioButton ("RDW");
-    btnRDW.setToggleGroup (group1);
-    RadioButton btnRavel = new RadioButton ("Ravel");
-    btnRavel.setToggleGroup (group1);
-    RadioButton btnFb80 = new RadioButton ("FB80");
-    btnLF.setToggleGroup (group1);
-    RadioButton btnFbOther = new RadioButton ("Other");
-    btnFbOther.setToggleGroup (group1);
+    RadioButton btnCR = addRadioButton ("CR", group1, evt1);
+    RadioButton btnLF = addRadioButton ("LF", group1, evt1);
+    RadioButton btnVB = addRadioButton ("VB", group1, evt1);
+    RadioButton btnRDW = addRadioButton ("RDW", group1, evt1);
+    RadioButton btnRavel = addRadioButton ("Ravel", group1, evt1);
+    RadioButton btnFb80 = addRadioButton ("FB80", group1, evt1);
+    RadioButton btnFbOther = addRadioButton ("Other", group1, evt1);
 
     vbox.getChildren ().addAll (lblSplit, btnCrlf, btnCR, btnLF, btnVB, btnRDW, btnRavel,
                                 btnFb80, btnFbOther);
     // vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group2 = new ToggleGroup ();
-    RadioButton btnAscii = new RadioButton ("ASCII");
+    EventHandler<ActionEvent> evt2 = e -> setFormatter ();
+
+    RadioButton btnAscii = addRadioButton ("ASCII", group2, evt2);
     btnAscii.setToggleGroup (group2);
     btnAscii.setSelected (true);
-    RadioButton btnEbcdic = new RadioButton ("EBCDIC");
+    RadioButton btnEbcdic = addRadioButton ("EBCDIC", group2, evt2);
     btnEbcdic.setToggleGroup (group2);
     vbox.getChildren ().addAll (lblFormat, btnAscii, btnEbcdic);
     vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group3 = new ToggleGroup ();
-    RadioButton btnFormatted = new RadioButton ("Formatted");
-    btnFormatted.setToggleGroup (group3);
-    RadioButton btnHex = new RadioButton ("Hex");
-    btnHex.setToggleGroup (group3);
+    RadioButton btnFormatted = addRadioButton ("Formatted", group3, evt2);
+    RadioButton btnHex = addRadioButton ("Hex", group3, evt2);
     btnHex.setSelected (true);
     vbox.getChildren ().addAll (btnHex, btnFormatted);
     vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group4 = new ToggleGroup ();
-    RadioButton btnNone = new RadioButton ("None");
-    btnNone.setToggleGroup (group4);
+    EventHandler<ActionEvent> evt3 = e -> setPageMaker ();
+
+    RadioButton btnNone = addRadioButton ("None", group4, evt3);
     btnNone.setSelected (true);
-    RadioButton btn66 = new RadioButton ("66");
-    btn66.setToggleGroup (group4);
-    RadioButton btnOther = new RadioButton ("Other");
-    btnOther.setToggleGroup (group4);
+    RadioButton btn66 = addRadioButton ("66", group4, evt3);
+    RadioButton btnOther = addRadioButton ("Other", group4, evt3);
     vbox.getChildren ().addAll (lblPrint, btnNone, btn66, btnOther);
-    // vbox.getChildren ().add (new Separator ());
 
     CheckBox chkAsa = new CheckBox ("ASA");
+    chkAsa.setOnAction (evt3);
     vbox.getChildren ().addAll (chkAsa);
 
     BorderPane borderPane = new BorderPane ();
     borderPane.setCenter (textArea);
     borderPane.setRight (vbox);
-    Scene scene = new Scene (borderPane, 800, 592);
 
+    Scene scene = new Scene (borderPane, 800, 592);
     primaryStage.setTitle ("Reporter");
     primaryStage.setScene (scene);
+    primaryStage.setOnCloseRequest (e -> closeWindow ());
+
+    prefs = Preferences.userNodeForPackage (this.getClass ());
+    windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");
+    if (!windowSaver.restoreWindow ())
+      primaryStage.centerOnScreen ();
+
     primaryStage.show ();
+  }
+
+  private RadioButton addRadioButton (String text, ToggleGroup group,
+      EventHandler<ActionEvent> evt)
+  {
+    RadioButton button = new RadioButton (text);
+    button.setToggleGroup (group);
+    button.setOnAction (evt);
+    return button;
+  }
+
+  private void setRecordMaker ()
+  {
+    System.out.println ("rebuild");
+  }
+
+  private void setFormatter ()
+  {
+    System.out.println ("format");
+  }
+
+  private void setPageMaker ()
+  {
+    System.out.println ("page");
+  }
+
+  private void closeWindow ()
+  {
+    windowSaver.saveWindow ();
   }
 
   public static void main (String[] args)
