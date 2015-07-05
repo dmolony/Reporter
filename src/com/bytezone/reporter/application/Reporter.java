@@ -6,7 +6,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import com.bytezone.reporter.record.CrlfRecordMaker;
+import com.bytezone.reporter.format.HexFormatter;
+import com.bytezone.reporter.format.RecordFormatter;
+import com.bytezone.reporter.text.AsciiTextMaker;
+import com.bytezone.reporter.text.EbcdicTextMaker;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -38,6 +41,10 @@ public class Reporter extends Application
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
   private Preferences prefs;
+  private Splitter splitter;
+  private RecordFormatter hexEbcdicFormatter;
+  private RecordFormatter hexAsciiFormatter;
+  private byte[] buffer;
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -46,28 +53,17 @@ public class Reporter extends Application
     Path currentPath = Paths.get (home + files[0]);
 
     byte[] bufferAll = Files.readAllBytes (currentPath);
-    byte[] buffer = new byte[2048];
+    buffer = new byte[2048];
     System.arraycopy (bufferAll, 0, buffer, 0, buffer.length);
+
+    splitter = new Splitter (buffer);
+    hexEbcdicFormatter = new HexFormatter (new EbcdicTextMaker ());
+    hexAsciiFormatter = new HexFormatter (new AsciiTextMaker ());
+    rebuild ();
 
     Font font = Font.font (fontNames[18], FontWeight.NORMAL, 14);
     textArea.setFont (font);
 
-    CrlfRecordMaker crlf = new CrlfRecordMaker (buffer);
-    List<byte[]> records = crlf.getRecords ();
-
-    for (byte[] record : records)
-    {
-      textArea.appendText (Utility.toHex (record));
-      textArea.appendText ("\n\n");
-    }
-
-    if (textArea.getLength () > 1)
-    {
-      textArea.deletePreviousChar ();
-      textArea.deletePreviousChar ();
-    }
-
-    textArea.positionCaret (0);
     textArea.setEditable (false);
 
     VBox vbox = new VBox (10);
@@ -82,51 +78,47 @@ public class Reporter extends Application
     // lblPrint.setAlignment (Pos.CENTER);
 
     ToggleGroup group1 = new ToggleGroup ();
-    EventHandler<ActionEvent> evt1 = e -> setRecordMaker ();
 
-    RadioButton btnCrlf = addRadioButton ("CRLF", group1, evt1);
+    RadioButton btnCrlf = addRadioButton ("CRLF", group1, e -> rebuild ());
     btnCrlf.setSelected (true);
-    RadioButton btnCR = addRadioButton ("CR", group1, evt1);
-    RadioButton btnLF = addRadioButton ("LF", group1, evt1);
-    RadioButton btnVB = addRadioButton ("VB", group1, evt1);
-    RadioButton btnRDW = addRadioButton ("RDW", group1, evt1);
-    RadioButton btnRavel = addRadioButton ("Ravel", group1, evt1);
-    RadioButton btnFb80 = addRadioButton ("FB80", group1, evt1);
-    RadioButton btnFbOther = addRadioButton ("Other", group1, evt1);
+    RadioButton btnCR = addRadioButton ("CR", group1, e -> rebuild ());
+    RadioButton btnLF = addRadioButton ("LF", group1, e -> rebuild ());
+    RadioButton btnVB = addRadioButton ("VB", group1, e -> rebuild ());
+    RadioButton btnRDW = addRadioButton ("RDW", group1, e -> rebuild ());
+    RadioButton btnRavel = addRadioButton ("Ravel", group1, e -> rebuild ());
+    RadioButton btnFb80 = addRadioButton ("FB80", group1, e -> rebuild ());
+    RadioButton btnFbOther = addRadioButton ("Other", group1, e -> rebuild ());
 
     vbox.getChildren ().addAll (lblSplit, btnCrlf, btnCR, btnLF, btnVB, btnRDW, btnRavel,
                                 btnFb80, btnFbOther);
-    // vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group2 = new ToggleGroup ();
-    EventHandler<ActionEvent> evt2 = e -> setFormatter ();
 
-    RadioButton btnAscii = addRadioButton ("ASCII", group2, evt2);
+    RadioButton btnAscii = addRadioButton ("ASCII", group2, e -> rebuild ());
     btnAscii.setToggleGroup (group2);
     btnAscii.setSelected (true);
-    RadioButton btnEbcdic = addRadioButton ("EBCDIC", group2, evt2);
+    RadioButton btnEbcdic = addRadioButton ("EBCDIC", group2, e -> rebuild ());
     btnEbcdic.setToggleGroup (group2);
     vbox.getChildren ().addAll (lblFormat, btnAscii, btnEbcdic);
     vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group3 = new ToggleGroup ();
-    RadioButton btnFormatted = addRadioButton ("Formatted", group3, evt2);
-    RadioButton btnHex = addRadioButton ("Hex", group3, evt2);
+    RadioButton btnFormatted = addRadioButton ("Formatted", group3, e -> rebuild ());
+    RadioButton btnHex = addRadioButton ("Hex", group3, e -> rebuild ());
     btnHex.setSelected (true);
     vbox.getChildren ().addAll (btnHex, btnFormatted);
     vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group4 = new ToggleGroup ();
-    EventHandler<ActionEvent> evt3 = e -> setPageMaker ();
 
-    RadioButton btnNone = addRadioButton ("None", group4, evt3);
+    RadioButton btnNone = addRadioButton ("None", group4, e -> rebuild ());
     btnNone.setSelected (true);
-    RadioButton btn66 = addRadioButton ("66", group4, evt3);
-    RadioButton btnOther = addRadioButton ("Other", group4, evt3);
+    RadioButton btn66 = addRadioButton ("66", group4, e -> rebuild ());
+    RadioButton btnOther = addRadioButton ("Other", group4, e -> rebuild ());
     vbox.getChildren ().addAll (lblPrint, btnNone, btn66, btnOther);
 
     CheckBox chkAsa = new CheckBox ("ASA");
-    chkAsa.setOnAction (evt3);
+    chkAsa.setOnAction (e -> rebuild ());
     vbox.getChildren ().addAll (chkAsa);
 
     BorderPane borderPane = new BorderPane ();
@@ -155,19 +147,39 @@ public class Reporter extends Application
     return button;
   }
 
-  private void setRecordMaker ()
+  private void rebuild ()
   {
-    System.out.println ("rebuild");
+    textArea.clear ();
+
+    List<byte[]> records = setRecordMaker ();
+    setFormatter (records);
+    setPageMaker ();
+
+    textArea.positionCaret (0);
   }
 
-  private void setFormatter ()
+  private List<byte[]> setRecordMaker ()
   {
-    System.out.println ("format");
+    return splitter.getRecords (Splitter.RecordType.CRLF);
+  }
+
+  private void setFormatter (List<byte[]> records)
+  {
+    for (byte[] record : records)
+    {
+      textArea.appendText (hexEbcdicFormatter.getFormattedRecord (record));
+      textArea.appendText ("\n\n");
+    }
+
+    if (records.size () > 0)
+    {
+      int last = textArea.getLength ();
+      textArea.deleteText (last - 2, last);
+    }
   }
 
   private void setPageMaker ()
   {
-    System.out.println ("page");
   }
 
   private void closeWindow ()
