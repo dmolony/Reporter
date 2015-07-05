@@ -5,10 +5,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.bytezone.record.CrlfRecordMaker;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
@@ -65,6 +69,14 @@ public class Reporter extends Application
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
 
+    Label lblSplit = new Label ("Records");
+    Label lblFormat = new Label ("Format");
+    Label lblPrint = new Label ("Paging");
+
+    lblSplit.setAlignment (Pos.CENTER);
+    lblFormat.setAlignment (Pos.CENTER);
+    lblPrint.setAlignment (Pos.CENTER);
+
     ToggleGroup group1 = new ToggleGroup ();
     RadioButton btnCrlf = new RadioButton ("CRLF");
     btnCrlf.setToggleGroup (group1);
@@ -84,9 +96,9 @@ public class Reporter extends Application
     RadioButton btnFbOther = new RadioButton ("Other");
     btnFbOther.setToggleGroup (group1);
 
-    vbox.getChildren ().addAll (btnCrlf, btnCR, btnLF, btnVB, btnRDW, btnRavel, btnFb80,
-                                btnFbOther);
-    vbox.getChildren ().add (new Separator ());
+    vbox.getChildren ().addAll (lblSplit, btnCrlf, btnCR, btnLF, btnVB, btnRDW, btnRavel,
+                                btnFb80, btnFbOther);
+    // vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group2 = new ToggleGroup ();
     RadioButton btnAscii = new RadioButton ("ASCII");
@@ -94,16 +106,16 @@ public class Reporter extends Application
     btnAscii.setSelected (true);
     RadioButton btnEbcdic = new RadioButton ("EBCDIC");
     btnEbcdic.setToggleGroup (group2);
-    vbox.getChildren ().addAll (btnAscii, btnEbcdic);
+    vbox.getChildren ().addAll (lblFormat, btnAscii, btnEbcdic);
     vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group3 = new ToggleGroup ();
     RadioButton btnFormatted = new RadioButton ("Formatted");
     btnFormatted.setToggleGroup (group3);
-    btnFormatted.setSelected (true);
     RadioButton btnHex = new RadioButton ("Hex");
     btnHex.setToggleGroup (group3);
-    vbox.getChildren ().addAll (btnFormatted, btnHex);
+    btnHex.setSelected (true);
+    vbox.getChildren ().addAll (btnHex, btnFormatted);
     vbox.getChildren ().add (new Separator ());
 
     ToggleGroup group4 = new ToggleGroup ();
@@ -114,8 +126,8 @@ public class Reporter extends Application
     btn66.setToggleGroup (group4);
     RadioButton btnOther = new RadioButton ("Other");
     btnOther.setToggleGroup (group4);
-    vbox.getChildren ().addAll (btnNone, btn66, btnOther);
-    vbox.getChildren ().add (new Separator ());
+    vbox.getChildren ().addAll (lblPrint, btnNone, btn66, btnOther);
+    // vbox.getChildren ().add (new Separator ());
 
     CheckBox chkAsa = new CheckBox ("ASA");
     vbox.getChildren ().addAll (chkAsa);
@@ -123,17 +135,11 @@ public class Reporter extends Application
     BorderPane borderPane = new BorderPane ();
     borderPane.setCenter (textArea);
     borderPane.setRight (vbox);
-    Scene scene = new Scene (borderPane, 800, 600);
-
-    // textArea.setId ("fred");
+    Scene scene = new Scene (borderPane, 800, 592);
 
     primaryStage.setTitle ("Reporter");
     primaryStage.setScene (scene);
     primaryStage.show ();
-
-    // ScrollBar sb = (ScrollBar) textArea.lookup (".scroll-bar:vertical");
-    // System.out.println (sb.getUnitIncrement ());
-    // sb.setUnitIncrement (1);
   }
 
   public static void main (String[] args)
