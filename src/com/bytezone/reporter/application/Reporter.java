@@ -16,11 +16,11 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
@@ -59,11 +59,20 @@ public class Reporter extends Application
   private RadioButton btnVB;
   private RadioButton btnRDW;
   private RadioButton btnRavel;
-  private RadioButton btnNone;
+  private RadioButton btnNoSplit;
 
   private final ToggleGroup encodingGroup = new ToggleGroup ();
   private RadioButton btnAscii;
   private RadioButton btnEbcdic;
+
+  private final ToggleGroup formattingGroup = new ToggleGroup ();
+  private RadioButton btnFormatted;
+  private RadioButton btnHex;
+
+  private final ToggleGroup pagingGroup = new ToggleGroup ();
+  private RadioButton btnNoPaging;
+  private RadioButton btn66;
+  private RadioButton btnOther;
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -80,7 +89,6 @@ public class Reporter extends Application
 
     splitter = new Splitter (buffer);
     formatter = new Formatter ();
-    rebuild ();
 
     Font font = Font.font (fontNames[18], FontWeight.NORMAL, 14);
     textArea.setFont (font);
@@ -90,51 +98,45 @@ public class Reporter extends Application
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
 
-    Label lblSplit = new Label ("Records");
-    Label lblFormat = new Label ("Format");
-    Label lblPrint = new Label ("Paging");
+    Label lblSplit = addLabel ("Records", 20, 120);
+    Label lblFormat = addLabel ("Formatting", 20, 120);
+    Label lblEncode = addLabel ("Encoding", 20, 120);
+    Label lblPrint = addLabel ("Paging", 20, 120);
 
-    // lblSplit.setAlignment (Pos.CENTER);
-    // lblFormat.setAlignment (Pos.CENTER);
-    // lblPrint.setAlignment (Pos.CENTER);
+    EventHandler<ActionEvent> rebuild = e -> rebuild ();
 
-    btnCrlf = addRadioButton ("CRLF", splitterGroup, e -> rebuild ());
-    btnCrlf.setSelected (true);
-    btnCr = addRadioButton ("CR", splitterGroup, e -> rebuild ());
-    btnLf = addRadioButton ("LF", splitterGroup, e -> rebuild ());
-    btnVB = addRadioButton ("VB", splitterGroup, e -> rebuild ());
-    btnRDW = addRadioButton ("RDW", splitterGroup, e -> rebuild ());
-    btnRavel = addRadioButton ("Ravel", splitterGroup, e -> rebuild ());
-    btnNone = addRadioButton ("None", splitterGroup, e -> rebuild ());
-    btnFb80 = addRadioButton ("FB80", splitterGroup, e -> rebuild ());
-    btnFb132 = addRadioButton ("FB132", splitterGroup, e -> rebuild ());
-    btnFbOther = addRadioButton ("Other", splitterGroup, e -> rebuild ());
+    btnNoSplit = addRadioButton ("None", splitterGroup, rebuild);
+    btnNoSplit.setSelected (true);
+    btnCrlf = addRadioButton ("CRLF", splitterGroup, rebuild);
+    btnCr = addRadioButton ("CR", splitterGroup, rebuild);
+    btnLf = addRadioButton ("LF", splitterGroup, rebuild);
+    btnVB = addRadioButton ("VB", splitterGroup, rebuild);
+    btnRDW = addRadioButton ("RDW", splitterGroup, rebuild);
+    btnRavel = addRadioButton ("Ravel", splitterGroup, rebuild);
+    btnFb80 = addRadioButton ("FB80", splitterGroup, rebuild);
+    btnFb132 = addRadioButton ("FB132", splitterGroup, rebuild);
+    btnFbOther = addRadioButton ("Other", splitterGroup, rebuild);
 
-    vbox.getChildren ().addAll (lblSplit, btnNone, btnCrlf, btnCr, btnLf, btnVB, btnRDW,
-                                btnRavel, btnFb80, btnFb132, btnFbOther);
+    vbox.getChildren ().addAll (lblSplit, btnNoSplit, btnCrlf, btnCr, btnLf, btnVB,
+                                btnRDW, btnRavel, btnFb80, btnFb132, btnFbOther);
 
-    btnAscii = addRadioButton ("ASCII", encodingGroup, e -> rebuild ());
+    btnAscii = addRadioButton ("ASCII", encodingGroup, rebuild);
     btnAscii.setToggleGroup (encodingGroup);
     btnAscii.setSelected (true);
-    btnEbcdic = addRadioButton ("EBCDIC", encodingGroup, e -> rebuild ());
+    btnEbcdic = addRadioButton ("EBCDIC", encodingGroup, rebuild);
     btnEbcdic.setToggleGroup (encodingGroup);
-    vbox.getChildren ().addAll (lblFormat, btnAscii, btnEbcdic);
-    vbox.getChildren ().add (new Separator ());
+    vbox.getChildren ().addAll (lblEncode, btnAscii, btnEbcdic);
 
-    ToggleGroup group3 = new ToggleGroup ();
-    RadioButton btnFormatted = addRadioButton ("Formatted", group3, e -> rebuild ());
-    RadioButton btnHex = addRadioButton ("Hex", group3, e -> rebuild ());
+    btnFormatted = addRadioButton ("Formatted", formattingGroup, rebuild);
+    btnHex = addRadioButton ("Hex", formattingGroup, rebuild);
     btnHex.setSelected (true);
-    vbox.getChildren ().addAll (btnHex, btnFormatted);
-    vbox.getChildren ().add (new Separator ());
+    vbox.getChildren ().addAll (lblFormat, btnHex, btnFormatted);
 
-    ToggleGroup group4 = new ToggleGroup ();
-
-    RadioButton btnNone = addRadioButton ("None", group4, e -> rebuild ());
-    btnNone.setSelected (true);
-    RadioButton btn66 = addRadioButton ("66", group4, e -> rebuild ());
-    RadioButton btnOther = addRadioButton ("Other", group4, e -> rebuild ());
-    vbox.getChildren ().addAll (lblPrint, btnNone, btn66, btnOther);
+    btnNoPaging = addRadioButton ("None", pagingGroup, rebuild);
+    btnNoPaging.setSelected (true);
+    btn66 = addRadioButton ("66", pagingGroup, rebuild);
+    btnOther = addRadioButton ("Other", pagingGroup, rebuild);
+    vbox.getChildren ().addAll (lblPrint, btnNoPaging, btn66, btnOther);
 
     CheckBox chkAsa = new CheckBox ("ASA");
     chkAsa.setOnAction (e -> rebuild ());
@@ -154,6 +156,7 @@ public class Reporter extends Application
     if (!windowSaver.restoreWindow ())
       primaryStage.centerOnScreen ();
 
+    rebuild ();
     primaryStage.show ();
   }
 
@@ -164,6 +167,17 @@ public class Reporter extends Application
     button.setToggleGroup (group);
     button.setOnAction (evt);
     return button;
+  }
+
+  private Label addLabel (String text, double height, double width)
+  {
+    Label label = new Label (text);
+
+    label.setPrefWidth (width);
+    label.setAlignment (Pos.CENTER);
+    label.setPrefHeight (height);
+
+    return label;
   }
 
   private void rebuild ()
@@ -200,7 +214,7 @@ public class Reporter extends Application
       recordType = RecordType.RDW;
     else if (btn == btnVB)
       recordType = RecordType.VB;
-    else if (btn == btnNone)
+    else if (btn == btnNoSplit)
       recordType = RecordType.NONE;
     else
       System.out.println ("Unknown record type");
