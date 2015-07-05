@@ -28,15 +28,8 @@ public class FbRecordMaker implements RecordMaker
 
   private void split ()
   {
-    int lastPtr = 0;
     for (int ptr = 0; ptr < buffer.length; ptr += recordLength)
-    {
-      int reclen = Math.min (recordLength, buffer.length - ptr);
-      addRecord (ptr, reclen);
-      lastPtr = ptr;
-    }
-    if (lastPtr < buffer.length)
-      addRecord (lastPtr, buffer.length - lastPtr);
+      addRecord (ptr, Math.min (recordLength, buffer.length - ptr));
   }
 
   private void addRecord (int ptr, int reclen)

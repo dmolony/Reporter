@@ -55,6 +55,11 @@ public class Reporter extends Application
   private RadioButton btnLf;
   private RadioButton btnFb80;
   private RadioButton btnFb132;
+  private RadioButton btnFbOther;
+  private RadioButton btnVB;
+  private RadioButton btnRDW;
+  private RadioButton btnRavel;
+  private RadioButton btnNone;
 
   private final ToggleGroup encodingGroup = new ToggleGroup ();
   private RadioButton btnAscii;
@@ -97,15 +102,16 @@ public class Reporter extends Application
     btnCrlf.setSelected (true);
     btnCr = addRadioButton ("CR", splitterGroup, e -> rebuild ());
     btnLf = addRadioButton ("LF", splitterGroup, e -> rebuild ());
-    RadioButton btnVB = addRadioButton ("VB", splitterGroup, e -> rebuild ());
-    RadioButton btnRDW = addRadioButton ("RDW", splitterGroup, e -> rebuild ());
-    RadioButton btnRavel = addRadioButton ("Ravel", splitterGroup, e -> rebuild ());
+    btnVB = addRadioButton ("VB", splitterGroup, e -> rebuild ());
+    btnRDW = addRadioButton ("RDW", splitterGroup, e -> rebuild ());
+    btnRavel = addRadioButton ("Ravel", splitterGroup, e -> rebuild ());
+    btnNone = addRadioButton ("None", splitterGroup, e -> rebuild ());
     btnFb80 = addRadioButton ("FB80", splitterGroup, e -> rebuild ());
     btnFb132 = addRadioButton ("FB132", splitterGroup, e -> rebuild ());
-    RadioButton btnFbOther = addRadioButton ("Other", splitterGroup, e -> rebuild ());
+    btnFbOther = addRadioButton ("Other", splitterGroup, e -> rebuild ());
 
-    vbox.getChildren ().addAll (lblSplit, btnCrlf, btnCr, btnLf, btnVB, btnRDW, btnRavel,
-                                btnFb80, btnFb132, btnFbOther);
+    vbox.getChildren ().addAll (lblSplit, btnNone, btnCrlf, btnCr, btnLf, btnVB, btnRDW,
+                                btnRavel, btnFb80, btnFb132, btnFbOther);
 
     btnAscii = addRadioButton ("ASCII", encodingGroup, e -> rebuild ());
     btnAscii.setToggleGroup (encodingGroup);
@@ -186,6 +192,18 @@ public class Reporter extends Application
       recordType = RecordType.FB80;
     else if (btn == btnFb132)
       recordType = RecordType.FB132;
+    else if (btn == btnFbOther)
+      recordType = RecordType.FBXX;
+    else if (btn == btnRavel)
+      recordType = RecordType.RVL;
+    else if (btn == btnRDW)
+      recordType = RecordType.RDW;
+    else if (btn == btnVB)
+      recordType = RecordType.VB;
+    else if (btn == btnNone)
+      recordType = RecordType.NONE;
+    else
+      System.out.println ("Unknown record type");
 
     return splitter.getRecords (recordType);
   }

@@ -6,6 +6,10 @@ import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
 import com.bytezone.reporter.record.LfRecordMaker;
+import com.bytezone.reporter.record.NoRecordMaker;
+import com.bytezone.reporter.record.RavelRecordMaker;
+import com.bytezone.reporter.record.RdwRecordMaker;
+import com.bytezone.reporter.record.VbRecordMaker;
 
 public class Splitter
 {
@@ -15,10 +19,15 @@ public class Splitter
   private LfRecordMaker lf;
   private FbRecordMaker fb80;
   private FbRecordMaker fb132;
+  private FbRecordMaker fbxx;
+  private VbRecordMaker vb;
+  private RdwRecordMaker rdw;
+  private RavelRecordMaker ravel;
+  private NoRecordMaker none;
 
   enum RecordType
   {
-    CR, CRLF, LF, RDW, VB, RVL, FB80, FB132, FBXX
+    CR, CRLF, LF, RDW, VB, RVL, FB80, FB132, FBXX, NONE
   }
 
   public Splitter (byte[] buffer)
@@ -45,6 +54,21 @@ public class Splitter
           lf = new LfRecordMaker (buffer);
         return lf.getRecords ();
 
+      case VB:
+        if (vb == null)
+          vb = new VbRecordMaker (buffer);
+        return vb.getRecords ();
+
+      case RDW:
+        if (rdw == null)
+          rdw = new RdwRecordMaker (buffer);
+        return rdw.getRecords ();
+
+      case RVL:
+        if (ravel == null)
+          ravel = new RavelRecordMaker (buffer);
+        return ravel.getRecords ();
+
       case FB80:
         if (fb80 == null)
           fb80 = new FbRecordMaker (buffer, 80);
@@ -54,6 +78,16 @@ public class Splitter
         if (fb132 == null)
           fb132 = new FbRecordMaker (buffer, 132);
         return fb132.getRecords ();
+
+      case FBXX:
+        if (fbxx == null)
+          fbxx = new FbRecordMaker (buffer, 999);       // how to specify this?
+        return fbxx.getRecords ();
+
+      case NONE:
+        if (none == null)
+          none = new NoRecordMaker (buffer);
+        return none.getRecords ();
 
       default:
         return null;
