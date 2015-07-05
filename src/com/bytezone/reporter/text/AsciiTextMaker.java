@@ -7,7 +7,8 @@ public class AsciiTextMaker implements TextMaker
   {
     final StringBuilder textLine = new StringBuilder ();
 
-    for (int ptr = offset, max = offset + length; ptr < max; ptr++)
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr++)
     {
       int val = buffer[ptr] & 0xFF;
       if (val < 0x20 || val > 0xF0)
