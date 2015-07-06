@@ -9,6 +9,7 @@ import java.util.prefs.Preferences;
 import com.bytezone.reporter.application.Formatter.EncodingType;
 import com.bytezone.reporter.application.Formatter.FormatType;
 import com.bytezone.reporter.application.Splitter.RecordType;
+import com.bytezone.reporter.record.Record;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -217,9 +218,18 @@ public class Reporter extends Application
   {
     textArea.clear ();
 
-    List<byte[]> records = setRecordMaker ();
-    System.out.printf ("%,d records%n", records.size ());
-    setFormatter (records);
+    if (false)
+    {
+      List<byte[]> records = setRecordMaker ();
+      System.out.printf ("%,d records%n", records.size ());
+      setFormatter (records);
+    }
+    else
+    {
+      List<Record> fastRecords = setFastRecordMaker ();
+      System.out.printf ("%,d records%n", fastRecords.size ());
+      setFastFormatter (fastRecords);
+    }
     setPageMaker ();
 
     textArea.positionCaret (0);
@@ -231,6 +241,14 @@ public class Reporter extends Application
     RecordType recordType = (RecordType) btn.getUserData ();
 
     return splitter.getRecords (recordType);
+  }
+
+  private List<Record> setFastRecordMaker ()
+  {
+    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
+    RecordType recordType = (RecordType) btn.getUserData ();
+
+    return splitter.getFastRecords (recordType);
   }
 
   private void setFormatter (List<byte[]> records)
@@ -258,6 +276,25 @@ public class Reporter extends Application
       if (text.charAt (0) != 10)
         break;
       textArea.deleteText (length - 1, length);
+    }
+  }
+
+  private void setFastFormatter (List<Record> fastRecords)
+  {
+    RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
+    FormatType formatType = (FormatType) btn2.getUserData ();
+    formatter.setFormatter (formatType);
+
+    RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
+    EncodingType encodingType = (EncodingType) btn.getUserData ();
+    formatter.setTextMaker (encodingType);
+
+    formatter.setFastRecords (fastRecords);
+
+    for (String record : formatter.getFormattedFastRecords ())
+    {
+      textArea.appendText (record);
+      textArea.appendText ("\n");
     }
   }
 

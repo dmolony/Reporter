@@ -21,9 +21,9 @@ public class RavelRecordMaker extends DefaultRecordMaker
       if (firstByte == (byte) 0xFF)
       {
         byte nextByte = buffer[ptr++];
-        if (nextByte == 0x02)                           // EOF
+        if (nextByte == 0x02)                            // EOF
           break;
-        if (nextByte == 0x01)                           // EOR
+        if (nextByte == 0x01)                            // EOR
         {
           addRecord (tempPtr);
           tempPtr = 0;
@@ -46,5 +46,10 @@ public class RavelRecordMaker extends DefaultRecordMaker
     byte[] record = new byte[ptr];
     System.arraycopy (temp, 0, record, 0, ptr);
     records.add (record);
+  }
+
+  @Override
+  protected void fastSplit ()
+  {
   }
 }

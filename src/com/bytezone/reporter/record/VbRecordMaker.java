@@ -30,4 +30,9 @@ public class VbRecordMaker extends DefaultRecordMaker
       records.add (record);
     }
   }
+
+  @Override
+  protected void fastSplit ()
+  {
+  }
 }

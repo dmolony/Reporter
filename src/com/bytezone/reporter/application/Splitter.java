@@ -9,6 +9,7 @@ import com.bytezone.reporter.record.LfRecordMaker;
 import com.bytezone.reporter.record.NoRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
+import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.VbRecordMaker;
 
 public class Splitter
@@ -34,6 +35,65 @@ public class Splitter
   public Splitter (byte[] buffer)
   {
     this.buffer = buffer;
+  }
+
+  List<Record> getFastRecords (RecordType recordType)
+  {
+    switch (recordType)
+    {
+      case CRLF:
+        if (crlf == null)
+          crlf = new CrlfRecordMaker (buffer);
+        return crlf.getFastRecords ();
+
+      case CR:
+        if (cr == null)
+          cr = new CrRecordMaker (buffer);
+        return cr.getFastRecords ();
+
+      case LF:
+        if (lf == null)
+          lf = new LfRecordMaker (buffer);
+        return lf.getFastRecords ();
+
+      case VB:
+        if (vb == null)
+          vb = new VbRecordMaker (buffer);
+        return vb.getFastRecords ();
+
+      case RDW:
+        if (rdw == null)
+          rdw = new RdwRecordMaker (buffer);
+        return rdw.getFastRecords ();
+
+      case RVL:
+        if (ravel == null)
+          ravel = new RavelRecordMaker (buffer);
+        return ravel.getFastRecords ();
+
+      case FB80:
+        if (fb80 == null)
+          fb80 = new FbRecordMaker (buffer, 80);
+        return fb80.getFastRecords ();
+
+      case FB132:
+        if (fb132 == null)
+          fb132 = new FbRecordMaker (buffer, 132);
+        return fb132.getFastRecords ();
+
+      case FBXX:
+        if (fbxx == null)
+          fbxx = new FbRecordMaker (buffer, 252);       // how to specify this?
+        return fbxx.getFastRecords ();
+
+      case NONE:
+        if (none == null)
+          none = new NoRecordMaker (buffer);
+        return none.getFastRecords ();
+
+      default:
+        return null;
+    }
   }
 
   List<byte[]> getRecords (RecordType recordType)

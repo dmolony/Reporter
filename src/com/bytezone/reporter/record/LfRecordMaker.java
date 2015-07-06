@@ -29,4 +29,21 @@ public class LfRecordMaker extends DefaultRecordMaker
     System.arraycopy (buffer, ptr, record, 0, reclen);
     records.add (record);
   }
+
+  @Override
+  protected void fastSplit ()
+  {
+    int start = 0;
+    for (int ptr = 0; ptr < buffer.length; ptr++)
+    {
+      if (buffer[ptr] == 0x0A)
+      {
+        fastRecords.add (new Record (buffer, start, ptr - start, start, ptr - start + 1));
+        start = ptr + 1;
+      }
+    }
+    if (start < buffer.length)
+      fastRecords.add (new Record (buffer, start, buffer.length - start, start,
+          buffer.length - start));
+  }
 }

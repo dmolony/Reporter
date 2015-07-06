@@ -23,4 +23,9 @@ public class FbRecordMaker extends DefaultRecordMaker
     System.arraycopy (buffer, ptr, record, 0, reclen);
     records.add (record);
   }
+
+  @Override
+  protected void fastSplit ()
+  {
+  }
 }

@@ -7,6 +7,7 @@ import com.bytezone.reporter.format.HexFormatter;
 import com.bytezone.reporter.format.NatloadFormatter;
 import com.bytezone.reporter.format.RecordFormatter;
 import com.bytezone.reporter.format.StringFormatter;
+import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -23,6 +24,7 @@ public class Formatter
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
   private List<byte[]> records;
+  private List<Record> fastRecords;
 
   enum FormatType
   {
@@ -39,12 +41,27 @@ public class Formatter
     this.records = records;
   }
 
+  public void setFastRecords (List<Record> fastRecords)
+  {
+    this.fastRecords = fastRecords;
+  }
+
   public List<String> getFormattedRecords ()
   {
     List<String> formattedRecords = new ArrayList<> (records.size ());
 
     for (byte[] record : records)
       formattedRecords.add (recordFormatter.getFormattedRecord (record));
+
+    return formattedRecords;
+  }
+
+  public List<String> getFormattedFastRecords ()
+  {
+    List<String> formattedRecords = new ArrayList<> (fastRecords.size ());
+
+    for (Record fastRecord : fastRecords)
+      formattedRecords.add (recordFormatter.getFormattedFastRecord (fastRecord));
 
     return formattedRecords;
   }
