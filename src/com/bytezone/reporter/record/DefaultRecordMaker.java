@@ -19,6 +19,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
     if (records == null)
     {
       records = new ArrayList<> ();
+      System.out.println ("Building records");
       split ();
     }
     return records;

@@ -2,7 +2,7 @@ package com.bytezone.reporter.record;
 
 public class RavelRecordMaker extends DefaultRecordMaker
 {
-  byte[] temp = new byte[1024];
+  byte[] temp = new byte[2048];
 
   public RavelRecordMaker (byte[] buffer)
   {
@@ -21,9 +21,9 @@ public class RavelRecordMaker extends DefaultRecordMaker
       if (firstByte == (byte) 0xFF)
       {
         byte nextByte = buffer[ptr++];
-        if (nextByte == 0x02)                         // EOF
+        if (nextByte == 0x02)                           // EOF
           break;
-        if (nextByte == 0x01)                         // EOR
+        if (nextByte == 0x01)                           // EOR
         {
           addRecord (tempPtr);
           tempPtr = 0;
@@ -31,7 +31,8 @@ public class RavelRecordMaker extends DefaultRecordMaker
         }
         assert nextByte == (byte) 0xFF;
       }
-      temp[tempPtr++] = firstByte;
+      if (tempPtr < temp.length)
+        temp[tempPtr++] = firstByte;
     }
     if (tempPtr > 0)
     {

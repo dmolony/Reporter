@@ -6,10 +6,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.reporter.application.Formatter.EncodingType;
 import com.bytezone.reporter.application.Formatter.FormatType;
 import com.bytezone.reporter.application.Splitter.RecordType;
-import com.bytezone.reporter.text.AsciiTextMaker;
-import com.bytezone.reporter.text.EbcdicTextMaker;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -45,10 +44,6 @@ public class Reporter extends Application
   private Splitter splitter;
   private final Formatter formatter = new Formatter ();
 
-  // private final TextMaker asciiTextMaker = new AsciiTextMaker ();
-  // private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
-  private byte[] buffer;
-
   private final ToggleGroup splitterGroup = new ToggleGroup ();
   private RadioButton btnCrlf;
   private RadioButton btnCr;
@@ -78,21 +73,22 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    Path currentPath = Paths.get (home + files[3]);
+    Path currentPath = Paths.get (home + files[0]);
 
-    byte[] bufferAll = Files.readAllBytes (currentPath);
-    buffer = new byte[2048];
-    System.arraycopy (bufferAll, 0, buffer, 0, buffer.length);
-
-    // hexEbcdicFormatter = new HexFormatter (new EbcdicTextMaker ());
-    // hexAsciiFormatter = new HexFormatter (new AsciiTextMaker ());
+    long fileLength = currentPath.toFile ().length ();
+    byte[] buffer = Files.readAllBytes (currentPath);
+    System.out.printf ("File size: %,d%n", buffer.length);
+    if (fileLength > 20000)
+    {
+      System.out.println ("Reducing buffer to 20,000");
+      byte[] shortBuffer = new byte[20000];
+      System.arraycopy (buffer, 0, shortBuffer, 0, shortBuffer.length);
+      buffer = shortBuffer;
+    }
 
     splitter = new Splitter (buffer);
-    // formatter = new Formatter ();
 
-    Font font = Font.font (fontNames[18], FontWeight.NORMAL, 14);
-    textArea.setFont (font);
-
+    textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
     VBox vbox = new VBox (10);
@@ -120,16 +116,15 @@ public class Reporter extends Application
     vbox.getChildren ().addAll (lblSplit, btnNoSplit, btnCrlf, btnCr, btnLf, btnVB,
                                 btnRDW, btnRavel, btnFb80, btnFb132, btnFbOther);
 
-    btnAscii = addRadioButton ("ASCII", encodingGroup, rebuild);
-    btnAscii.setToggleGroup (encodingGroup);
+    btnAscii =
+        addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
     btnAscii.setSelected (true);
-    btnEbcdic = addRadioButton ("EBCDIC", encodingGroup, rebuild);
-    btnEbcdic.setToggleGroup (encodingGroup);
+    btnEbcdic =
+        addEncodingTypeButton ("EBCDIC", encodingGroup, rebuild, EncodingType.EBCDIC);
     vbox.getChildren ().addAll (lblEncode, btnAscii, btnEbcdic);
 
-    btnText = addRadioButton ("Text", formattingGroup, rebuild);
-    btnHex = addRadioButton ("Hex", formattingGroup, rebuild);
-    btnText = addRadioButton ("Text", formattingGroup, rebuild);
+    btnText = addFormatTypeButton ("Text", formattingGroup, rebuild, FormatType.TEXT);
+    btnHex = addFormatTypeButton ("Hex", formattingGroup, rebuild, FormatType.HEX);
     btnHex.setSelected (true);
     vbox.getChildren ().addAll (lblFormat, btnHex, btnText);
 
@@ -169,6 +164,22 @@ public class Reporter extends Application
     return button;
   }
 
+  private RadioButton addEncodingTypeButton (String text, ToggleGroup group,
+      EventHandler<ActionEvent> evt, EncodingType encodingType)
+  {
+    RadioButton button = addRadioButton (text, group, evt);
+    button.setUserData (encodingType);
+    return button;
+  }
+
+  private RadioButton addFormatTypeButton (String text, ToggleGroup group,
+      EventHandler<ActionEvent> evt, FormatType formatType)
+  {
+    RadioButton button = addRadioButton (text, group, evt);
+    button.setUserData (formatType);
+    return button;
+  }
+
   private RadioButton addRadioButton (String text, ToggleGroup group,
       EventHandler<ActionEvent> evt)
   {
@@ -194,6 +205,7 @@ public class Reporter extends Application
     textArea.clear ();
 
     List<byte[]> records = setRecordMaker ();
+    System.out.printf ("%,d records%n", records.size ());
     setFormatter (records);
     setPageMaker ();
 
@@ -211,20 +223,12 @@ public class Reporter extends Application
   private void setFormatter (List<byte[]> records)
   {
     RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
-    if (btn2 == btnText)
-    {
-      formatter.setFormatter (FormatType.TEXT);
-    }
-    else if (btn2 == btnHex)
-    {
-      formatter.setFormatter (FormatType.HEX);
-    }
+    FormatType formatType = (FormatType) btn2.getUserData ();
+    formatter.setFormatter (formatType);
 
     RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
-    if (btn == btnAscii)
-      formatter.setTextMaker (new AsciiTextMaker ());
-    else
-      formatter.setTextMaker (new EbcdicTextMaker ());
+    EncodingType encodingType = (EncodingType) btn.getUserData ();
+    formatter.setTextMaker (encodingType);
 
     for (byte[] record : records)
     {
@@ -235,7 +239,17 @@ public class Reporter extends Application
     if (records.size () > 0)
     {
       int last = textArea.getLength ();
-      textArea.deleteText (last - 2, last);
+      textArea.deleteText (last - 1, last);
+    }
+
+    int length;
+    while ((length = textArea.getLength ()) > 0)
+    {
+      String text = textArea.getText (length - 1, length);
+      System.out.printf ("Last:%d%n", (int) text.charAt (0));
+      if (text.charAt (0) != 10)
+        break;
+      textArea.deleteText (length - 1, length);
     }
   }
 
