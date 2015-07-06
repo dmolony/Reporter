@@ -1,32 +1,17 @@
 package com.bytezone.reporter.record;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class FbRecordMaker implements RecordMaker
+public class FbRecordMaker extends DefaultRecordMaker
 {
   private final int recordLength;
-  private final byte[] buffer;
-  private List<byte[]> records;
 
   public FbRecordMaker (byte[] buffer, int recordLength)
   {
+    super (buffer);
     this.recordLength = recordLength;
-    this.buffer = buffer;
   }
 
   @Override
-  public List<byte[]> getRecords ()
-  {
-    if (records == null)
-    {
-      records = new ArrayList<> ();
-      split ();
-    }
-    return records;
-  }
-
-  private void split ()
+  protected void split ()
   {
     for (int ptr = 0; ptr < buffer.length; ptr += recordLength)
       addRecord (ptr, Math.min (recordLength, buffer.length - ptr));

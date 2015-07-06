@@ -1,30 +1,14 @@
 package com.bytezone.reporter.record;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class VbRecordMaker implements RecordMaker
+public class VbRecordMaker extends DefaultRecordMaker
 {
-  private final byte[] buffer;
-  private List<byte[]> records;
-
   public VbRecordMaker (byte[] buffer)
   {
-    this.buffer = buffer;
+    super (buffer);
   }
 
   @Override
-  public List<byte[]> getRecords ()
-  {
-    if (records == null)
-    {
-      records = new ArrayList<> ();
-      split ();
-    }
-    return records;
-  }
-
-  private void split ()
+  protected void split ()
   {
     int ptr = 0;
     while (ptr < buffer.length)

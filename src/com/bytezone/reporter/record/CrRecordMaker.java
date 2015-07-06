@@ -1,30 +1,14 @@
 package com.bytezone.reporter.record;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CrRecordMaker implements RecordMaker
+public class CrRecordMaker extends DefaultRecordMaker
 {
-  private final byte[] buffer;
-  private List<byte[]> records;
-
   public CrRecordMaker (byte[] buffer)
   {
-    this.buffer = buffer;
+    super (buffer);
   }
 
   @Override
-  public List<byte[]> getRecords ()
-  {
-    if (records == null)
-    {
-      records = new ArrayList<> ();
-      split ();
-    }
-    return records;
-  }
-
-  private void split ()
+  protected void split ()
   {
     int lastPtr = 0;
     for (int ptr = 0, max = buffer.length; ptr < max; ptr++)
