@@ -36,7 +36,9 @@ public class Reporter extends Application
         "PT Mono", "Source Code Pro", "Ubuntu Mono", "Monospaced" };
 
   private static final String[] files =
-      { "DENIS-000.src", "DBALIB.src", "MOLONYD.NCD", "denis-005.src" };
+      { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
+        "smutlib001.src", "DBALIB.SRC" };
+  private final String[] types = { "FB252", "CR", "CRLF", "RAV", "VB", "RDW", "NVB" };
 
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
@@ -63,6 +65,7 @@ public class Reporter extends Application
   private final ToggleGroup formattingGroup = new ToggleGroup ();
   private RadioButton btnText;
   private RadioButton btnHex;
+  private RadioButton btnNatload;
 
   private final ToggleGroup pagingGroup = new ToggleGroup ();
   private RadioButton btnNoPaging;
@@ -73,18 +76,26 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    Path currentPath = Paths.get (home + files[0]);
+    int choice = 2;
+    Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
     System.out.printf ("File size: %,d%n", buffer.length);
-    if (fileLength > 20000)
+    int max = 20_000;
+    if (fileLength > max)
     {
-      System.out.println ("Reducing buffer to 20,000");
-      byte[] shortBuffer = new byte[20000];
-      System.arraycopy (buffer, 0, shortBuffer, 0, shortBuffer.length);
+      System.out.printf ("Reducing buffer to %,d%n", max);
+      byte[] shortBuffer = new byte[max];
+      System.arraycopy (buffer, 0, shortBuffer, 0, max);
       buffer = shortBuffer;
     }
+
+    System.out.println ("------------------------");
+    for (int i = 0; i < files.length; i++)
+      System.out.printf ("%d  %-5s %s%n", i, types[i], files[i]);
+    System.out.println ("------------------------");
+    System.out.printf ("Using %-5s %s%n", types[choice], files[choice]);
 
     splitter = new Splitter (buffer);
 
@@ -125,8 +136,10 @@ public class Reporter extends Application
 
     btnText = addFormatTypeButton ("Text", formattingGroup, rebuild, FormatType.TEXT);
     btnHex = addFormatTypeButton ("Hex", formattingGroup, rebuild, FormatType.HEX);
+    btnNatload =
+        addFormatTypeButton ("NatLoad", formattingGroup, rebuild, FormatType.NATLOAD);
     btnHex.setSelected (true);
-    vbox.getChildren ().addAll (lblFormat, btnHex, btnText);
+    vbox.getChildren ().addAll (lblFormat, btnHex, btnText, btnNatload);
 
     btnNoPaging = addRadioButton ("None", pagingGroup, rebuild);
     btnNoPaging.setSelected (true);
@@ -246,7 +259,7 @@ public class Reporter extends Application
     while ((length = textArea.getLength ()) > 0)
     {
       String text = textArea.getText (length - 1, length);
-      System.out.printf ("Last:%d%n", (int) text.charAt (0));
+      // System.out.printf ("Last:%d%n", (int) text.charAt (0));
       if (text.charAt (0) != 10)
         break;
       textArea.deleteText (length - 1, length);

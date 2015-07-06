@@ -14,7 +14,7 @@ public class AsciiTextMaker implements TextMaker
       if (val < 0x20 || val > 0xF0)
         textLine.append ('.');
       else
-        textLine.append (new String (buffer, ptr, 1));
+        textLine.append ((char) val);
     }
 
     return textLine.toString ();
