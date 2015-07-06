@@ -42,8 +42,5 @@ public class LfRecordMaker extends DefaultRecordMaker
         start = ptr + 1;
       }
     }
-    if (start < buffer.length)
-      fastRecords.add (new Record (buffer, start, buffer.length - start, start,
-          buffer.length - start));
   }
 }

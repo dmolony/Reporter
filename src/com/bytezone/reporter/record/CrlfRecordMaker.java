@@ -49,8 +49,8 @@ public class CrlfRecordMaker extends DefaultRecordMaker
         }
       }
     }
-    if (start < buffer.length)
-      fastRecords.add (new Record (buffer, start, buffer.length - start, start,
-          buffer.length - start));
+    // if (start < buffer.length)
+    // fastRecords.add (new Record (buffer, start, buffer.length - start, start,
+    // buffer.length - start));
   }
 }

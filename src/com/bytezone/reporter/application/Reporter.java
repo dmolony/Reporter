@@ -77,13 +77,13 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 2;
+    int choice = 0;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
     System.out.printf ("File size: %,d%n", buffer.length);
-    int max = 20_000;
+    int max = 150_000;
     if (fileLength > max)
     {
       System.out.printf ("Reducing buffer to %,d%n", max);
@@ -263,20 +263,18 @@ public class Reporter extends Application
 
     formatter.setRecords (records);
 
+    StringBuilder text = new StringBuilder ();
     for (String record : formatter.getFormattedRecords ())
     {
-      textArea.appendText (record);
-      textArea.appendText ("\n");
+      text.append (record);
+      text.append ('\n');
     }
 
-    int length;
-    while ((length = textArea.getLength ()) > 0)
-    {
-      String text = textArea.getText (length - 1, length);
-      if (text.charAt (0) != 10)
-        break;
-      textArea.deleteText (length - 1, length);
-    }
+    while (text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
+
+    textArea.setText (text.toString ());
+
   }
 
   private void setFastFormatter (List<Record> fastRecords)
@@ -291,11 +289,17 @@ public class Reporter extends Application
 
     formatter.setFastRecords (fastRecords);
 
+    StringBuilder text = new StringBuilder ();
     for (String record : formatter.getFormattedFastRecords ())
     {
-      textArea.appendText (record);
-      textArea.appendText ("\n");
+      text.append (record);
+      text.append ('\n');
     }
+
+    while (text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
+
+    textArea.setText (text.toString ());
   }
 
   private void setPageMaker ()
