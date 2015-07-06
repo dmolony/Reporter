@@ -243,23 +243,18 @@ public class Reporter extends Application
     EncodingType encodingType = (EncodingType) btn.getUserData ();
     formatter.setTextMaker (encodingType);
 
-    for (byte[] record : records)
-    {
-      textArea.appendText (formatter.getFormattedRecord (record));
-      textArea.appendText ("\n");
-    }
+    formatter.setRecords (records);
 
-    if (records.size () > 0)
+    for (String record : formatter.getFormattedRecords ())
     {
-      int last = textArea.getLength ();
-      textArea.deleteText (last - 1, last);
+      textArea.appendText (record);
+      textArea.appendText ("\n");
     }
 
     int length;
     while ((length = textArea.getLength ()) > 0)
     {
       String text = textArea.getText (length - 1, length);
-      // System.out.printf ("Last:%d%n", (int) text.charAt (0));
       if (text.charAt (0) != 10)
         break;
       textArea.deleteText (length - 1, length);

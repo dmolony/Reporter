@@ -14,6 +14,7 @@ import com.bytezone.reporter.record.VbRecordMaker;
 public class Splitter
 {
   private final byte[] buffer;
+
   private CrlfRecordMaker crlf;
   private CrRecordMaker cr;
   private LfRecordMaker lf;

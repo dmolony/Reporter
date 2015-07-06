@@ -1,5 +1,8 @@
 package com.bytezone.reporter.application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bytezone.reporter.format.HexFormatter;
 import com.bytezone.reporter.format.NatloadFormatter;
 import com.bytezone.reporter.format.RecordFormatter;
@@ -11,12 +14,15 @@ import com.bytezone.reporter.text.TextMaker;
 public class Formatter
 {
   private RecordFormatter recordFormatter;
+
   private final RecordFormatter hexFormatter = new HexFormatter ();
   private final RecordFormatter stringFormatter = new StringFormatter ();
   private final RecordFormatter natloadFormatter = new NatloadFormatter ();
 
   private final TextMaker asciiTextMaker = new AsciiTextMaker ();
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+
+  private List<byte[]> records;
 
   enum FormatType
   {
@@ -28,27 +34,40 @@ public class Formatter
     ASCII, EBCDIC
   }
 
+  public void setRecords (List<byte[]> records)
+  {
+    this.records = records;
+  }
+
+  public List<String> getFormattedRecords ()
+  {
+    List<String> formattedRecords = new ArrayList<> (records.size ());
+
+    for (byte[] record : records)
+      formattedRecords.add (recordFormatter.getFormattedRecord (record));
+
+    return formattedRecords;
+  }
+
   public void setTextMaker (EncodingType encodingType)
   {
     switch (encodingType)
     {
       case ASCII:
-        hexFormatter.setTextMaker (asciiTextMaker);
-        stringFormatter.setTextMaker (asciiTextMaker);
-        natloadFormatter.setTextMaker (asciiTextMaker);
+        setTextMaker (asciiTextMaker);
         break;
 
       case EBCDIC:
-        hexFormatter.setTextMaker (ebcdicTextMaker);
-        stringFormatter.setTextMaker (ebcdicTextMaker);
-        natloadFormatter.setTextMaker (ebcdicTextMaker);
+        setTextMaker (ebcdicTextMaker);
         break;
     }
   }
 
   private void setTextMaker (TextMaker textMaker)
   {
-
+    hexFormatter.setTextMaker (textMaker);
+    stringFormatter.setTextMaker (textMaker);
+    natloadFormatter.setTextMaker (textMaker);
   }
 
   public void setFormatter (FormatType formatType)
