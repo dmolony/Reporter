@@ -81,7 +81,7 @@ public class Splitter
 
       case FBXX:
         if (fbxx == null)
-          fbxx = new FbRecordMaker (buffer, 999);       // how to specify this?
+          fbxx = new FbRecordMaker (buffer, 252);       // how to specify this?
         return fbxx.getRecords ();
 
       case NONE:

@@ -37,7 +37,8 @@ public class Reporter extends Application
         "Input Mono Narrow", "Luculent", "Menlo", "Monaco", "M+ 1m", "Panic Sans",
         "PT Mono", "Source Code Pro", "Ubuntu Mono", "Monospaced" };
 
-  private static final String[] files = { "DENIS-000.src", "DBALIB.src" };
+  private static final String[] files =
+      { "DENIS-000.src", "DBALIB.src", "MOLONYD.NCD", "denis-005.src" };
 
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
@@ -78,7 +79,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    Path currentPath = Paths.get (home + files[0]);
+    Path currentPath = Paths.get (home + files[3]);
 
     byte[] bufferAll = Files.readAllBytes (currentPath);
     buffer = new byte[2048];
