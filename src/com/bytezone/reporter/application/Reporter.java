@@ -6,9 +6,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.reporter.application.Formatter.FormatType;
 import com.bytezone.reporter.application.Splitter.RecordType;
-import com.bytezone.reporter.format.HexFormatter;
-import com.bytezone.reporter.format.RecordFormatter;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 
@@ -44,10 +43,10 @@ public class Reporter extends Application
   private WindowSaver windowSaver;
   private Preferences prefs;
   private Splitter splitter;
-  private Formatter formatter;
+  private final Formatter formatter = new Formatter ();
 
-  private RecordFormatter hexEbcdicFormatter;
-  private RecordFormatter hexAsciiFormatter;
+  // private final TextMaker asciiTextMaker = new AsciiTextMaker ();
+  // private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
   private byte[] buffer;
 
   private final ToggleGroup splitterGroup = new ToggleGroup ();
@@ -67,7 +66,7 @@ public class Reporter extends Application
   private RadioButton btnEbcdic;
 
   private final ToggleGroup formattingGroup = new ToggleGroup ();
-  private RadioButton btnFormatted;
+  private RadioButton btnText;
   private RadioButton btnHex;
 
   private final ToggleGroup pagingGroup = new ToggleGroup ();
@@ -85,11 +84,11 @@ public class Reporter extends Application
     buffer = new byte[2048];
     System.arraycopy (bufferAll, 0, buffer, 0, buffer.length);
 
-    hexEbcdicFormatter = new HexFormatter (new EbcdicTextMaker ());
-    hexAsciiFormatter = new HexFormatter (new AsciiTextMaker ());
+    // hexEbcdicFormatter = new HexFormatter (new EbcdicTextMaker ());
+    // hexAsciiFormatter = new HexFormatter (new AsciiTextMaker ());
 
     splitter = new Splitter (buffer);
-    formatter = new Formatter ();
+    // formatter = new Formatter ();
 
     Font font = Font.font (fontNames[18], FontWeight.NORMAL, 14);
     textArea.setFont (font);
@@ -106,17 +105,17 @@ public class Reporter extends Application
 
     EventHandler<ActionEvent> rebuild = e -> rebuild ();
 
-    btnNoSplit = addRadioButton ("None", splitterGroup, rebuild);
+    btnNoSplit = addRecordTypeButton ("None", splitterGroup, rebuild, RecordType.NONE);
     btnNoSplit.setSelected (true);
-    btnCrlf = addRadioButton ("CRLF", splitterGroup, rebuild);
-    btnCr = addRadioButton ("CR", splitterGroup, rebuild);
-    btnLf = addRadioButton ("LF", splitterGroup, rebuild);
-    btnVB = addRadioButton ("VB", splitterGroup, rebuild);
-    btnRDW = addRadioButton ("RDW", splitterGroup, rebuild);
-    btnRavel = addRadioButton ("Ravel", splitterGroup, rebuild);
-    btnFb80 = addRadioButton ("FB80", splitterGroup, rebuild);
-    btnFb132 = addRadioButton ("FB132", splitterGroup, rebuild);
-    btnFbOther = addRadioButton ("Other", splitterGroup, rebuild);
+    btnCrlf = addRecordTypeButton ("CRLF", splitterGroup, rebuild, RecordType.CRLF);
+    btnCr = addRecordTypeButton ("CR", splitterGroup, rebuild, RecordType.CR);
+    btnLf = addRecordTypeButton ("LF", splitterGroup, rebuild, RecordType.LF);
+    btnVB = addRecordTypeButton ("VB", splitterGroup, rebuild, RecordType.VB);
+    btnRDW = addRecordTypeButton ("RDW", splitterGroup, rebuild, RecordType.RDW);
+    btnRavel = addRecordTypeButton ("Ravel", splitterGroup, rebuild, RecordType.RVL);
+    btnFb80 = addRecordTypeButton ("FB80", splitterGroup, rebuild, RecordType.FB80);
+    btnFb132 = addRecordTypeButton ("FB132", splitterGroup, rebuild, RecordType.FB132);
+    btnFbOther = addRecordTypeButton ("Other", splitterGroup, rebuild, RecordType.FBXX);
 
     vbox.getChildren ().addAll (lblSplit, btnNoSplit, btnCrlf, btnCr, btnLf, btnVB,
                                 btnRDW, btnRavel, btnFb80, btnFb132, btnFbOther);
@@ -128,10 +127,11 @@ public class Reporter extends Application
     btnEbcdic.setToggleGroup (encodingGroup);
     vbox.getChildren ().addAll (lblEncode, btnAscii, btnEbcdic);
 
-    btnFormatted = addRadioButton ("Formatted", formattingGroup, rebuild);
+    btnText = addRadioButton ("Text", formattingGroup, rebuild);
     btnHex = addRadioButton ("Hex", formattingGroup, rebuild);
+    btnText = addRadioButton ("Text", formattingGroup, rebuild);
     btnHex.setSelected (true);
-    vbox.getChildren ().addAll (lblFormat, btnHex, btnFormatted);
+    vbox.getChildren ().addAll (lblFormat, btnHex, btnText);
 
     btnNoPaging = addRadioButton ("None", pagingGroup, rebuild);
     btnNoPaging.setSelected (true);
@@ -159,6 +159,14 @@ public class Reporter extends Application
 
     rebuild ();
     primaryStage.show ();
+  }
+
+  private RadioButton addRecordTypeButton (String text, ToggleGroup group,
+      EventHandler<ActionEvent> evt, RecordType recordType)
+  {
+    RadioButton button = addRadioButton (text, group, evt);
+    button.setUserData (recordType);
+    return button;
   }
 
   private RadioButton addRadioButton (String text, ToggleGroup group,
@@ -195,46 +203,33 @@ public class Reporter extends Application
   private List<byte[]> setRecordMaker ()
   {
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
-    RecordType recordType = null;
-
-    if (btn == btnCrlf)
-      recordType = RecordType.CRLF;
-    else if (btn == btnCr)
-      recordType = RecordType.CR;
-    else if (btn == btnLf)
-      recordType = RecordType.LF;
-    else if (btn == btnFb80)
-      recordType = RecordType.FB80;
-    else if (btn == btnFb132)
-      recordType = RecordType.FB132;
-    else if (btn == btnFbOther)
-      recordType = RecordType.FBXX;
-    else if (btn == btnRavel)
-      recordType = RecordType.RVL;
-    else if (btn == btnRDW)
-      recordType = RecordType.RDW;
-    else if (btn == btnVB)
-      recordType = RecordType.VB;
-    else if (btn == btnNoSplit)
-      recordType = RecordType.NONE;
-    else
-      System.out.println ("Unknown record type");
+    RecordType recordType = (RecordType) btn.getUserData ();
 
     return splitter.getRecords (recordType);
   }
 
   private void setFormatter (List<byte[]> records)
   {
+    RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
+    if (btn2 == btnText)
+    {
+      formatter.setFormatter (FormatType.TEXT);
+    }
+    else if (btn2 == btnHex)
+    {
+      formatter.setFormatter (FormatType.HEX);
+    }
+
     RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
     if (btn == btnAscii)
-      formatter.setFormatter (hexAsciiFormatter);
+      formatter.setTextMaker (new AsciiTextMaker ());
     else
-      formatter.setFormatter (hexEbcdicFormatter);
+      formatter.setTextMaker (new EbcdicTextMaker ());
 
     for (byte[] record : records)
     {
       textArea.appendText (formatter.getFormattedRecord (record));
-      textArea.appendText ("\n\n");
+      textArea.appendText ("\n");
     }
 
     if (records.size () > 0)

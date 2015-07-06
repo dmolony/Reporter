@@ -1,16 +1,7 @@
 package com.bytezone.reporter.format;
 
-import com.bytezone.reporter.text.TextMaker;
-
-public class HexFormatter implements RecordFormatter
+public class HexFormatter extends DefaultFormatter
 {
-  TextMaker textMaker;
-
-  public HexFormatter (TextMaker textMaker)
-  {
-    this.textMaker = textMaker;
-  }
-
   @Override
   public String getFormattedRecord (byte[] buffer)
   {
@@ -33,8 +24,6 @@ public class HexFormatter implements RecordFormatter
                                   textMaker.getText (buffer, ptr, lineSize)));
     }
 
-    if (text.length () > 0)
-      text.deleteCharAt (text.length () - 1);
     return text.toString ();
   }
 }
