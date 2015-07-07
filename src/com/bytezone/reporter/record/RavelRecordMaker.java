@@ -10,7 +10,7 @@ public class RavelRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void fastSplit ()
+  protected void split ()
   {
     int ptr = 0;
     int tempPtr = 0;
@@ -33,10 +33,10 @@ public class RavelRecordMaker extends DefaultRecordMaker
           {
             byte[] record = new byte[tempPtr];
             System.arraycopy (temp, 0, record, 0, tempPtr);
-            fastRecords.add (new Record (record, 0, tempPtr, 0, tempPtr));
+            records.add (new Record (record, 0, tempPtr, 0, tempPtr));
           }
           else
-            fastRecords.add (new Record (buffer, start, tempPtr, start, tempPtr));
+            records.add (new Record (buffer, start, tempPtr, start, tempPtr));
 
           tempPtr = 0;
           start = ptr;

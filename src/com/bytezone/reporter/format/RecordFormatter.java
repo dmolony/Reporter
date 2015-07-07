@@ -5,7 +5,7 @@ import com.bytezone.reporter.text.TextMaker;
 
 public interface RecordFormatter
 {
-  public String getFormattedFastRecord (Record record);
+  public String getFormattedRecord (Record record);
 
   public void setTextMaker (TextMaker textMaker);
 }

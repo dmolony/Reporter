@@ -6,7 +6,7 @@ import java.util.List;
 public abstract class DefaultRecordMaker implements RecordMaker
 {
   protected final byte[] buffer;
-  protected List<Record> fastRecords;
+  protected List<Record> records;
 
   public DefaultRecordMaker (byte[] buffer)
   {
@@ -14,16 +14,16 @@ public abstract class DefaultRecordMaker implements RecordMaker
   }
 
   @Override
-  public List<Record> getFastRecords ()
+  public List<Record> getRecords ()
 
   {
-    if (fastRecords == null)
+    if (records == null)
     {
-      fastRecords = new ArrayList<> ();
-      fastSplit ();
+      records = new ArrayList<> ();
+      split ();
     }
-    return fastRecords;
+    return records;
   }
 
-  protected abstract void fastSplit ();
+  protected abstract void split ();
 }

@@ -11,13 +11,13 @@ public class FbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void fastSplit ()
+  protected void split ()
   {
     for (int ptr = 0; ptr < buffer.length; ptr += recordLength)
     {
       int reclen = Math.min (recordLength, buffer.length - ptr);
       if (reclen == recordLength)
-        fastRecords.add (new Record (buffer, ptr, reclen, ptr, reclen));
+        records.add (new Record (buffer, ptr, reclen, ptr, reclen));
     }
   }
 }

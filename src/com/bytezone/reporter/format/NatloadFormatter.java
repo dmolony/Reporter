@@ -5,7 +5,7 @@ import com.bytezone.reporter.record.Record;
 public class NatloadFormatter extends DefaultFormatter
 {
   @Override
-  public String getFormattedFastRecord (Record record)
+  public String getFormattedRecord (Record record)
   {
     if (record.buffer[record.offset] == (byte) 0xFF
         || record.buffer[record.offset + 1] == (byte) 0xFF)

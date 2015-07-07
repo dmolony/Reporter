@@ -8,14 +8,14 @@ public class LfRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void fastSplit ()
+  protected void split ()
   {
     int start = 0;
     for (int ptr = 0; ptr < buffer.length; ptr++)
     {
       if (buffer[ptr] == 0x0A)
       {
-        fastRecords.add (new Record (buffer, start, ptr - start, start, ptr - start + 1));
+        records.add (new Record (buffer, start, ptr - start, start, ptr - start + 1));
         start = ptr + 1;
       }
     }

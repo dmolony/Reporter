@@ -8,7 +8,7 @@ public class VbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void fastSplit ()
+  protected void split ()
   {
     int ptr = 0;
     while (ptr < buffer.length)
@@ -26,7 +26,7 @@ public class VbRecordMaker extends DefaultRecordMaker
       Record record = new Record (buffer, ptr, reclen2, start, reclen);
       ptr += reclen2;
 
-      fastRecords.add (record);
+      records.add (record);
     }
   }
 }

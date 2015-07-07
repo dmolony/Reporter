@@ -7,6 +7,7 @@ import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
 import com.bytezone.reporter.record.LfRecordMaker;
 import com.bytezone.reporter.record.NoRecordMaker;
+import com.bytezone.reporter.record.NvbRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
@@ -23,13 +24,14 @@ public class Splitter
   private FbRecordMaker fb132;
   private FbRecordMaker fbxx;
   private VbRecordMaker vb;
+  private NvbRecordMaker nvb;
   private RdwRecordMaker rdw;
   private RavelRecordMaker ravel;
   private NoRecordMaker none;
 
   enum RecordType
   {
-    CR, CRLF, LF, RDW, VB, RVL, FB80, FB132, FBXX, NONE
+    CR, CRLF, LF, RDW, VB, RVL, FB80, FB132, FBXX, NONE, NVB
   }
 
   public Splitter (byte[] buffer)
@@ -37,59 +39,64 @@ public class Splitter
     this.buffer = buffer;
   }
 
-  List<Record> getFastRecords (RecordType recordType)
+  List<Record> getRecords (RecordType recordType)
   {
     switch (recordType)
     {
       case CRLF:
         if (crlf == null)
           crlf = new CrlfRecordMaker (buffer);
-        return crlf.getFastRecords ();
+        return crlf.getRecords ();
 
       case CR:
         if (cr == null)
           cr = new CrRecordMaker (buffer);
-        return cr.getFastRecords ();
+        return cr.getRecords ();
 
       case LF:
         if (lf == null)
           lf = new LfRecordMaker (buffer);
-        return lf.getFastRecords ();
+        return lf.getRecords ();
 
       case VB:
         if (vb == null)
           vb = new VbRecordMaker (buffer);
-        return vb.getFastRecords ();
+        return vb.getRecords ();
+
+      case NVB:
+        if (nvb == null)
+          nvb = new NvbRecordMaker (buffer);
+        return nvb.getRecords ();
 
       case RDW:
         if (rdw == null)
           rdw = new RdwRecordMaker (buffer);
-        return rdw.getFastRecords ();
+        return rdw.getRecords ();
 
       case RVL:
         if (ravel == null)
           ravel = new RavelRecordMaker (buffer);
-        return ravel.getFastRecords ();
+        return ravel.getRecords ();
 
       case FB80:
         if (fb80 == null)
           fb80 = new FbRecordMaker (buffer, 80);
-        return fb80.getFastRecords ();
+        return fb80.getRecords ();
 
       case FB132:
         if (fb132 == null)
           fb132 = new FbRecordMaker (buffer, 132);
-        return fb132.getFastRecords ();
+        return fb132.getRecords ();
 
       case FBXX:
         if (fbxx == null)
-          fbxx = new FbRecordMaker (buffer, 252);       // how to specify this?
-        return fbxx.getFastRecords ();
+          fbxx = new FbRecordMaker (buffer, 252);// how to specify this?
+        return fbxx.getRecords ();
 
       case NONE:
         if (none == null)
           none = new NoRecordMaker (buffer);
-        return none.getFastRecords ();
+        return none.getRecords ();
 
       default:
         return null;

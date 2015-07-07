@@ -8,8 +8,8 @@ public class NoRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void fastSplit ()
+  protected void split ()
   {
-    fastRecords.add (new Record (buffer, 0, buffer.length, 0, buffer.length));
+    records.add (new Record (buffer, 0, buffer.length, 0, buffer.length));
   }
 }

@@ -56,6 +56,7 @@ public class Reporter extends Application
   private RadioButton btnFb132;
   private RadioButton btnFbOther;
   private RadioButton btnVB;
+  private RadioButton btnNvb;
   private RadioButton btnRDW;
   private RadioButton btnRavel;
   private RadioButton btnNoSplit;
@@ -78,7 +79,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 2;
+    int choice = 6;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -125,9 +126,10 @@ public class Reporter extends Application
     btnFb80 = addRecordTypeButton ("FB80", splitterGroup, rebuild, RecordType.FB80);
     btnFb132 = addRecordTypeButton ("FB132", splitterGroup, rebuild, RecordType.FB132);
     btnFbOther = addRecordTypeButton ("Other", splitterGroup, rebuild, RecordType.FBXX);
+    btnNvb = addRecordTypeButton ("NVB", splitterGroup, rebuild, RecordType.NVB);
 
     vbox.getChildren ().addAll (lblSplit, btnNoSplit, btnCrlf, btnCr, btnLf, btnVB,
-                                btnRDW, btnRavel, btnFb80, btnFb132, btnFbOther);
+                                btnNvb, btnRDW, btnRavel, btnFb80, btnFb132, btnFbOther);
 
     btnAscii =
         addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
@@ -219,24 +221,24 @@ public class Reporter extends Application
   {
     textArea.clear ();
 
-    List<Record> fastRecords = setFastRecordMaker ();
-    System.out.printf ("%,d records%n", fastRecords.size ());
-    setFastFormatter (fastRecords);
+    List<Record> records = setRecordMaker ();
+    System.out.printf ("%,d records%n", records.size ());
+    setFormatter (records);
 
     setPageMaker ();
 
     textArea.positionCaret (0);
   }
 
-  private List<Record> setFastRecordMaker ()
+  private List<Record> setRecordMaker ()
   {
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
     RecordType recordType = (RecordType) btn.getUserData ();
 
-    return splitter.getFastRecords (recordType);
+    return splitter.getRecords (recordType);
   }
 
-  private void setFastFormatter (List<Record> fastRecords)
+  private void setFormatter (List<Record> records)
   {
     RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
     FormatType formatType = (FormatType) btn2.getUserData ();
@@ -246,10 +248,10 @@ public class Reporter extends Application
     EncodingType encodingType = (EncodingType) btn.getUserData ();
     formatter.setTextMaker (encodingType);
 
-    formatter.setFastRecords (fastRecords);
+    formatter.setRecords (records);
 
     StringBuilder text = new StringBuilder ();
-    for (String record : formatter.getFormattedFastRecords ())
+    for (String record : formatter.getFormattedRecords ())
     {
       text.append (record);
       text.append ('\n');

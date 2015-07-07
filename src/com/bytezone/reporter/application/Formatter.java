@@ -16,36 +16,36 @@ public class Formatter
 {
   private RecordFormatter recordFormatter;
 
+  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
+  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+
   private final RecordFormatter hexFormatter = new HexFormatter ();
   private final RecordFormatter stringFormatter = new StringFormatter ();
   private final RecordFormatter natloadFormatter = new NatloadFormatter ();
 
-  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
-  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+  private List<Record> records;
 
-  private List<Record> fastRecords;
-
-  enum FormatType
-  {
-    HEX, TEXT, NATLOAD
-  }
-
-  enum EncodingType
+  enum EncodingType// TextMaker
   {
     ASCII, EBCDIC
   }
 
-  public void setFastRecords (List<Record> fastRecords)
+  enum FormatType// RecordFormatter
   {
-    this.fastRecords = fastRecords;
+    HEX, TEXT, NATLOAD
   }
 
-  public List<String> getFormattedFastRecords ()
+  public void setRecords (List<Record> records)
   {
-    List<String> formattedRecords = new ArrayList<> (fastRecords.size ());
+    this.records = records;
+  }
 
-    for (Record fastRecord : fastRecords)
-      formattedRecords.add (recordFormatter.getFormattedFastRecord (fastRecord));
+  public List<String> getFormattedRecords ()
+  {
+    List<String> formattedRecords = new ArrayList<> (records.size ());
+
+    for (Record record : records)
+      formattedRecords.add (recordFormatter.getFormattedRecord (record));
 
     return formattedRecords;
   }

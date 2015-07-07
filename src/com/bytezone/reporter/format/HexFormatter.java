@@ -7,7 +7,7 @@ public class HexFormatter extends DefaultFormatter
   static final int HEX_LINE_SIZE = 16;
 
   @Override
-  public String getFormattedFastRecord (Record record)
+  public String getFormattedRecord (Record record)
   {
     StringBuilder text = new StringBuilder ();
 
