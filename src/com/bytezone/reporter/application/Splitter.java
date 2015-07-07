@@ -11,6 +11,7 @@ import com.bytezone.reporter.record.NvbRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.record.RecordMaker.RecordType;
 import com.bytezone.reporter.record.VbRecordMaker;
 
 public class Splitter
@@ -22,17 +23,12 @@ public class Splitter
   private LfRecordMaker lf;
   private FbRecordMaker fb80;
   private FbRecordMaker fb132;
-  private FbRecordMaker fbxx;
+  private FbRecordMaker fb252;
   private VbRecordMaker vb;
   private NvbRecordMaker nvb;
   private RdwRecordMaker rdw;
   private RavelRecordMaker ravel;
   private NoRecordMaker none;
-
-  enum RecordType
-  {
-    CR, CRLF, LF, RDW, VB, RVL, FB80, FB132, FBXX, NONE, NVB
-  }
 
   public Splitter (byte[] buffer)
   {
@@ -88,10 +84,10 @@ public class Splitter
           fb132 = new FbRecordMaker (buffer, 132);
         return fb132.getRecords ();
 
-      case FBXX:
-        if (fbxx == null)
-          fbxx = new FbRecordMaker (buffer, 252);// how to specify this?
-        return fbxx.getRecords ();
+      case FB252:
+        if (fb252 == null)
+          fb252 = new FbRecordMaker (buffer, 252);
+        return fb252.getRecords ();
 
       case NONE:
         if (none == null)

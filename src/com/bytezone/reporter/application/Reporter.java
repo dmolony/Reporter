@@ -8,8 +8,8 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.reporter.application.Formatter.EncodingType;
 import com.bytezone.reporter.application.Formatter.FormatType;
-import com.bytezone.reporter.application.Splitter.RecordType;
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.record.RecordMaker.RecordType;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -127,7 +127,7 @@ public class Reporter extends Application
     btnRavel = addRecordTypeButton ("Ravel", splitterGroup, rebuild, RecordType.RVL);
     btnFb80 = addRecordTypeButton ("FB80", splitterGroup, rebuild, RecordType.FB80);
     btnFb132 = addRecordTypeButton ("FB132", splitterGroup, rebuild, RecordType.FB132);
-    btnFbOther = addRecordTypeButton ("Other", splitterGroup, rebuild, RecordType.FBXX);
+    btnFbOther = addRecordTypeButton ("FB252", splitterGroup, rebuild, RecordType.FB252);
     btnNvb = addRecordTypeButton ("NVB", splitterGroup, rebuild, RecordType.NVB);
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,

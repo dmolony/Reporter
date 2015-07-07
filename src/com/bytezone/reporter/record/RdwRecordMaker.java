@@ -1,5 +1,7 @@
 package com.bytezone.reporter.record;
 
+import java.util.List;
+
 public class RdwRecordMaker extends DefaultRecordMaker
 {
   public RdwRecordMaker (byte[] buffer)
@@ -7,10 +9,16 @@ public class RdwRecordMaker extends DefaultRecordMaker
     super (buffer);
   }
 
+  public RdwRecordMaker (List<Record> records)
+  {
+    super (records);
+  }
+
   @Override
   protected void split ()
   {
     int ptr = 0;
+    int recordNumber = 0;
     while (ptr < buffer.length)
     {
       int start = ptr;
@@ -24,10 +32,31 @@ public class RdwRecordMaker extends DefaultRecordMaker
 
       int reclen2 = Math.min (reclen - 4, buffer.length - ptr);
 
-      Record record = new Record (buffer, ptr, reclen2, start, reclen);
+      Record record = new Record (buffer, ptr, reclen2, recordNumber++);
       ptr += reclen2;
 
       records.add (record);
     }
+  }
+
+  @Override
+  protected byte[] join ()
+  {
+    int bufferLength = 0;
+    for (Record record : records)
+      bufferLength += record.length + 4;
+
+    byte[] buffer = new byte[bufferLength];
+    int ptr = 0;
+    for (Record record : records)
+    {
+      buffer[ptr++] = (byte) ((record.length & 0xFF00) >> 8);
+      buffer[ptr++] = (byte) (record.length & 0xFF);
+      buffer[ptr++] = (byte) 0;
+      buffer[ptr++] = (byte) 0;
+      System.arraycopy (record.buffer, record.offset, buffer, ptr, record.length);
+    }
+
+    return buffer;
   }
 }

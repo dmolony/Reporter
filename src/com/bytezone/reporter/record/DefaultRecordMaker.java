@@ -5,7 +5,7 @@ import java.util.List;
 
 public abstract class DefaultRecordMaker implements RecordMaker
 {
-  protected final byte[] buffer;
+  protected byte[] buffer;
   protected List<Record> records;
 
   public DefaultRecordMaker (byte[] buffer)
@@ -13,9 +13,13 @@ public abstract class DefaultRecordMaker implements RecordMaker
     this.buffer = buffer;
   }
 
+  public DefaultRecordMaker (List<Record> records)
+  {
+    this.records = records;
+  }
+
   @Override
   public List<Record> getRecords ()
-
   {
     if (records == null)
     {
@@ -25,5 +29,16 @@ public abstract class DefaultRecordMaker implements RecordMaker
     return records;
   }
 
+  @Override
+  public byte[] getBuffer ()
+  {
+    if (buffer == null)
+      buffer = join ();
+
+    return buffer;
+  }
+
   protected abstract void split ();
+
+  protected abstract byte[] join ();
 }

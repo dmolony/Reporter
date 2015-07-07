@@ -19,6 +19,7 @@ public class NvbRecordMaker extends DefaultRecordMaker
   {
     int linesLeft = 0;
     int ptr = 0;
+    int recordNumber = 0;
 
     while (ptr < buffer.length)
     {
@@ -34,8 +35,27 @@ public class NvbRecordMaker extends DefaultRecordMaker
       else if (buffer[ptr] != 0 && buffer[ptr] != (byte) 0xFF)
         linesLeft = Integer.parseInt (ebcdicTextMaker.getText (buffer, ptr + 18, 3));
 
-      records.add (new Record (buffer, ptr, reclen, ptr, reclen));
+      records.add (new Record (buffer, ptr, reclen, recordNumber++));
       ptr += reclen;
     }
+  }
+
+  @Override
+  protected byte[] join ()
+  {
+    int bufferLength = 0;
+    for (Record record : records)
+      bufferLength += record.length;
+
+    byte[] buffer = new byte[bufferLength];
+
+    int ptr = 0;
+    for (Record record : records)
+    {
+      System.arraycopy (record.buffer, record.offset, buffer, ptr, record.length);
+      ptr += record.length;
+    }
+
+    return buffer;
   }
 }
