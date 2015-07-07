@@ -10,10 +10,11 @@ public class RavelRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected void fastSplit ()
   {
     int ptr = 0;
     int tempPtr = 0;
+    int start = 0;
 
     while (ptr < buffer.length)
     {
@@ -25,8 +26,20 @@ public class RavelRecordMaker extends DefaultRecordMaker
           break;
         if (nextByte == 0x01)                            // EOR
         {
-          addRecord (tempPtr);
+          // if there are no 0xFF bytes in the record, just use the original buffer
+          // otherwise copy to a new buffer
+          int len = ptr - start - 2;
+          if (len > tempPtr)
+          {
+            byte[] record = new byte[tempPtr];
+            System.arraycopy (temp, 0, record, 0, tempPtr);
+            fastRecords.add (new Record (record, 0, tempPtr, 0, tempPtr));
+          }
+          else
+            fastRecords.add (new Record (buffer, start, tempPtr, start, tempPtr));
+
           tempPtr = 0;
+          start = ptr;
           continue;
         }
         assert nextByte == (byte) 0xFF;
@@ -34,22 +47,5 @@ public class RavelRecordMaker extends DefaultRecordMaker
       if (tempPtr < temp.length)
         temp[tempPtr++] = firstByte;
     }
-    if (tempPtr > 0)
-    {
-      System.out.println ("Unfinished ravel record");
-      addRecord (tempPtr);
-    }
-  }
-
-  private void addRecord (int ptr)
-  {
-    byte[] record = new byte[ptr];
-    System.arraycopy (temp, 0, record, 0, ptr);
-    records.add (record);
-  }
-
-  @Override
-  protected void fastSplit ()
-  {
   }
 }

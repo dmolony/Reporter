@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface RecordMaker
 {
-      List<byte[]> getRecords ();
+      // List<byte[]> getRecords ();
 
   List<Record> getFastRecords ();
 }

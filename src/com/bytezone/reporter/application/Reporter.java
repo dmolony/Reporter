@@ -39,7 +39,7 @@ public class Reporter extends Application
   private static final String[] files =
       { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
         "smutlib001.src", "DBALIB.SRC" };
-  private final String[] types = { "FB252", "CR", "CRLF", "RAV", "VB", "RDW", "NVB" };
+  private final String[] types = { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB" };
 
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
@@ -78,7 +78,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 0;
+    int choice = 2;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -219,30 +219,14 @@ public class Reporter extends Application
   {
     textArea.clear ();
 
-    // if (false)
-    // {
-    // List<byte[]> records = setRecordMaker ();
-    // System.out.printf ("%,d records%n", records.size ());
-    // setFormatter (records);
-    // }
-    // else
-    // {
     List<Record> fastRecords = setFastRecordMaker ();
     System.out.printf ("%,d records%n", fastRecords.size ());
     setFastFormatter (fastRecords);
-    // }
+
     setPageMaker ();
 
     textArea.positionCaret (0);
   }
-
-  // private List<byte[]> setRecordMaker ()
-  // {
-  // RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
-  // RecordType recordType = (RecordType) btn.getUserData ();
-  //
-  // return splitter.getRecords (recordType);
-  // }
 
   private List<Record> setFastRecordMaker ()
   {
@@ -251,32 +235,6 @@ public class Reporter extends Application
 
     return splitter.getFastRecords (recordType);
   }
-
-  // private void setFormatter (List<byte[]> records)
-  // {
-  // RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
-  // FormatType formatType = (FormatType) btn2.getUserData ();
-  // formatter.setFormatter (formatType);
-  //
-  // RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
-  // EncodingType encodingType = (EncodingType) btn.getUserData ();
-  // formatter.setTextMaker (encodingType);
-  //
-  // formatter.setRecords (records);
-  //
-  // StringBuilder text = new StringBuilder ();
-  // for (String record : formatter.getFormattedRecords ())
-  // {
-  // text.append (record);
-  // text.append ('\n');
-  // }
-  //
-  // while (text.charAt (text.length () - 1) == '\n')
-  // text.deleteCharAt (text.length () - 1);
-  //
-  // textArea.setText (text.toString ());
-  //
-  // }
 
   private void setFastFormatter (List<Record> fastRecords)
   {
@@ -297,7 +255,7 @@ public class Reporter extends Application
       text.append ('\n');
     }
 
-    while (text.charAt (text.length () - 1) == '\n')
+    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
       text.deleteCharAt (text.length () - 1);
 
     textArea.setText (text.toString ());

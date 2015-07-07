@@ -23,7 +23,6 @@ public class Formatter
   private final TextMaker asciiTextMaker = new AsciiTextMaker ();
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
-  private List<byte[]> records;
   private List<Record> fastRecords;
 
   enum FormatType
@@ -36,25 +35,10 @@ public class Formatter
     ASCII, EBCDIC
   }
 
-  public void setRecords (List<byte[]> records)
-  {
-    this.records = records;
-  }
-
   public void setFastRecords (List<Record> fastRecords)
   {
     this.fastRecords = fastRecords;
   }
-
-  // public List<String> getFormattedRecords ()
-  // {
-  // List<String> formattedRecords = new ArrayList<> (records.size ());
-  //
-  // for (byte[] record : records)
-  // formattedRecords.add (recordFormatter.getFormattedRecord (record));
-  //
-  // return formattedRecords;
-  // }
 
   public List<String> getFormattedFastRecords ()
   {
@@ -102,9 +86,4 @@ public class Formatter
         break;
     }
   }
-
-  // public String getFormattedRecord (byte[] record)
-  // {
-  // return recordFormatter.getFormattedRecord (record);
-  // }
 }

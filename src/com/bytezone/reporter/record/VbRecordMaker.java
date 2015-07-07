@@ -8,11 +8,12 @@ public class VbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected void fastSplit ()
   {
     int ptr = 0;
     while (ptr < buffer.length)
     {
+      int start = ptr;
       int filler = (buffer[ptr++] & 0xFF) << 8;
       filler |= buffer[ptr++] & 0xFF;
       if (filler != 0)
@@ -20,19 +21,12 @@ public class VbRecordMaker extends DefaultRecordMaker
 
       int reclen = (buffer[ptr++] & 0xFF) << 8;
       reclen |= buffer[ptr++] & 0xFF;
+      int reclen2 = Math.min (reclen - 4, buffer.length - ptr);
 
-      reclen = Math.min (reclen - 4, buffer.length - ptr);
+      Record record = new Record (buffer, ptr, reclen2, start, reclen);
+      ptr += reclen2;
 
-      byte[] record = new byte[reclen];
-      System.arraycopy (buffer, ptr, record, 0, reclen);
-      ptr += reclen;
-
-      records.add (record);
+      fastRecords.add (record);
     }
-  }
-
-  @Override
-  protected void fastSplit ()
-  {
   }
 }
