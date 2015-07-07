@@ -17,10 +17,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -85,7 +87,7 @@ public class Reporter extends Application
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
     System.out.printf ("File size: %,d%n", buffer.length);
-    int max = 300_000;
+    int max = 100_000;
     if (fileLength > max)
     {
       System.out.printf ("Reducing buffer to %,d%n", max);
@@ -105,15 +107,15 @@ public class Reporter extends Application
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
-    VBox vbox = new VBox (10);
-    vbox.setPadding (new Insets (10));
-
-    Label lblSplit = addLabel ("Records", 20, 120);
-    Label lblFormat = addLabel ("Formatting", 20, 120);
-    Label lblEncode = addLabel ("Encoding", 20, 120);
-    Label lblPrint = addLabel ("Paging", 20, 120);
+    //    Label lblSplit = addLabel ("Records", 20, 120);
+    //    Label lblFormat = addLabel ("Formatting", 20, 120);
+    //    Label lblEncode = addLabel ("Encoding", 20, 120);
+    //    Label lblPrint = addLabel ("Paging", 20, 120);
 
     EventHandler<ActionEvent> rebuild = e -> rebuild ();
+
+    VBox vbox1 = new VBox (10);
+    vbox1.setPadding (new Insets (10));
 
     btnNoSplit = addRecordTypeButton ("None", splitterGroup, rebuild, RecordType.NONE);
     btnNoSplit.setSelected (true);
@@ -128,36 +130,53 @@ public class Reporter extends Application
     btnFbOther = addRecordTypeButton ("Other", splitterGroup, rebuild, RecordType.FBXX);
     btnNvb = addRecordTypeButton ("NVB", splitterGroup, rebuild, RecordType.NVB);
 
-    vbox.getChildren ().addAll (lblSplit, btnNoSplit, btnCrlf, btnCr, btnLf, btnVB,
-                                btnNvb, btnRDW, btnRavel, btnFb80, btnFb132, btnFbOther);
+    vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
+                                 btnRavel, btnFb80, btnFb132, btnFbOther);
+
+    VBox vbox2 = new VBox (10);
+    vbox2.setPadding (new Insets (10));
 
     btnAscii =
         addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
     btnAscii.setSelected (true);
     btnEbcdic =
         addEncodingTypeButton ("EBCDIC", encodingGroup, rebuild, EncodingType.EBCDIC);
-    vbox.getChildren ().addAll (lblEncode, btnAscii, btnEbcdic);
+    vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
+
+    VBox vbox3 = new VBox (10);
+    vbox3.setPadding (new Insets (10));
 
     btnText = addFormatTypeButton ("Text", formattingGroup, rebuild, FormatType.TEXT);
     btnHex = addFormatTypeButton ("Hex", formattingGroup, rebuild, FormatType.HEX);
     btnNatload =
         addFormatTypeButton ("NatLoad", formattingGroup, rebuild, FormatType.NATLOAD);
     btnHex.setSelected (true);
-    vbox.getChildren ().addAll (lblFormat, btnHex, btnText, btnNatload);
+    vbox3.getChildren ().addAll (btnHex, btnText, btnNatload);
+
+    VBox vbox4 = new VBox (10);
+    vbox4.setPadding (new Insets (10));
 
     btnNoPaging = addRadioButton ("None", pagingGroup, rebuild);
     btnNoPaging.setSelected (true);
     btn66 = addRadioButton ("66", pagingGroup, rebuild);
     btnOther = addRadioButton ("Other", pagingGroup, rebuild);
-    vbox.getChildren ().addAll (lblPrint, btnNoPaging, btn66, btnOther);
+    vbox4.getChildren ().addAll (btnNoPaging, btn66, btnOther);
 
     CheckBox chkAsa = new CheckBox ("ASA");
     chkAsa.setOnAction (e -> rebuild ());
-    vbox.getChildren ().addAll (chkAsa);
+    vbox4.getChildren ().addAll (chkAsa);
+
+    TitledPane t1 = new TitledPane ("Records", vbox1);
+    TitledPane t2 = new TitledPane ("Encoding", vbox2);
+    TitledPane t3 = new TitledPane ("Formatting", vbox3);
+    TitledPane t4 = new TitledPane ("Paging", vbox4);
+
+    Accordion accordion = new Accordion ();
+    accordion.getPanes ().addAll (t1, t2, t3, t4);
 
     BorderPane borderPane = new BorderPane ();
     borderPane.setCenter (textArea);
-    borderPane.setRight (vbox);
+    borderPane.setRight (accordion);
 
     Scene scene = new Scene (borderPane, 800, 592);
     primaryStage.setTitle ("Reporter");
