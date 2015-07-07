@@ -46,15 +46,15 @@ public class Formatter
     this.fastRecords = fastRecords;
   }
 
-  public List<String> getFormattedRecords ()
-  {
-    List<String> formattedRecords = new ArrayList<> (records.size ());
-
-    for (byte[] record : records)
-      formattedRecords.add (recordFormatter.getFormattedRecord (record));
-
-    return formattedRecords;
-  }
+  // public List<String> getFormattedRecords ()
+  // {
+  // List<String> formattedRecords = new ArrayList<> (records.size ());
+  //
+  // for (byte[] record : records)
+  // formattedRecords.add (recordFormatter.getFormattedRecord (record));
+  //
+  // return formattedRecords;
+  // }
 
   public List<String> getFormattedFastRecords ()
   {
@@ -103,8 +103,8 @@ public class Formatter
     }
   }
 
-  public String getFormattedRecord (byte[] record)
-  {
-    return recordFormatter.getFormattedRecord (record);
-  }
+  // public String getFormattedRecord (byte[] record)
+  // {
+  // return recordFormatter.getFormattedRecord (record);
+  // }
 }

@@ -44,6 +44,7 @@ public class Reporter extends Application
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
   private Preferences prefs;
+
   private Splitter splitter;
   private final Formatter formatter = new Formatter ();
 
@@ -83,7 +84,7 @@ public class Reporter extends Application
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
     System.out.printf ("File size: %,d%n", buffer.length);
-    int max = 150_000;
+    int max = 300_000;
     if (fileLength > max)
     {
       System.out.printf ("Reducing buffer to %,d%n", max);
@@ -218,30 +219,30 @@ public class Reporter extends Application
   {
     textArea.clear ();
 
-    if (false)
-    {
-      List<byte[]> records = setRecordMaker ();
-      System.out.printf ("%,d records%n", records.size ());
-      setFormatter (records);
-    }
-    else
-    {
-      List<Record> fastRecords = setFastRecordMaker ();
-      System.out.printf ("%,d records%n", fastRecords.size ());
-      setFastFormatter (fastRecords);
-    }
+    // if (false)
+    // {
+    // List<byte[]> records = setRecordMaker ();
+    // System.out.printf ("%,d records%n", records.size ());
+    // setFormatter (records);
+    // }
+    // else
+    // {
+    List<Record> fastRecords = setFastRecordMaker ();
+    System.out.printf ("%,d records%n", fastRecords.size ());
+    setFastFormatter (fastRecords);
+    // }
     setPageMaker ();
 
     textArea.positionCaret (0);
   }
 
-  private List<byte[]> setRecordMaker ()
-  {
-    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
-    RecordType recordType = (RecordType) btn.getUserData ();
-
-    return splitter.getRecords (recordType);
-  }
+  // private List<byte[]> setRecordMaker ()
+  // {
+  // RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
+  // RecordType recordType = (RecordType) btn.getUserData ();
+  //
+  // return splitter.getRecords (recordType);
+  // }
 
   private List<Record> setFastRecordMaker ()
   {
@@ -251,31 +252,31 @@ public class Reporter extends Application
     return splitter.getFastRecords (recordType);
   }
 
-  private void setFormatter (List<byte[]> records)
-  {
-    RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
-    FormatType formatType = (FormatType) btn2.getUserData ();
-    formatter.setFormatter (formatType);
-
-    RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
-    EncodingType encodingType = (EncodingType) btn.getUserData ();
-    formatter.setTextMaker (encodingType);
-
-    formatter.setRecords (records);
-
-    StringBuilder text = new StringBuilder ();
-    for (String record : formatter.getFormattedRecords ())
-    {
-      text.append (record);
-      text.append ('\n');
-    }
-
-    while (text.charAt (text.length () - 1) == '\n')
-      text.deleteCharAt (text.length () - 1);
-
-    textArea.setText (text.toString ());
-
-  }
+  // private void setFormatter (List<byte[]> records)
+  // {
+  // RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
+  // FormatType formatType = (FormatType) btn2.getUserData ();
+  // formatter.setFormatter (formatType);
+  //
+  // RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
+  // EncodingType encodingType = (EncodingType) btn.getUserData ();
+  // formatter.setTextMaker (encodingType);
+  //
+  // formatter.setRecords (records);
+  //
+  // StringBuilder text = new StringBuilder ();
+  // for (String record : formatter.getFormattedRecords ())
+  // {
+  // text.append (record);
+  // text.append ('\n');
+  // }
+  //
+  // while (text.charAt (text.length () - 1) == '\n')
+  // text.deleteCharAt (text.length () - 1);
+  //
+  // textArea.setText (text.toString ());
+  //
+  // }
 
   private void setFastFormatter (List<Record> fastRecords)
   {
