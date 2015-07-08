@@ -14,4 +14,18 @@ public class Record
     this.length = length;
     this.recordNumber = recordNumber;
   }
+
+  public int countTrailingNulls ()
+  {
+    int nulls = 0;
+    int ptr = offset + length - 1;
+    while (ptr >= offset)
+    {
+      if (buffer[ptr--] == 0)
+        nulls++;
+      else
+        break;
+    }
+    return nulls;
+  }
 }

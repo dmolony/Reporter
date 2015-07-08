@@ -14,6 +14,7 @@ public class NatloadFormatter extends DefaultFormatter
     if (record.buffer[record.offset] == 0 && record.buffer[record.offset + 1] == 0)
       return "..";
 
+    // test for Module Header Record
     if ((record.buffer[record.offset] & 0xFF) > 0x95
         || (record.buffer[record.offset + 1] & 0xFF) > 0x95)
     {
@@ -26,6 +27,14 @@ public class NatloadFormatter extends DefaultFormatter
                             program, sequence, lines);
     }
 
+    if (record.length > 150)
+    {
+      int length = record.length - record.countTrailingNulls ();
+      return String.format ("%02X%02X %s", record.buffer[record.offset] & 0xFF,
+                            record.buffer[record.offset + 1] & 0xFF, textMaker
+                                .getText (record.buffer, record.offset + 2, length - 2))
+          .trim ();
+    }
     return String
         .format ("%02X%02X %s", record.buffer[record.offset] & 0xFF,
                  record.buffer[record.offset + 1] & 0xFF,

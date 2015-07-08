@@ -87,7 +87,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 3;
+    int choice = 0;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -133,9 +133,6 @@ public class Reporter extends Application
     RecordMaker ravel = new RavelRecordMaker (buffer);
     RecordMaker none = new NoRecordMaker (buffer);
 
-    //    RecordMaker[] recordMakers =
-    //        { crlf, cr, lf, fb80, fb132, fb252, vb, nvb, rdw, ravel, none };
-
     btnNoSplit = addRecordTypeButton (none, "None", splitterGroup, rebuild);
     btnNoSplit.setSelected (true);
     btnCrlf = addRecordTypeButton (crlf, "CRLF", splitterGroup, rebuild);
@@ -148,6 +145,16 @@ public class Reporter extends Application
     btnFb132 = addRecordTypeButton (fb132, "FB132", splitterGroup, rebuild);
     btnFbOther = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
     btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild);
+
+    RadioButton[] testableButtons =
+        { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb, btnRavel };
+    for (RadioButton button : testableButtons)
+    {
+      if (((RecordMaker) button.getUserData ()).test (1024) <= 2)
+        button.setDisable (true);
+      else
+        button.setSelected (true);
+    }
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFbOther);
@@ -216,7 +223,6 @@ public class Reporter extends Application
   {
     RadioButton button = addRadioButton (text, group, evt);
     button.setUserData (recordMaker);
-    button.setDisable (recordMaker.test (1024) == 0);
     return button;
   }
 

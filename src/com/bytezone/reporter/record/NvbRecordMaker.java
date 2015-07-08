@@ -33,15 +33,20 @@ public class NvbRecordMaker extends DefaultRecordMaker
     {
       int reclen = linesLeft == 0 ? HEADER_SIZE : SOURCE_SIZE;
       if (buffer.length - ptr < reclen)
-      {
-        //        System.out.println ("short buffer");
         break;
-      }
 
       if (linesLeft > 0)
         --linesLeft;
       else if (buffer[ptr] != 0 && buffer[ptr] != (byte) 0xFF)
-        linesLeft = Integer.parseInt (ebcdicTextMaker.getText (buffer, ptr + 18, 3));
+        try
+        {
+          linesLeft = Integer.parseInt (ebcdicTextMaker.getText (buffer, ptr + 18, 3));
+        }
+        catch (NumberFormatException e)
+        {
+          records.clear ();
+          break;
+        }
 
       records.add (new Record (buffer, ptr, reclen, recordNumber++));
       ptr += reclen;
