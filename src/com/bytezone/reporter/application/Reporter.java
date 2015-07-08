@@ -8,18 +8,26 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.reporter.application.Formatter.EncodingType;
 import com.bytezone.reporter.application.Formatter.FormatType;
+import com.bytezone.reporter.record.CrRecordMaker;
+import com.bytezone.reporter.record.CrlfRecordMaker;
+import com.bytezone.reporter.record.FbRecordMaker;
+import com.bytezone.reporter.record.LfRecordMaker;
+import com.bytezone.reporter.record.NoRecordMaker;
+import com.bytezone.reporter.record.NvbRecordMaker;
+import com.bytezone.reporter.record.RavelRecordMaker;
+import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.RecordMaker.RecordType;
+import com.bytezone.reporter.record.VbRecordMaker;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
@@ -47,7 +55,7 @@ public class Reporter extends Application
   private WindowSaver windowSaver;
   private Preferences prefs;
 
-  private Splitter splitter;
+  //  private Splitter splitter;
   private final Formatter formatter = new Formatter ();
 
   private final ToggleGroup splitterGroup = new ToggleGroup ();
@@ -102,7 +110,7 @@ public class Reporter extends Application
     System.out.println ("------------------------");
     System.out.printf ("Using %-5s %s%n", types[choice], files[choice]);
 
-    splitter = new Splitter (buffer);
+    //    splitter = new Splitter (buffer);
 
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
@@ -117,18 +125,34 @@ public class Reporter extends Application
     VBox vbox1 = new VBox (10);
     vbox1.setPadding (new Insets (10));
 
-    btnNoSplit = addRecordTypeButton ("None", splitterGroup, rebuild, RecordType.NONE);
+    RecordMaker crlf = new CrlfRecordMaker (buffer);
+    RecordMaker cr = new CrRecordMaker (buffer);
+    RecordMaker lf = new LfRecordMaker (buffer);
+    RecordMaker fb80 = new FbRecordMaker (buffer, 80);
+    RecordMaker fb132 = new FbRecordMaker (buffer, 132);
+    RecordMaker fb252 = new FbRecordMaker (buffer, 252);
+    RecordMaker vb = new VbRecordMaker (buffer);
+    RecordMaker nvb = new NvbRecordMaker (buffer);
+    RecordMaker rdw = new RdwRecordMaker (buffer);
+    RecordMaker ravel = new RavelRecordMaker (buffer);
+    RecordMaker none = new NoRecordMaker (buffer);
+
+    btnNoSplit =
+        addRecordTypeButton (none, "None", splitterGroup, rebuild, RecordType.NONE);
     btnNoSplit.setSelected (true);
-    btnCrlf = addRecordTypeButton ("CRLF", splitterGroup, rebuild, RecordType.CRLF);
-    btnCr = addRecordTypeButton ("CR", splitterGroup, rebuild, RecordType.CR);
-    btnLf = addRecordTypeButton ("LF", splitterGroup, rebuild, RecordType.LF);
-    btnVB = addRecordTypeButton ("VB", splitterGroup, rebuild, RecordType.VB);
-    btnRDW = addRecordTypeButton ("RDW", splitterGroup, rebuild, RecordType.RDW);
-    btnRavel = addRecordTypeButton ("Ravel", splitterGroup, rebuild, RecordType.RVL);
-    btnFb80 = addRecordTypeButton ("FB80", splitterGroup, rebuild, RecordType.FB80);
-    btnFb132 = addRecordTypeButton ("FB132", splitterGroup, rebuild, RecordType.FB132);
-    btnFbOther = addRecordTypeButton ("FB252", splitterGroup, rebuild, RecordType.FB252);
-    btnNvb = addRecordTypeButton ("NVB", splitterGroup, rebuild, RecordType.NVB);
+    btnCrlf = addRecordTypeButton (crlf, "CRLF", splitterGroup, rebuild, RecordType.CRLF);
+    btnCr = addRecordTypeButton (cr, "CR", splitterGroup, rebuild, RecordType.CR);
+    btnLf = addRecordTypeButton (lf, "LF", splitterGroup, rebuild, RecordType.LF);
+    btnVB = addRecordTypeButton (vb, "VB", splitterGroup, rebuild, RecordType.VB);
+    btnRDW = addRecordTypeButton (rdw, "RDW", splitterGroup, rebuild, RecordType.RDW);
+    btnRavel =
+        addRecordTypeButton (ravel, "Ravel", splitterGroup, rebuild, RecordType.RVL);
+    btnFb80 = addRecordTypeButton (fb80, "FB80", splitterGroup, rebuild, RecordType.FB80);
+    btnFb132 =
+        addRecordTypeButton (fb132, "FB132", splitterGroup, rebuild, RecordType.FB132);
+    btnFbOther =
+        addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild, RecordType.FB252);
+    btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild, RecordType.NVB);
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFbOther);
@@ -192,11 +216,11 @@ public class Reporter extends Application
     primaryStage.show ();
   }
 
-  private RadioButton addRecordTypeButton (String text, ToggleGroup group,
-      EventHandler<ActionEvent> evt, RecordType recordType)
+  private RadioButton addRecordTypeButton (RecordMaker recordMaker, String text,
+      ToggleGroup group, EventHandler<ActionEvent> evt, RecordType recordType)
   {
     RadioButton button = addRadioButton (text, group, evt);
-    button.setUserData (recordType);
+    button.setUserData (recordMaker);
     return button;
   }
 
@@ -225,16 +249,16 @@ public class Reporter extends Application
     return button;
   }
 
-  private Label addLabel (String text, double height, double width)
-  {
-    Label label = new Label (text);
-
-    label.setPrefWidth (width);
-    label.setAlignment (Pos.CENTER);
-    label.setPrefHeight (height);
-
-    return label;
-  }
+  //  private Label addLabel (String text, double height, double width)
+  //  {
+  //    Label label = new Label (text);
+  //
+  //    label.setPrefWidth (width);
+  //    label.setAlignment (Pos.CENTER);
+  //    label.setPrefHeight (height);
+  //
+  //    return label;
+  //  }
 
   private void rebuild ()
   {
@@ -252,9 +276,9 @@ public class Reporter extends Application
   private List<Record> setRecordMaker ()
   {
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
-    RecordType recordType = (RecordType) btn.getUserData ();
+    RecordMaker recordMaker = (RecordMaker) btn.getUserData ();
 
-    return splitter.getRecords (recordType);
+    return recordMaker.getRecords ();
   }
 
   private void setFormatter (List<Record> records)

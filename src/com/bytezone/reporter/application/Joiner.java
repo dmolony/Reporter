@@ -14,6 +14,8 @@ import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker.RecordType;
 import com.bytezone.reporter.record.VbRecordMaker;
 
+// this won't be needed
+
 public class Joiner
 {
   private final List<Record> records;
