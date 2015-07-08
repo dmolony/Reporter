@@ -52,7 +52,9 @@ public class RavelRecordMaker extends DefaultRecordMaker
           start = ptr;
           continue;
         }
-        assert nextByte == (byte) 0xFF;
+        if (nextByte != (byte) 0xFF)
+          break;
+        //        assert nextByte == (byte) 0xFF;
       }
       if (tempPtr < temp.length)
         temp[tempPtr++] = firstByte;

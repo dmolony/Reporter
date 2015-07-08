@@ -21,6 +21,10 @@ public class NvbRecordMaker extends DefaultRecordMaker
   protected List<Record> split ()
   {
     List<Record> records = new ArrayList<Record> ();
+    if (buffer.length < 16 || buffer[0] != (byte) 0xFF || buffer[7] != (byte) 0xFF
+        || buffer[14] != (byte) 0xFF)
+      return records;
+
     int linesLeft = 0;
     int ptr = 0;
     int recordNumber = 0;
@@ -30,7 +34,7 @@ public class NvbRecordMaker extends DefaultRecordMaker
       int reclen = linesLeft == 0 ? HEADER_SIZE : SOURCE_SIZE;
       if (buffer.length - ptr < reclen)
       {
-        System.out.println ("short buffer");
+        //        System.out.println ("short buffer");
         break;
       }
 

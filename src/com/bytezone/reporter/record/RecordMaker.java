@@ -4,12 +4,9 @@ import java.util.List;
 
 public interface RecordMaker
 {
-  enum RecordType
-  {
-    CR, CRLF, LF, RDW, VB, RVL, FB80, FB132, FB252, NONE, NVB
-  }
+  public List<Record> getRecords ();
 
-  List<Record> getRecords ();
+  public byte[] getBuffer ();
 
-  byte[] getBuffer ();
+  public int test (int testBufferSize);
 }

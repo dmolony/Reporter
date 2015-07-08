@@ -30,7 +30,8 @@ public class RdwRecordMaker extends DefaultRecordMaker
       int filler = (buffer[ptr++] & 0xFF) << 8;
       filler |= buffer[ptr++] & 0xFF;
       if (filler != 0)
-        System.out.println ("Non zero");
+        //        System.out.println ("Non zero");
+        break;
 
       int reclen2 = Math.min (reclen - 4, buffer.length - ptr);
 

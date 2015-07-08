@@ -18,7 +18,6 @@ import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
-import com.bytezone.reporter.record.RecordMaker.RecordType;
 import com.bytezone.reporter.record.VbRecordMaker;
 
 import javafx.application.Application;
@@ -88,7 +87,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 6;
+    int choice = 3;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -134,22 +133,21 @@ public class Reporter extends Application
     RecordMaker ravel = new RavelRecordMaker (buffer);
     RecordMaker none = new NoRecordMaker (buffer);
 
-    btnNoSplit =
-        addRecordTypeButton (none, "None", splitterGroup, rebuild, RecordType.NONE);
+    //    RecordMaker[] recordMakers =
+    //        { crlf, cr, lf, fb80, fb132, fb252, vb, nvb, rdw, ravel, none };
+
+    btnNoSplit = addRecordTypeButton (none, "None", splitterGroup, rebuild);
     btnNoSplit.setSelected (true);
-    btnCrlf = addRecordTypeButton (crlf, "CRLF", splitterGroup, rebuild, RecordType.CRLF);
-    btnCr = addRecordTypeButton (cr, "CR", splitterGroup, rebuild, RecordType.CR);
-    btnLf = addRecordTypeButton (lf, "LF", splitterGroup, rebuild, RecordType.LF);
-    btnVB = addRecordTypeButton (vb, "VB", splitterGroup, rebuild, RecordType.VB);
-    btnRDW = addRecordTypeButton (rdw, "RDW", splitterGroup, rebuild, RecordType.RDW);
-    btnRavel =
-        addRecordTypeButton (ravel, "Ravel", splitterGroup, rebuild, RecordType.RVL);
-    btnFb80 = addRecordTypeButton (fb80, "FB80", splitterGroup, rebuild, RecordType.FB80);
-    btnFb132 =
-        addRecordTypeButton (fb132, "FB132", splitterGroup, rebuild, RecordType.FB132);
-    btnFbOther =
-        addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild, RecordType.FB252);
-    btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild, RecordType.NVB);
+    btnCrlf = addRecordTypeButton (crlf, "CRLF", splitterGroup, rebuild);
+    btnCr = addRecordTypeButton (cr, "CR", splitterGroup, rebuild);
+    btnLf = addRecordTypeButton (lf, "LF", splitterGroup, rebuild);
+    btnVB = addRecordTypeButton (vb, "VB", splitterGroup, rebuild);
+    btnRDW = addRecordTypeButton (rdw, "RDW", splitterGroup, rebuild);
+    btnRavel = addRecordTypeButton (ravel, "Ravel", splitterGroup, rebuild);
+    btnFb80 = addRecordTypeButton (fb80, "FB80", splitterGroup, rebuild);
+    btnFb132 = addRecordTypeButton (fb132, "FB132", splitterGroup, rebuild);
+    btnFbOther = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
+    btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild);
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFbOther);
@@ -159,9 +157,9 @@ public class Reporter extends Application
 
     btnAscii =
         addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
-    btnAscii.setSelected (true);
     btnEbcdic =
         addEncodingTypeButton ("EBCDIC", encodingGroup, rebuild, EncodingType.EBCDIC);
+    btnEbcdic.setSelected (true);
     vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
 
     VBox vbox3 = new VBox (10);
@@ -214,10 +212,11 @@ public class Reporter extends Application
   }
 
   private RadioButton addRecordTypeButton (RecordMaker recordMaker, String text,
-      ToggleGroup group, EventHandler<ActionEvent> evt, RecordType recordType)
+      ToggleGroup group, EventHandler<ActionEvent> evt)
   {
     RadioButton button = addRadioButton (text, group, evt);
     button.setUserData (recordMaker);
+    button.setDisable (recordMaker.test (1024) == 0);
     return button;
   }
 
