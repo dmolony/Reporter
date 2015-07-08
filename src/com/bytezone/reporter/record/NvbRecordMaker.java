@@ -1,5 +1,8 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -15,8 +18,9 @@ public class NvbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     int linesLeft = 0;
     int ptr = 0;
     int recordNumber = 0;
@@ -38,6 +42,7 @@ public class NvbRecordMaker extends DefaultRecordMaker
       records.add (new Record (buffer, ptr, reclen, recordNumber++));
       ptr += reclen;
     }
+    return records;
   }
 
   @Override

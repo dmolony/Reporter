@@ -1,5 +1,6 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NoRecordMaker extends DefaultRecordMaker
@@ -15,9 +16,11 @@ public class NoRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     records.add (new Record (buffer, 0, buffer.length, 0));
+    return records;
   }
 
   @Override

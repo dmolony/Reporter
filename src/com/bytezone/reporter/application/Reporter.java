@@ -55,7 +55,6 @@ public class Reporter extends Application
   private WindowSaver windowSaver;
   private Preferences prefs;
 
-  //  private Splitter splitter;
   private final Formatter formatter = new Formatter ();
 
   private final ToggleGroup splitterGroup = new ToggleGroup ();
@@ -109,8 +108,6 @@ public class Reporter extends Application
       System.out.printf ("%d  %-5s %s%n", i, types[i], files[i]);
     System.out.println ("------------------------");
     System.out.printf ("Using %-5s %s%n", types[choice], files[choice]);
-
-    //    splitter = new Splitter (buffer);
 
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);

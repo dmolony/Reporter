@@ -1,5 +1,6 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RavelRecordMaker extends DefaultRecordMaker
@@ -17,8 +18,9 @@ public class RavelRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     int ptr = 0;
     int tempPtr = 0;
     int start = 0;
@@ -55,6 +57,7 @@ public class RavelRecordMaker extends DefaultRecordMaker
       if (tempPtr < temp.length)
         temp[tempPtr++] = firstByte;
     }
+    return records;
   }
 
   @Override

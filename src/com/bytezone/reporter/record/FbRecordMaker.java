@@ -1,5 +1,6 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FbRecordMaker extends DefaultRecordMaker
@@ -19,8 +20,9 @@ public class FbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     int recordNumber = 0;
     for (int ptr = 0; ptr < buffer.length; ptr += recordLength)
     {
@@ -28,6 +30,7 @@ public class FbRecordMaker extends DefaultRecordMaker
       if (reclen == recordLength)
         records.add (new Record (buffer, ptr, reclen, recordNumber++));
     }
+    return records;
   }
 
   @Override

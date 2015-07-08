@@ -1,5 +1,6 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LfRecordMaker extends DefaultRecordMaker
@@ -15,8 +16,9 @@ public class LfRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     int start = 0;
     int recordNumber = 0;
     for (int ptr = 0; ptr < buffer.length; ptr++)
@@ -27,6 +29,7 @@ public class LfRecordMaker extends DefaultRecordMaker
         start = ptr + 1;
       }
     }
+    return records;
   }
 
   @Override

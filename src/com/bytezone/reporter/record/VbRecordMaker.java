@@ -1,5 +1,6 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VbRecordMaker extends DefaultRecordMaker
@@ -15,8 +16,9 @@ public class VbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     int ptr = 0;
     int recordNumber = 0;
     while (ptr < buffer.length)
@@ -35,6 +37,7 @@ public class VbRecordMaker extends DefaultRecordMaker
 
       records.add (record);
     }
+    return records;
   }
 
   @Override

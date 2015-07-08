@@ -1,5 +1,6 @@
 package com.bytezone.reporter.record;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RdwRecordMaker extends DefaultRecordMaker
@@ -15,8 +16,9 @@ public class RdwRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected void split ()
+  protected List<Record> split ()
   {
+    List<Record> records = new ArrayList<Record> ();
     int ptr = 0;
     int recordNumber = 0;
     while (ptr < buffer.length)
@@ -37,6 +39,7 @@ public class RdwRecordMaker extends DefaultRecordMaker
 
       records.add (record);
     }
+    return records;
   }
 
   @Override

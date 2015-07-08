@@ -1,6 +1,5 @@
 package com.bytezone.reporter.record;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DefaultRecordMaker implements RecordMaker
@@ -22,10 +21,8 @@ public abstract class DefaultRecordMaker implements RecordMaker
   public List<Record> getRecords ()
   {
     if (records == null)
-    {
-      records = new ArrayList<> ();
-      split ();
-    }
+      records = split ();
+
     return records;
   }
 
@@ -38,7 +35,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
     return buffer;
   }
 
-  protected abstract void split ();
+  protected abstract List<Record> split ();
 
   protected abstract byte[] join ();
 }
