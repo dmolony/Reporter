@@ -26,7 +26,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -49,6 +48,7 @@ public class Reporter extends Application
   private static final String[] files =
       { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
         "smutlib001.src", "DBALIB.SRC" };
+
   private final String[] types = { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB" };
 
   private final TextArea textArea = new TextArea ();
@@ -88,7 +88,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 2;
+    int choice = 1;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -169,6 +169,17 @@ public class Reporter extends Application
     btnFb132.setDisable (fileLength % 132 != 0);
     btnFb252.setDisable (fileLength % 252 != 0);
 
+    max = Math.min (1000, buffer.length);
+    int hex20 = 0;
+    int hex40 = 0;
+    for (int ptr = 0; ptr < max; ptr++)
+    {
+      if (buffer[ptr] == 0x20)
+        ++hex20;
+      else if (buffer[ptr] == 0x40)
+        ++hex40;
+    }
+
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
 
@@ -179,8 +190,13 @@ public class Reporter extends Application
         addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
     btnEbcdic =
         addEncodingTypeButton ("EBCDIC", encodingGroup, rebuild, EncodingType.EBCDIC);
-    btnEbcdic.setSelected (true);
+    //    btnEbcdic.setSelected (true);
     vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
+
+    if (hex20 > hex40)
+      btnAscii.setSelected (true);
+    else
+      btnEbcdic.setSelected (true);
 
     VBox vbox3 = new VBox (10);
     vbox3.setPadding (new Insets (10));
@@ -210,12 +226,17 @@ public class Reporter extends Application
     TitledPane t3 = new TitledPane ("Formatting", vbox3);
     TitledPane t4 = new TitledPane ("Paging", vbox4);
 
-    Accordion accordion = new Accordion ();
-    accordion.getPanes ().addAll (t1, t2, t3, t4);
+    t1.setCollapsible (false);
+    t2.setCollapsible (false);
+    t3.setCollapsible (false);
+    t4.setCollapsible (false);
+
+    VBox vbox = new VBox ();
+    vbox.getChildren ().addAll (t1, t2, t3, t4);
 
     BorderPane borderPane = new BorderPane ();
     borderPane.setCenter (textArea);
-    borderPane.setRight (accordion);
+    borderPane.setRight (vbox);
 
     Scene scene = new Scene (borderPane, 800, 592);
     primaryStage.setTitle ("Reporter");
@@ -230,11 +251,6 @@ public class Reporter extends Application
     rebuild ();
     primaryStage.show ();
   }
-
-  //  private boolean testFB (RecordMaker recordMaker, int recordLength)
-  //  {
-  //    return recordMaker.getBuffer ().length % recordLength == 0;
-  //  }
 
   private RadioButton addRecordTypeButton (RecordMaker recordMaker, String text,
       ToggleGroup group, EventHandler<ActionEvent> evt)
