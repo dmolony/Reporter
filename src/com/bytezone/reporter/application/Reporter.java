@@ -3,6 +3,7 @@ package com.bytezone.reporter.application;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -62,7 +63,7 @@ public class Reporter extends Application
   private RadioButton btnLf;
   private RadioButton btnFb80;
   private RadioButton btnFb132;
-  private RadioButton btnFbOther;
+  private RadioButton btnFb252;
   private RadioButton btnVB;
   private RadioButton btnNvb;
   private RadioButton btnRDW;
@@ -87,7 +88,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 0;
+    int choice = 3;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -143,21 +144,30 @@ public class Reporter extends Application
     btnRavel = addRecordTypeButton (ravel, "Ravel", splitterGroup, rebuild);
     btnFb80 = addRecordTypeButton (fb80, "FB80", splitterGroup, rebuild);
     btnFb132 = addRecordTypeButton (fb132, "FB132", splitterGroup, rebuild);
-    btnFbOther = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
+    btnFb252 = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
     btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild);
 
     RadioButton[] testableButtons =
         { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb, btnRavel };
+    int maxRecords = 0;
     for (RadioButton button : testableButtons)
     {
-      if (((RecordMaker) button.getUserData ()).test (1024) <= 2)
+      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024);
+      if (recordsFound <= 2)
         button.setDisable (true);
       else
-        button.setSelected (true);
+      {
+        if (recordsFound > maxRecords)
+        {
+          button.setSelected (true);
+          maxRecords = recordsFound;
+        }
+      }
     }
+    RadioButton[] testableFbButtons = { btnFb80, btnFb132, btnFb252 };
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
-                                 btnRavel, btnFb80, btnFb132, btnFbOther);
+                                 btnRavel, btnFb80, btnFb132, btnFb252);
 
     VBox vbox2 = new VBox (10);
     vbox2.setPadding (new Insets (10));
@@ -268,6 +278,7 @@ public class Reporter extends Application
 
     List<Record> records = setRecordMaker ();
     System.out.printf ("%,d records%n", records.size ());
+    countSpace (records);
     setFormatter (records);
 
     setPageMaker ();
@@ -310,6 +321,23 @@ public class Reporter extends Application
 
   private void setPageMaker ()
   {
+  }
+
+  private void countSpace (List<Record> records)
+  {
+    List<byte[]> buffers = new ArrayList<> ();
+    int totalData = 0;
+    int bufferLength = 0;
+    for (Record record : records)
+    {
+      totalData += record.length;
+      if (!buffers.contains (record.buffer))
+      {
+        buffers.add (record.buffer);
+        bufferLength += record.buffer.length;
+      }
+    }
+    System.out.printf ("Buffer space %,8d, record space %,8d%n", bufferLength, totalData);
   }
 
   private void closeWindow ()

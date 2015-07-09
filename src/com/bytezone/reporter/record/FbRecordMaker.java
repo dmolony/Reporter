@@ -28,7 +28,18 @@ public class FbRecordMaker extends DefaultRecordMaker
     {
       int reclen = Math.min (recordLength, buffer.length - ptr);
       if (reclen == recordLength)
+      {
+        // trim trailing nulls
+        int ptr2 = ptr + reclen - 1;
+        while (reclen > 0)
+        {
+          if (buffer[ptr2--] != 0)
+            break;
+          --reclen;
+        }
+
         records.add (new Record (buffer, ptr, reclen, recordNumber++));
+      }
     }
     return records;
   }
