@@ -88,7 +88,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 3;
+    int choice = 2;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -152,7 +152,7 @@ public class Reporter extends Application
     int maxRecords = 0;
     for (RadioButton button : testableButtons)
     {
-      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024);
+      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024).size ();
       if (recordsFound <= 2)
         button.setDisable (true);
       else
@@ -164,7 +164,10 @@ public class Reporter extends Application
         }
       }
     }
-    RadioButton[] testableFbButtons = { btnFb80, btnFb132, btnFb252 };
+
+    btnFb80.setDisable (fileLength % 80 != 0);
+    btnFb132.setDisable (fileLength % 132 != 0);
+    btnFb252.setDisable (fileLength % 252 != 0);
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
@@ -228,6 +231,11 @@ public class Reporter extends Application
     primaryStage.show ();
   }
 
+  //  private boolean testFB (RecordMaker recordMaker, int recordLength)
+  //  {
+  //    return recordMaker.getBuffer ().length % recordLength == 0;
+  //  }
+
   private RadioButton addRecordTypeButton (RecordMaker recordMaker, String text,
       ToggleGroup group, EventHandler<ActionEvent> evt)
   {
@@ -277,10 +285,8 @@ public class Reporter extends Application
     textArea.clear ();
 
     List<Record> records = setRecordMaker ();
-    System.out.printf ("%,d records%n", records.size ());
-    countSpace (records);
+    spaceReport (records);
     setFormatter (records);
-
     setPageMaker ();
 
     textArea.positionCaret (0);
@@ -296,14 +302,14 @@ public class Reporter extends Application
 
   private void setFormatter (List<Record> records)
   {
-    RadioButton btn2 = (RadioButton) formattingGroup.getSelectedToggle ();
-    FormatType formatType = (FormatType) btn2.getUserData ();
-    formatter.setFormatter (formatType);
+    RadioButton btn = (RadioButton) formattingGroup.getSelectedToggle ();
+    FormatType formatType = (FormatType) btn.getUserData ();
 
-    RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
+    btn = (RadioButton) encodingGroup.getSelectedToggle ();
     EncodingType encodingType = (EncodingType) btn.getUserData ();
-    formatter.setTextMaker (encodingType);
 
+    formatter.setFormatter (formatType);
+    formatter.setTextMaker (encodingType);
     formatter.setRecords (records);
 
     StringBuilder text = new StringBuilder ();
@@ -313,6 +319,7 @@ public class Reporter extends Application
       text.append ('\n');
     }
 
+    // remove trailing newlines
     while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
       text.deleteCharAt (text.length () - 1);
 
@@ -323,7 +330,7 @@ public class Reporter extends Application
   {
   }
 
-  private void countSpace (List<Record> records)
+  private void spaceReport (List<Record> records)
   {
     List<byte[]> buffers = new ArrayList<> ();
     int totalData = 0;
@@ -337,7 +344,14 @@ public class Reporter extends Application
         bufferLength += record.buffer.length;
       }
     }
-    System.out.printf ("Buffer space %,8d, record space %,8d%n", bufferLength, totalData);
+
+    System.out.println ("--------------------------");
+    System.out.printf ("Records     : %,8d%n", records.size ());
+    System.out.printf ("Buffer space: %,8d%nrecord space: %,8d%n", bufferLength,
+                       totalData);
+    System.out.printf ("Utilisation :       %4.2f%%%n",
+                       ((float) totalData / bufferLength * 100));
+    System.out.println ("--------------------------");
   }
 
   private void closeWindow ()

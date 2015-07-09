@@ -18,14 +18,14 @@ public abstract class DefaultRecordMaker implements RecordMaker
   }
 
   @Override
-  public int test (int testBufferSize)
+  public List<Record> test (int testBufferSize)
   {
     assert records == null;
 
     if (buffer.length <= testBufferSize)
     {
       records = split ();
-      return records.size ();
+      return records;
     }
     else
     {
@@ -34,7 +34,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
       System.arraycopy (saveBuffer, 0, buffer, 0, buffer.length);
       List<Record> tempRecords = split ();
       buffer = saveBuffer;
-      return tempRecords.size ();
+      return tempRecords;
     }
   }
 

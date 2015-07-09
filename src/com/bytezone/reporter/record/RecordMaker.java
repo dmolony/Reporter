@@ -8,5 +8,7 @@ public interface RecordMaker
 
   public byte[] getBuffer ();
 
-  public int test (int testBufferSize);
+  public List<Record> test (int testBufferSize);
+
+  //  public boolean test ();
 }
