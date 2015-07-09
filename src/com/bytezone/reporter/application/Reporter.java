@@ -48,9 +48,10 @@ public class Reporter extends Application
 
   private static final String[] files =
       { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
-        "smutlib001.src", "DBALIB.SRC" };
+        "smutlib001.src", "DBALIB.SRC", "test1.txt", "test2.txt" };
 
-  private final String[] types = { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB" };
+  private final String[] types =
+      { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB", "FB132", "FB132" };
 
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
@@ -85,11 +86,13 @@ public class Reporter extends Application
   private RadioButton btn66;
   private RadioButton btnOther;
 
+  private List<Record> records;
+
   @Override
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 1;
+    int choice = 8;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -113,7 +116,8 @@ public class Reporter extends Application
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
-    EventHandler<ActionEvent> rebuild = e -> rebuild ();
+    EventHandler<ActionEvent> rebuild = e -> createRecords ();
+    EventHandler<ActionEvent> setText = e -> setText ();
 
     VBox vbox1 = new VBox (10);
     vbox1.setPadding (new Insets (10));
@@ -161,9 +165,20 @@ public class Reporter extends Application
       }
     }
 
-    btnFb80.setDisable (fileLength % 80 != 0);
-    btnFb132.setDisable (fileLength % 132 != 0);
-    btnFb252.setDisable (fileLength % 252 != 0);
+    if (fileLength % 80 != 0)
+      btnFb80.setDisable (true);
+    else
+      btnFb80.setSelected (true);
+
+    if (fileLength % 132 != 0)
+      btnFb132.setDisable (true);
+    else
+      btnFb132.setSelected (true);
+
+    if (fileLength % 252 != 0)
+      btnFb252.setDisable (true);
+    else
+      btnFb252.setSelected (true);
 
     max = Math.min (1000, buffer.length);
     int hex20 = 0;
@@ -183,9 +198,9 @@ public class Reporter extends Application
     vbox2.setPadding (new Insets (10));
 
     btnAscii =
-        addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
+        addEncodingTypeButton ("ASCII", encodingGroup, setText, EncodingType.ASCII);
     btnEbcdic =
-        addEncodingTypeButton ("EBCDIC", encodingGroup, rebuild, EncodingType.EBCDIC);
+        addEncodingTypeButton ("EBCDIC", encodingGroup, setText, EncodingType.EBCDIC);
     vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
 
     if (hex20 > hex40)
@@ -196,24 +211,24 @@ public class Reporter extends Application
     VBox vbox3 = new VBox (10);
     vbox3.setPadding (new Insets (10));
 
-    btnText = addFormatTypeButton ("Text", formattingGroup, rebuild, FormatType.TEXT);
-    btnHex = addFormatTypeButton ("Hex", formattingGroup, rebuild, FormatType.HEX);
+    btnText = addFormatTypeButton ("Text", formattingGroup, setText, FormatType.TEXT);
+    btnHex = addFormatTypeButton ("Hex", formattingGroup, setText, FormatType.HEX);
     btnNatload =
-        addFormatTypeButton ("NatLoad", formattingGroup, rebuild, FormatType.NATLOAD);
+        addFormatTypeButton ("NatLoad", formattingGroup, setText, FormatType.NATLOAD);
     btnHex.setSelected (true);
     vbox3.getChildren ().addAll (btnHex, btnText, btnNatload);
 
     VBox vbox4 = new VBox (10);
     vbox4.setPadding (new Insets (10));
 
-    btnNoPaging = addRadioButton ("None", pagingGroup, rebuild);
+    btnNoPaging = addRadioButton ("None", pagingGroup, setText);
     btnNoPaging.setSelected (true);
-    btn66 = addRadioButton ("66", pagingGroup, rebuild);
-    btnOther = addRadioButton ("Other", pagingGroup, rebuild);
+    btn66 = addRadioButton ("66", pagingGroup, setText);
+    btnOther = addRadioButton ("Other", pagingGroup, setText);
     vbox4.getChildren ().addAll (btnNoPaging, btn66, btnOther);
 
     CheckBox chkAsa = new CheckBox ("ASA");
-    chkAsa.setOnAction (e -> rebuild ());
+    chkAsa.setOnAction (setText);
     vbox4.getChildren ().addAll (chkAsa);
 
     VBox vbox = new VBox ();
@@ -237,7 +252,7 @@ public class Reporter extends Application
     if (!windowSaver.restoreWindow ())
       primaryStage.centerOnScreen ();
 
-    rebuild ();
+    createRecords ();
     primaryStage.show ();
   }
 
@@ -282,57 +297,31 @@ public class Reporter extends Application
     return button;
   }
 
-  private void rebuild ()
+  private void createRecords ()
   {
-    textArea.clear ();
+    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
+    records = ((RecordMaker) btn.getUserData ()).getRecords ();
+    formatter.setRecords (records);
+    spaceReport ();
+    setText ();
+  }
 
-    List<Record> records = setRecordMaker ();
-    spaceReport (records);
-    setFormatter (records);
-    setPageMaker ();
+  private void setText ()
+  {
+    RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
+    EncodingType encodingType = (EncodingType) btn.getUserData ();
 
+    btn = (RadioButton) formattingGroup.getSelectedToggle ();
+    FormatType formatType = (FormatType) btn.getUserData ();
+
+    formatter.setTextMaker (encodingType);
+    formatter.setFormatter (formatType);// hex/text/other
+
+    textArea.setText (formatter.getFormattedText ());
     textArea.positionCaret (0);
   }
 
-  private List<Record> setRecordMaker ()
-  {
-    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
-    RecordMaker recordMaker = (RecordMaker) btn.getUserData ();
-
-    return recordMaker.getRecords ();
-  }
-
-  private void setFormatter (List<Record> records)
-  {
-    RadioButton btn = (RadioButton) formattingGroup.getSelectedToggle ();
-    FormatType formatType = (FormatType) btn.getUserData ();
-
-    btn = (RadioButton) encodingGroup.getSelectedToggle ();
-    EncodingType encodingType = (EncodingType) btn.getUserData ();
-
-    formatter.setFormatter (formatType);
-    formatter.setTextMaker (encodingType);
-    formatter.setRecords (records);
-
-    StringBuilder text = new StringBuilder ();
-    for (String record : formatter.getFormattedRecords ())
-    {
-      text.append (record);
-      text.append ('\n');
-    }
-
-    // remove trailing newlines
-    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
-      text.deleteCharAt (text.length () - 1);
-
-    textArea.setText (text.toString ());
-  }
-
-  private void setPageMaker ()
-  {
-  }
-
-  private void spaceReport (List<Record> records)
+  private void spaceReport ()
   {
     List<byte[]> buffers = new ArrayList<> ();
     int totalData = 0;
@@ -351,7 +340,7 @@ public class Reporter extends Application
     System.out.printf ("Records     : %,8d%n", records.size ());
     System.out.printf ("Buffer space: %,8d%nrecord space: %,8d%n", bufferLength,
                        totalData);
-    System.out.printf ("Utilisation :       %4.2f%%%n",
+    System.out.printf ("Utilisation :      %6.2f%%%n",
                        ((float) totalData / bufferLength * 100));
     System.out.println ("--------------------------");
   }

@@ -50,6 +50,22 @@ public class Formatter
     return formattedRecords;
   }
 
+  public String getFormattedText ()
+  {
+    StringBuilder text = new StringBuilder ();
+    for (String record : getFormattedRecords ())
+    {
+      text.append (record);
+      text.append ('\n');
+    }
+
+    // remove trailing newlines
+    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
+
+    return text.toString ();
+  }
+
   public void setTextMaker (EncodingType encodingType)
   {
     switch (encodingType)
