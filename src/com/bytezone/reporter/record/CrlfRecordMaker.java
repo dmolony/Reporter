@@ -29,6 +29,14 @@ public class CrlfRecordMaker extends DefaultRecordMaker
         start = ptr + 1;
       }
     }
+
+    if (start < buffer.length)
+    {
+      // ignore 0x1A on the end - added by IND$FILE
+      if (start != buffer.length - 1 || buffer[buffer.length - 1] != 0x1A)
+        records.add (new Record (buffer, start, buffer.length - start, recordNumber++));
+    }
+
     return records;
   }
 

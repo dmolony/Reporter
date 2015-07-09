@@ -48,10 +48,18 @@ public class Reporter extends Application
 
   private static final String[] files =
       { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
-        "smutlib001.src", "DBALIB.SRC", "test1.txt", "test2.txt" };
+        "smutlib001.src", "DBALIB.SRC", "test1.txt", "test2.txt", "test3.txt",
+        "test4.txt", "idcams-listcat.txt", "iehlist.txt" };
 
-  private final String[] types =
-      { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB", "FB132", "FB132" };
+  private static final String[] types =
+      { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB", "FB132", "FB132", "CRLF",
+        "FB132", "FB80", "FB132" };
+
+  private static final String[] encodings =
+      { "E", "A", "E", "E", "E", "E", "E", "E", "E", "A", "E", "E", "E" };
+
+  private static final String[] formats =
+      { "N", "T", "N", "N", "N", "N", "N", "T", "T", "T", "T", "T", "T" };
 
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
@@ -92,13 +100,13 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 8;
+    int choice = 2;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
-    System.out.printf ("File size: %,d%n", buffer.length);
-    int max = 100_000;
+
+    int max = 120_000;
     if (fileLength > max)
     {
       System.out.printf ("Reducing buffer to %,d%n", max);
@@ -107,11 +115,15 @@ public class Reporter extends Application
       buffer = shortBuffer;
     }
 
-    System.out.println ("------------------------");
+    System.out.println ("-------------------------------------------------");
     for (int i = 0; i < files.length; i++)
-      System.out.printf ("%d  %-5s %s%n", i, types[i], files[i]);
-    System.out.println ("------------------------");
-    System.out.printf ("Using %-5s %s%n", types[choice], files[choice]);
+    {
+      Path path = Paths.get (home + files[i]);
+      long length = path.toFile ().length ();
+      System.out.printf ("%s %2d  %-5s  %s  %s  %-18s %,11d%n", (choice == i) ? "*" : " ",
+                         i, types[i], encodings[i], formats[i], files[i], length);
+    }
+    System.out.println ("-------------------------------------------------");
 
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
@@ -167,17 +179,17 @@ public class Reporter extends Application
 
     if (fileLength % 80 != 0)
       btnFb80.setDisable (true);
-    else
+    else if (maxRecords < 2)
       btnFb80.setSelected (true);
 
     if (fileLength % 132 != 0)
       btnFb132.setDisable (true);
-    else
+    else if (maxRecords < 2)
       btnFb132.setSelected (true);
 
     if (fileLength % 252 != 0)
       btnFb252.setDisable (true);
-    else
+    else if (maxRecords < 2)
       btnFb252.setSelected (true);
 
     max = Math.min (1000, buffer.length);

@@ -29,6 +29,10 @@ public class LfRecordMaker extends DefaultRecordMaker
         start = ptr + 1;
       }
     }
+
+    if (start < buffer.length)
+      records.add (new Record (buffer, start, buffer.length - start, recordNumber++));
+
     return records;
   }
 
