@@ -25,6 +25,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
@@ -112,11 +113,6 @@ public class Reporter extends Application
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
-    //    Label lblSplit = addLabel ("Records", 20, 120);
-    //    Label lblFormat = addLabel ("Formatting", 20, 120);
-    //    Label lblEncode = addLabel ("Encoding", 20, 120);
-    //    Label lblPrint = addLabel ("Paging", 20, 120);
-
     EventHandler<ActionEvent> rebuild = e -> rebuild ();
 
     VBox vbox1 = new VBox (10);
@@ -190,7 +186,6 @@ public class Reporter extends Application
         addEncodingTypeButton ("ASCII", encodingGroup, rebuild, EncodingType.ASCII);
     btnEbcdic =
         addEncodingTypeButton ("EBCDIC", encodingGroup, rebuild, EncodingType.EBCDIC);
-    //    btnEbcdic.setSelected (true);
     vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
 
     if (hex20 > hex40)
@@ -221,18 +216,12 @@ public class Reporter extends Application
     chkAsa.setOnAction (e -> rebuild ());
     vbox4.getChildren ().addAll (chkAsa);
 
-    TitledPane t1 = new TitledPane ("Records", vbox1);
-    TitledPane t2 = new TitledPane ("Encoding", vbox2);
-    TitledPane t3 = new TitledPane ("Formatting", vbox3);
-    TitledPane t4 = new TitledPane ("Paging", vbox4);
-
-    t1.setCollapsible (false);
-    t2.setCollapsible (false);
-    t3.setCollapsible (false);
-    t4.setCollapsible (false);
-
     VBox vbox = new VBox ();
-    vbox.getChildren ().addAll (t1, t2, t3, t4);
+
+    addTitledPane ("Records", vbox1, vbox);
+    addTitledPane ("Encoding", vbox2, vbox);
+    addTitledPane ("Formatting", vbox3, vbox);
+    addTitledPane ("Paging", vbox4, vbox);
 
     BorderPane borderPane = new BorderPane ();
     borderPane.setCenter (textArea);
@@ -250,6 +239,14 @@ public class Reporter extends Application
 
     rebuild ();
     primaryStage.show ();
+  }
+
+  private TitledPane addTitledPane (String text, Node contents, VBox parent)
+  {
+    TitledPane titledPane = new TitledPane ("Records", contents);
+    titledPane.setCollapsible (false);
+    parent.getChildren ().add (titledPane);
+    return titledPane;
   }
 
   private RadioButton addRecordTypeButton (RecordMaker recordMaker, String text,
@@ -284,17 +281,6 @@ public class Reporter extends Application
     button.setOnAction (evt);
     return button;
   }
-
-  //  private Label addLabel (String text, double height, double width)
-  //  {
-  //    Label label = new Label (text);
-  //
-  //    label.setPrefWidth (width);
-  //    label.setAlignment (Pos.CENTER);
-  //    label.setPrefHeight (height);
-  //
-  //    return label;
-  //  }
 
   private void rebuild ()
   {
