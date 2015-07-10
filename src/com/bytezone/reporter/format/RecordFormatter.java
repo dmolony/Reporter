@@ -8,4 +8,6 @@ public interface RecordFormatter
   public String getFormattedRecord (Record record);
 
   public void setTextMaker (TextMaker textMaker);
+
+  public void setNewline (boolean newline);
 }

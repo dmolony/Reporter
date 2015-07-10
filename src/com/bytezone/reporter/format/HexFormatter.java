@@ -10,7 +10,7 @@ public class HexFormatter extends DefaultFormatter
   public String getFormattedRecord (Record record)
   {
     if (record.length == 0)
-      return String.format ("%06X", record.offset);
+      return String.format ("%06X%s", record.offset, newline ? "\n" : "");
 
     StringBuilder text = new StringBuilder ();
 
@@ -27,7 +27,7 @@ public class HexFormatter extends DefaultFormatter
                                   textMaker.getText (record.buffer, ptr, lineMax - ptr)));
     }
 
-    if (text.length () > 0)
+    if (text.length () > 0 && !newline)
       text.deleteCharAt (text.length () - 1);
 
     return text.toString ();

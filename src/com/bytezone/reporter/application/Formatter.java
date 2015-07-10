@@ -35,6 +35,11 @@ public class Formatter
     HEX, TEXT, NATLOAD
   }
 
+  public Formatter ()
+  {
+    hexFormatter.setNewline (true);
+  }
+
   public void setRecords (List<Record> records)
   {
     this.records = records;
