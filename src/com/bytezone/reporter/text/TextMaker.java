@@ -8,5 +8,14 @@ public interface TextMaker
 
   public boolean test (byte[] buffer, int offset, int length);
 
-  public boolean test (Record record);
+  public default boolean test (Record record)
+  {
+    return test (record.buffer, record.offset, record.length);
+  }
+
+  default void rightTrim (StringBuilder text)
+  {
+    while (text.length () > 0 && text.charAt (text.length () - 1) == ' ')
+      text.deleteCharAt (text.length () - 1);
+  }
 }

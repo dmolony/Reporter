@@ -2,8 +2,6 @@ package com.bytezone.reporter.text;
 
 import java.io.UnsupportedEncodingException;
 
-import com.bytezone.reporter.record.Record;
-
 public class EbcdicTextMaker implements TextMaker
 {
   static final String EBCDIC = "CP1047";
@@ -49,8 +47,7 @@ public class EbcdicTextMaker implements TextMaker
         textLine.append ((char) ebc2asc[val]);
     }
 
-    while (textLine.length () > 0 && textLine.charAt (textLine.length () - 1) == ' ')
-      textLine.deleteCharAt (textLine.length () - 1);
+    rightTrim (textLine);
 
     return textLine.toString ();
   }
@@ -68,11 +65,5 @@ public class EbcdicTextMaker implements TextMaker
         return false;
     }
     return true;
-  }
-
-  @Override
-  public boolean test (Record record)
-  {
-    return test (record.buffer, record.offset, record.length);
   }
 }

@@ -1,7 +1,5 @@
 package com.bytezone.reporter.text;
 
-import com.bytezone.reporter.record.Record;
-
 public class AsciiTextMaker implements TextMaker
 {
   @Override
@@ -19,8 +17,7 @@ public class AsciiTextMaker implements TextMaker
         textLine.append ((char) val);
     }
 
-    while (textLine.length () > 0 && textLine.charAt (textLine.length () - 1) == ' ')
-      textLine.deleteCharAt (textLine.length () - 1);
+    rightTrim (textLine);
 
     return textLine.toString ();
   }
@@ -38,11 +35,5 @@ public class AsciiTextMaker implements TextMaker
         return false;
     }
     return true;
-  }
-
-  @Override
-  public boolean test (Record record)
-  {
-    return test (record.buffer, record.offset, record.length);
   }
 }
