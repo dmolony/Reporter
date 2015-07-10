@@ -48,8 +48,8 @@ public class Reporter extends Application
 
   private static final String[] files =
       { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
-        "smutlib001.src", "DBALIB.SRC", "test1.txt", "test2.txt", "test3.txt",
-        "test4.txt", "idcams-listcat.txt", "iehlist.txt" };
+        "smutlib001.src", "DBALIB.SRC", "listcat.txt", "iehlist2.txt", "iehlist3.txt",
+        "out-idcams-listcat.txt", "jcl-idcams-listcat.txt", "iehlist.txt" };
 
   private static final String[] types =
       { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB", "FB132", "FB132", "CRLF",
@@ -100,7 +100,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 2;
+    int choice = 11;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -115,15 +115,15 @@ public class Reporter extends Application
       buffer = shortBuffer;
     }
 
-    System.out.println ("-------------------------------------------------");
+    System.out.println ("-----------------------------------------------------");
     for (int i = 0; i < files.length; i++)
     {
       Path path = Paths.get (home + files[i]);
       long length = path.toFile ().length ();
-      System.out.printf ("%s %2d  %-5s  %s  %s  %-18s %,11d%n", (choice == i) ? "*" : " ",
+      System.out.printf ("%s %2d  %-5s  %s  %s  %-22s %,11d%n", (choice == i) ? "*" : " ",
                          i, types[i], encodings[i], formats[i], files[i], length);
     }
-    System.out.println ("-------------------------------------------------");
+    System.out.println ("-----------------------------------------------------");
 
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
@@ -224,11 +224,12 @@ public class Reporter extends Application
     vbox3.setPadding (new Insets (10));
 
     btnText = addFormatTypeButton ("Text", formattingGroup, setText, FormatType.TEXT);
-    btnHex = addFormatTypeButton ("Hex", formattingGroup, setText, FormatType.HEX);
+    btnHex = addFormatTypeButton ("Binary", formattingGroup, setText, FormatType.HEX);
     btnNatload =
         addFormatTypeButton ("NatLoad", formattingGroup, setText, FormatType.NATLOAD);
-    btnHex.setSelected (true);
     vbox3.getChildren ().addAll (btnHex, btnText, btnNatload);
+
+    btnHex.setSelected (true);
 
     VBox vbox4 = new VBox (10);
     vbox4.setPadding (new Insets (10));
@@ -270,7 +271,7 @@ public class Reporter extends Application
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
   {
-    TitledPane titledPane = new TitledPane ("Records", contents);
+    TitledPane titledPane = new TitledPane (text, contents);
     titledPane.setCollapsible (false);
     parent.getChildren ().add (titledPane);
     return titledPane;

@@ -38,16 +38,16 @@ public class Formatter
   public void setRecords (List<Record> records)
   {
     this.records = records;
-  }
-
-  public List<String> getFormattedRecords ()
-  {
-    List<String> formattedRecords = new ArrayList<> (records.size ());
 
     for (Record record : records)
-      formattedRecords.add (recordFormatter.getFormattedRecord (record));
-
-    return formattedRecords;
+    {
+      if (record.length > 0)
+      {
+        boolean ascii = asciiTextMaker.test (record);
+        boolean ebcdic = ebcdicTextMaker.test (record);
+        System.out.printf ("%-6s %-6s %n", ascii ? "ascii" : "", ebcdic ? "ebcdic" : "");
+      }
+    }
   }
 
   public String getFormattedText ()
@@ -64,6 +64,16 @@ public class Formatter
       text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
+  }
+
+  private List<String> getFormattedRecords ()
+  {
+    List<String> formattedRecords = new ArrayList<> (records.size ());
+
+    for (Record record : records)
+      formattedRecords.add (recordFormatter.getFormattedRecord (record));
+
+    return formattedRecords;
   }
 
   public void setTextMaker (EncodingType encodingType)

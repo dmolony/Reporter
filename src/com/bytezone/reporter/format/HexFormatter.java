@@ -9,6 +9,9 @@ public class HexFormatter extends DefaultFormatter
   @Override
   public String getFormattedRecord (Record record)
   {
+    if (record.length == 0)
+      return String.format ("%06X", record.offset);
+
     StringBuilder text = new StringBuilder ();
 
     int max = record.offset + record.length;
@@ -23,6 +26,9 @@ public class HexFormatter extends DefaultFormatter
       text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
                                   textMaker.getText (record.buffer, ptr, lineMax - ptr)));
     }
+
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
   }

@@ -28,4 +28,10 @@ public class Record
     }
     return nulls;
   }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%,5d  %,5d  %,5d", recordNumber, offset, length);
+  }
 }
