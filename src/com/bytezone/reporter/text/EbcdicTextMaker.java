@@ -49,6 +49,9 @@ public class EbcdicTextMaker implements TextMaker
         textLine.append ((char) ebc2asc[val]);
     }
 
+    while (textLine.length () > 0 && textLine.charAt (textLine.length () - 1) == ' ')
+      textLine.deleteCharAt (textLine.length () - 1);
+
     return textLine.toString ();
   }
 
