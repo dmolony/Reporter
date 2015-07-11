@@ -9,6 +9,4 @@ public interface RecordMaker
   public byte[] getBuffer ();
 
   public List<Record> test (int testBufferSize);
-
-  //  public boolean test ();
 }

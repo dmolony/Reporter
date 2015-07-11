@@ -120,7 +120,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 10;
+    int choice = 12;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
