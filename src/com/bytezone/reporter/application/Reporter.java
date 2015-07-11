@@ -32,6 +32,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
@@ -82,6 +83,7 @@ public class Reporter extends Application
   private Report natloadReport;
   private Report asaReport;
 
+  private Pagination pagination;
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
   private Preferences prefs;
@@ -147,6 +149,7 @@ public class Reporter extends Application
 
     textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
     textArea.setEditable (false);
+    //    textArea.setPrefRowCount (10);
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
     EventHandler<ActionEvent> setText = e -> setText ();
@@ -247,8 +250,9 @@ public class Reporter extends Application
     btnHex = addFormatTypeButton ("Binary", formattingGroup, setText, FormatType.HEX);
     btnNatload =
         addFormatTypeButton ("NatLoad", formattingGroup, setText, FormatType.NATLOAD);
-    btnAsa = addFormatTypeButton ("ASA", formattingGroup, setText, FormatType.ASA);
-    vbox3.getChildren ().addAll (btnHex, btnText, btnNatload, btnAsa);
+    btnAsa =
+        addFormatTypeButton ("Line Printer", formattingGroup, setText, FormatType.ASA);
+    vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
 
     btnHex.setSelected (true);
 
@@ -266,10 +270,18 @@ public class Reporter extends Application
     addTitledPane ("Records", vbox1, vbox);
     addTitledPane ("Encoding", vbox2, vbox);
     addTitledPane ("Formatting", vbox3, vbox);
-    addTitledPane ("Paging", vbox4, vbox);
+    //    addTitledPane ("Paging", vbox4, vbox);
+
+    //    VBox outerBox = new VBox ();
+    //    outerBox.setAlignment (Pos.CENTER);
+    pagination = new Pagination (15);
+    //    pagination.setPrefHeight (600);
+    pagination.setPageFactory ( (Integer pageIndex) -> createTextPage (pageIndex));
+    //    outerBox.getChildren ().add (pagination);
 
     BorderPane borderPane = new BorderPane ();
-    borderPane.setCenter (textArea);
+    //    borderPane.setCenter (textArea);
+    borderPane.setCenter (pagination);
     borderPane.setRight (vbox);
 
     Scene scene = new Scene (borderPane, 800, 592);
@@ -284,6 +296,18 @@ public class Reporter extends Application
 
     createRecords ();
     primaryStage.show ();
+  }
+
+  private VBox createPage (int page)
+  {
+    VBox box = new VBox ();
+    box.getChildren ().add (textArea);
+    return box;
+  }
+
+  private TextArea createTextPage (int page)
+  {
+    return textArea;
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
