@@ -8,14 +8,11 @@ import com.bytezone.reporter.text.TextMaker;
 
 public abstract class Report
 {
-  //  private RecordFormatter recordFormatter;
+  protected final List<Record> records;
   protected TextMaker textMaker;
-
-  private final List<Record> records;
 
   public Report (List<Record> records)
   {
-
     this.records = records;
 
     //    if (false)
@@ -57,43 +54,10 @@ public abstract class Report
     return formattedRecords;
   }
 
-  //  public void setTextMaker (EncodingType encodingType)
-  //  {
-  //    switch (encodingType)
-  //    {
-  //      case ASCII:
-  //        setTextMaker (asciiTextMaker);
-  //        break;
-  //
-  //      case EBCDIC:
-  //        setTextMaker (ebcdicTextMaker);
-  //        break;
-  //    }
-  //  }
-
   public void setTextMaker (TextMaker textMaker)
   {
-    //    hexFormatter.setTextMaker (textMaker);
-    //    stringFormatter.setTextMaker (textMaker);
-    //    natloadFormatter.setTextMaker (textMaker);
     this.textMaker = textMaker;
   }
-
-  //  public void setFormatter (FormatType formatType)
-  //  {
-  //    switch (formatType)
-  //    {
-  //      case HEX:
-  //        recordFormatter = hexFormatter;
-  //        break;
-  //      case TEXT:
-  //        recordFormatter = stringFormatter;
-  //        break;
-  //      case NATLOAD:
-  //        recordFormatter = natloadFormatter;
-  //        break;
-  //    }
-  //  }
 
   public abstract String getFormattedRecord (Record record);
 }

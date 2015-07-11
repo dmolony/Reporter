@@ -1,13 +1,13 @@
-package com.bytezone.reporter.format;
+package com.bytezone.reporter.reports;
 
 import java.util.List;
 
 import com.bytezone.reporter.application.Report;
 import com.bytezone.reporter.record.Record;
 
-public class TextReport extends Report
+public class ASAReport extends Report
 {
-  public TextReport (List<Record> records)
+  public ASAReport (List<Record> records)
   {
     super (records);
   }
@@ -15,6 +15,6 @@ public class TextReport extends Report
   @Override
   public String getFormattedRecord (Record record)
   {
-    return textMaker.getText (record.buffer, record.offset, record.length);
+    return textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
   }
 }

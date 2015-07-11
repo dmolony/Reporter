@@ -1,4 +1,4 @@
-package com.bytezone.reporter.format;
+package com.bytezone.reporter.reports;
 
 import java.util.List;
 

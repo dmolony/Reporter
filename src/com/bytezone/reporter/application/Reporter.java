@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import com.bytezone.reporter.format.ASAReport;
-import com.bytezone.reporter.format.HexReport;
-import com.bytezone.reporter.format.NatloadReport;
-import com.bytezone.reporter.format.TextReport;
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
@@ -22,6 +18,10 @@ import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
+import com.bytezone.reporter.reports.ASAReport;
+import com.bytezone.reporter.reports.HexReport;
+import com.bytezone.reporter.reports.NatloadReport;
+import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -331,11 +331,12 @@ public class Reporter extends Application
   {
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
-    //    formatter = new Report (records);
+
     hexReport = new HexReport (records);
     textReport = new TextReport (records);
     natloadReport = new NatloadReport (records);
     asaReport = new ASAReport (records);
+
     spaceReport ();
     setText ();
   }
