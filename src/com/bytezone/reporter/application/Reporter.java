@@ -18,9 +18,10 @@ import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
-import com.bytezone.reporter.reports.ASAReport;
+import com.bytezone.reporter.reports.AsaReport;
 import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
+import com.bytezone.reporter.reports.Report;
 import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
@@ -335,7 +336,7 @@ public class Reporter extends Application
     hexReport = new HexReport (records);
     textReport = new TextReport (records);
     natloadReport = new NatloadReport (records);
-    asaReport = new ASAReport (records);
+    asaReport = new AsaReport (records);
 
     spaceReport ();
     setText ();
@@ -349,36 +350,22 @@ public class Reporter extends Application
     btn = (RadioButton) formattingGroup.getSelectedToggle ();
     FormatType formatType = (FormatType) btn.getUserData ();
 
-    switch (encodingType)
-    {
-      case EBCDIC:
-        hexReport.setTextMaker (ebcdicTextMaker);
-        textReport.setTextMaker (ebcdicTextMaker);
-        natloadReport.setTextMaker (ebcdicTextMaker);
-        asaReport.setTextMaker (ebcdicTextMaker);
-        break;
-
-      case ASCII:
-        hexReport.setTextMaker (asciiTextMaker);
-        textReport.setTextMaker (asciiTextMaker);
-        natloadReport.setTextMaker (asciiTextMaker);
-        asaReport.setTextMaker (asciiTextMaker);
-        break;
-    }
+    TextMaker textMaker =
+        encodingType == EncodingType.EBCDIC ? ebcdicTextMaker : asciiTextMaker;
 
     switch (formatType)
     {
       case HEX:
-        textArea.setText (hexReport.getFormattedText ());
+        textArea.setText (hexReport.getFormattedText (textMaker));
         break;
       case TEXT:
-        textArea.setText (textReport.getFormattedText ());
+        textArea.setText (textReport.getFormattedText (textMaker));
         break;
       case NATLOAD:
-        textArea.setText (natloadReport.getFormattedText ());
+        textArea.setText (natloadReport.getFormattedText (textMaker));
         break;
       case ASA:
-        textArea.setText (asaReport.getFormattedText ());
+        textArea.setText (asaReport.getFormattedText (textMaker));
         break;
     }
 

@@ -1,4 +1,4 @@
-package com.bytezone.reporter.application;
+package com.bytezone.reporter.reports;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,9 @@ public abstract class Report
     //      }
   }
 
-  public String getFormattedText ()
+  public String getFormattedText (TextMaker textMaker)
   {
+    this.textMaker = textMaker;
     StringBuilder text = new StringBuilder ();
     for (String record : getFormattedRecords ())
     {
@@ -52,11 +53,6 @@ public abstract class Report
       formattedRecords.add (getFormattedRecord (record));
 
     return formattedRecords;
-  }
-
-  public void setTextMaker (TextMaker textMaker)
-  {
-    this.textMaker = textMaker;
   }
 
   public abstract String getFormattedRecord (Record record);

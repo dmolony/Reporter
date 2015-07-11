@@ -2,12 +2,11 @@ package com.bytezone.reporter.reports;
 
 import java.util.List;
 
-import com.bytezone.reporter.application.Report;
 import com.bytezone.reporter.record.Record;
 
-public class ASAReport extends Report
+public class AsaReport extends Report
 {
-  public ASAReport (List<Record> records)
+  public AsaReport (List<Record> records)
   {
     super (records);
   }
