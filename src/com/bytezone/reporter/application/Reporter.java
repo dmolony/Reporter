@@ -22,7 +22,6 @@ import com.bytezone.reporter.reports.AsaReport;
 import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.Report;
-import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -334,7 +333,7 @@ public class Reporter extends Application
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
 
     hexReport = new HexReport (records);
-    textReport = new TextReport (records);
+    textReport = new Report (records);
     natloadReport = new NatloadReport (records);
     asaReport = new AsaReport (records);
 

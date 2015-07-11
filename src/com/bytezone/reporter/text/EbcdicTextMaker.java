@@ -40,14 +40,20 @@ public class EbcdicTextMaker implements TextMaker
     int max = Math.min (offset + length, buffer.length);
     for (int ptr = offset; ptr < max; ptr++)
     {
-      int val = buffer[ptr] & 0xFF;
-      if (val < 0x40 || val == 0xFF)
+      int value = buffer[ptr] & 0xFF;
+      if (value < 0x40 || value == 0xFF)
         textLine.append ('.');
       else
-        textLine.append ((char) ebc2asc[val]);
+        textLine.append ((char) ebc2asc[value]);
     }
 
     return rightTrim (textLine).toString ();
+  }
+
+  @Override
+  public char getChar (int value)
+  {
+    return (char) ebc2asc[value];
   }
 
   @Override
@@ -58,8 +64,8 @@ public class EbcdicTextMaker implements TextMaker
 
     for (int ptr = offset, max = offset + length; ptr < max; ptr++)
     {
-      int val = buffer[ptr] & 0xFF;
-      if (val < 0x40 || val == 0xFF)
+      int value = buffer[ptr] & 0xFF;
+      if (value < 0x40 || value == 0xFF)
         return false;
     }
     return true;

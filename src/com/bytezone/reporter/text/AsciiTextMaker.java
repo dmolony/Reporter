@@ -10,14 +10,20 @@ public class AsciiTextMaker implements TextMaker
     int max = Math.min (offset + length, buffer.length);
     for (int ptr = offset; ptr < max; ptr++)
     {
-      int val = buffer[ptr] & 0xFF;
-      if (val < 0x20 || val > 0xF0)
+      int value = buffer[ptr] & 0xFF;
+      if (value < 0x20 || value > 0xF0)
         textLine.append ('.');
       else
-        textLine.append ((char) val);
+        textLine.append ((char) value);
     }
 
     return rightTrim (textLine).toString ();
+  }
+
+  @Override
+  public char getChar (int value)
+  {
+    return (char) value;
   }
 
   @Override
@@ -28,8 +34,8 @@ public class AsciiTextMaker implements TextMaker
 
     for (int ptr = offset, max = offset + length; ptr < max; ptr++)
     {
-      int val = buffer[ptr] & 0xFF;
-      if (val < 0x20 || val > 0xF0)
+      int value = buffer[ptr] & 0xFF;
+      if (value < 0x20 || value > 0xF0)
         return false;
     }
     return true;

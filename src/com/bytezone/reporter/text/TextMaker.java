@@ -6,6 +6,8 @@ public interface TextMaker
 {
   public String getText (byte[] buffer, int offset, int length);
 
+  public char getChar (int value);
+
   public boolean test (byte[] buffer, int offset, int length);
 
   public default boolean test (Record record)

@@ -6,7 +6,7 @@ import java.util.List;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
-public abstract class Report
+public class Report
 {
   protected final List<Record> records;
   protected TextMaker textMaker;
@@ -45,7 +45,7 @@ public abstract class Report
     return text.toString ();
   }
 
-  private List<String> getFormattedRecords ()
+  protected List<String> getFormattedRecords ()
   {
     List<String> formattedRecords = new ArrayList<> (records.size ());
 
@@ -55,5 +55,8 @@ public abstract class Report
     return formattedRecords;
   }
 
-  public abstract String getFormattedRecord (Record record);
+  public String getFormattedRecord (Record record)
+  {
+    return textMaker.getText (record.buffer, record.offset, record.length);
+  }
 }
