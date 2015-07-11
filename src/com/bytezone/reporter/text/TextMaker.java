@@ -13,9 +13,10 @@ public interface TextMaker
     return test (record.buffer, record.offset, record.length);
   }
 
-  default void rightTrim (StringBuilder text)
+  default StringBuilder rightTrim (StringBuilder text)
   {
     while (text.length () > 0 && text.charAt (text.length () - 1) == ' ')
       text.deleteCharAt (text.length () - 1);
+    return text;
   }
 }

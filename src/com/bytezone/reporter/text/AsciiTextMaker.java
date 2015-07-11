@@ -17,9 +17,7 @@ public class AsciiTextMaker implements TextMaker
         textLine.append ((char) val);
     }
 
-    rightTrim (textLine);
-
-    return textLine.toString ();
+    return rightTrim (textLine).toString ();
   }
 
   @Override

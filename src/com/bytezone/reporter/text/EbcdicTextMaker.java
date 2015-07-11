@@ -47,9 +47,7 @@ public class EbcdicTextMaker implements TextMaker
         textLine.append ((char) ebc2asc[val]);
     }
 
-    rightTrim (textLine);
-
-    return textLine.toString ();
+    return rightTrim (textLine).toString ();
   }
 
   @Override
