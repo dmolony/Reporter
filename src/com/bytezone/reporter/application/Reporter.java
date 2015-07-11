@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import com.bytezone.reporter.application.Formatter.EncodingType;
-import com.bytezone.reporter.application.Formatter.FormatType;
+import com.bytezone.reporter.format.ASAReport;
+import com.bytezone.reporter.format.HexReport;
+import com.bytezone.reporter.format.NatloadReport;
+import com.bytezone.reporter.format.TextReport;
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
@@ -20,6 +22,9 @@ import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
+import com.bytezone.reporter.text.AsciiTextMaker;
+import com.bytezone.reporter.text.EbcdicTextMaker;
+import com.bytezone.reporter.text.TextMaker;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -27,7 +32,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
@@ -61,11 +65,26 @@ public class Reporter extends Application
   private static final String[] formats =
       { "N", "T", "N", "N", "N", "N", "N", "T", "T", "T", "T", "T", "T" };
 
+  enum EncodingType
+  {
+    ASCII, EBCDIC
+  }
+
+  enum FormatType
+  {
+    HEX, TEXT, NATLOAD, ASA
+  }
+  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
+  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+
+  private Report hexReport;
+  private Report textReport;
+  private Report natloadReport;
+  private Report asaReport;
+
   private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
   private Preferences prefs;
-
-  private final Formatter formatter = new Formatter ();
 
   private final ToggleGroup splitterGroup = new ToggleGroup ();
   private RadioButton btnCrlf;
@@ -88,6 +107,7 @@ public class Reporter extends Application
   private RadioButton btnText;
   private RadioButton btnHex;
   private RadioButton btnNatload;
+  private RadioButton btnAsa;
 
   private final ToggleGroup pagingGroup = new ToggleGroup ();
   private RadioButton btnNoPaging;
@@ -227,7 +247,8 @@ public class Reporter extends Application
     btnHex = addFormatTypeButton ("Binary", formattingGroup, setText, FormatType.HEX);
     btnNatload =
         addFormatTypeButton ("NatLoad", formattingGroup, setText, FormatType.NATLOAD);
-    vbox3.getChildren ().addAll (btnHex, btnText, btnNatload);
+    btnAsa = addFormatTypeButton ("ASA", formattingGroup, setText, FormatType.ASA);
+    vbox3.getChildren ().addAll (btnHex, btnText, btnNatload, btnAsa);
 
     btnHex.setSelected (true);
 
@@ -239,10 +260,6 @@ public class Reporter extends Application
     btn66 = addRadioButton ("66", pagingGroup, setText);
     btnOther = addRadioButton ("Other", pagingGroup, setText);
     vbox4.getChildren ().addAll (btnNoPaging, btn66, btnOther);
-
-    CheckBox chkAsa = new CheckBox ("ASA");
-    chkAsa.setOnAction (setText);
-    vbox4.getChildren ().addAll (chkAsa);
 
     VBox vbox = new VBox ();
 
@@ -314,7 +331,11 @@ public class Reporter extends Application
   {
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
-    formatter.setRecords (records);
+    //    formatter = new Report (records);
+    hexReport = new HexReport (records);
+    textReport = new TextReport (records);
+    natloadReport = new NatloadReport (records);
+    asaReport = new ASAReport (records);
     spaceReport ();
     setText ();
   }
@@ -327,10 +348,39 @@ public class Reporter extends Application
     btn = (RadioButton) formattingGroup.getSelectedToggle ();
     FormatType formatType = (FormatType) btn.getUserData ();
 
-    formatter.setTextMaker (encodingType);
-    formatter.setFormatter (formatType);// hex/text/other
+    switch (encodingType)
+    {
+      case EBCDIC:
+        hexReport.setTextMaker (ebcdicTextMaker);
+        textReport.setTextMaker (ebcdicTextMaker);
+        natloadReport.setTextMaker (ebcdicTextMaker);
+        asaReport.setTextMaker (ebcdicTextMaker);
+        break;
 
-    textArea.setText (formatter.getFormattedText ());
+      case ASCII:
+        hexReport.setTextMaker (asciiTextMaker);
+        textReport.setTextMaker (asciiTextMaker);
+        natloadReport.setTextMaker (asciiTextMaker);
+        asaReport.setTextMaker (asciiTextMaker);
+        break;
+    }
+
+    switch (formatType)
+    {
+      case HEX:
+        textArea.setText (hexReport.getFormattedText ());
+        break;
+      case TEXT:
+        textArea.setText (textReport.getFormattedText ());
+        break;
+      case NATLOAD:
+        textArea.setText (natloadReport.getFormattedText ());
+        break;
+      case ASA:
+        textArea.setText (asaReport.getFormattedText ());
+        break;
+    }
+
     textArea.positionCaret (0);
   }
 

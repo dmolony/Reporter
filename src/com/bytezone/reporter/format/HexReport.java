@@ -1,10 +1,20 @@
 package com.bytezone.reporter.format;
 
+import java.util.List;
+
+import com.bytezone.reporter.application.Report;
 import com.bytezone.reporter.record.Record;
 
-public class HexFormatter extends DefaultFormatter
+public class HexReport extends Report
 {
   static final int HEX_LINE_SIZE = 16;
+  private final boolean newline;
+
+  public HexReport (List<Record> records)
+  {
+    super (records);
+    newline = true;
+  }
 
   @Override
   public String getFormattedRecord (Record record)
