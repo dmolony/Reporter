@@ -19,9 +19,9 @@ import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
 import com.bytezone.reporter.reports.AsaReport;
-import com.bytezone.reporter.reports.DefaultReport;
 import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
+import com.bytezone.reporter.reports.Report;
 import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
@@ -75,11 +75,11 @@ public class Reporter extends Application
   private final TextMaker asciiTextMaker = new AsciiTextMaker ();
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
-  private DefaultReport hexReport;
-  private DefaultReport textReport;
-  private DefaultReport natloadReport;
-  private DefaultReport asaReport;
-  private DefaultReport currentReport;
+  private Report hexReport;
+  private Report textReport;
+  private Report natloadReport;
+  private Report asaReport;
+  private Report currentReport;
 
   private final BorderPane borderPane = new BorderPane ();
   private WindowSaver windowSaver;
@@ -119,7 +119,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 10;
+    int choice = 3;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -329,9 +329,12 @@ public class Reporter extends Application
 
     hexReport = new HexReport (records);
     hexReport.setNewlineBetweenRecords (true);
+
     textReport = new TextReport (records);
     natloadReport = new NatloadReport (records);
+
     asaReport = new AsaReport (records);
+    asaReport.setAllowSplitRecords (true);
 
     spaceReport ();
     paginate ();

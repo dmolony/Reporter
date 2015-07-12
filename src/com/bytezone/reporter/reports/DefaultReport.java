@@ -11,7 +11,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public abstract class DefaultReport
+public abstract class DefaultReport implements Report
 {
   protected final List<Record> records;
   protected final List<Page> pages;
@@ -21,6 +21,7 @@ public abstract class DefaultReport
   protected TextMaker textMaker;
   protected int pageSize = 66;
   protected boolean newlineBetweenRecords;
+  protected boolean allowSplitRecords;
 
   public DefaultReport (List<Record> records)
   {
@@ -34,6 +35,7 @@ public abstract class DefaultReport
     pagination.setPageFactory ( (Integer pageIndex) -> getFormattedPage (pageIndex));
   }
 
+  @Override
   public void setTextMaker (TextMaker textMaker)
   {
     this.textMaker = textMaker;
@@ -41,13 +43,23 @@ public abstract class DefaultReport
     pagination.setPageCount (pages.size ());
   }
 
+  @Override
   public void setNewlineBetweenRecords (boolean value)
   {
     newlineBetweenRecords = value;
-    paginate ();
-    pagination.setPageCount (pages.size ());
+    //    paginate ();
+    //    pagination.setPageCount (pages.size ());
   }
 
+  @Override
+  public void setAllowSplitRecords (boolean value)
+  {
+    allowSplitRecords = value;
+    //    paginate ();
+    //    pagination.setPageCount (pages.size ());
+  }
+
+  @Override
   public Pagination getPagination ()
   {
     return pagination;
@@ -82,5 +94,6 @@ public abstract class DefaultReport
   protected class Page
   {
     final List<Record> records = new ArrayList<> ();
+    int firstLine, lastLine;// for partial records over pagebreaks
   }
 }
