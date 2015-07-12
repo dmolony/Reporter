@@ -32,15 +32,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Pagination;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class Reporter extends Application
@@ -82,9 +78,11 @@ public class Reporter extends Application
   private Report textReport;
   private Report natloadReport;
   private Report asaReport;
+  private Report currentReport;
 
-  private Pagination pagination;
-  private final TextArea textArea = new TextArea ();
+  //  private Pagination pagination;
+  private final BorderPane borderPane = new BorderPane ();
+  //  private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
   private Preferences prefs;
 
@@ -128,14 +126,14 @@ public class Reporter extends Application
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
 
-    int max = 120_000;
-    if (fileLength > max)
-    {
-      System.out.printf ("Reducing buffer to %,d%n", max);
-      byte[] shortBuffer = new byte[max];
-      System.arraycopy (buffer, 0, shortBuffer, 0, max);
-      buffer = shortBuffer;
-    }
+    //    int max = 120_000;
+    //    if (fileLength > max)
+    //    {
+    //      System.out.printf ("Reducing buffer to %,d%n", max);
+    //      byte[] shortBuffer = new byte[max];
+    //      System.arraycopy (buffer, 0, shortBuffer, 0, max);
+    //      buffer = shortBuffer;
+    //    }
 
     System.out.println ("-----------------------------------------------------");
     for (int i = 0; i < files.length; i++)
@@ -147,12 +145,12 @@ public class Reporter extends Application
     }
     System.out.println ("-----------------------------------------------------");
 
-    textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
-    textArea.setEditable (false);
+    //    textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
+    //    textArea.setEditable (false);
     //    textArea.setPrefRowCount (10);
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
-    EventHandler<ActionEvent> setText = e -> setText ();
+    EventHandler<ActionEvent> paginate = e -> paginate ();
 
     VBox vbox1 = new VBox (10);
     vbox1.setPadding (new Insets (10));
@@ -215,7 +213,7 @@ public class Reporter extends Application
     else if (maxRecords < 2)
       btnFb252.setSelected (true);
 
-    max = Math.min (1000, buffer.length);
+    int max = Math.min (1000, buffer.length);
     int hex20 = 0;
     int hex40 = 0;
     for (int ptr = 0; ptr < max; ptr++)
@@ -233,9 +231,9 @@ public class Reporter extends Application
     vbox2.setPadding (new Insets (10));
 
     btnAscii =
-        addEncodingTypeButton ("ASCII", encodingGroup, setText, EncodingType.ASCII);
+        addEncodingTypeButton ("ASCII", encodingGroup, paginate, EncodingType.ASCII);
     btnEbcdic =
-        addEncodingTypeButton ("EBCDIC", encodingGroup, setText, EncodingType.EBCDIC);
+        addEncodingTypeButton ("EBCDIC", encodingGroup, paginate, EncodingType.EBCDIC);
     vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
 
     if (hex20 > hex40)
@@ -246,12 +244,12 @@ public class Reporter extends Application
     VBox vbox3 = new VBox (10);
     vbox3.setPadding (new Insets (10));
 
-    btnText = addFormatTypeButton ("Text", formattingGroup, setText, FormatType.TEXT);
-    btnHex = addFormatTypeButton ("Binary", formattingGroup, setText, FormatType.HEX);
+    btnText = addFormatTypeButton ("Text", formattingGroup, paginate, FormatType.TEXT);
+    btnHex = addFormatTypeButton ("Binary", formattingGroup, paginate, FormatType.HEX);
     btnNatload =
-        addFormatTypeButton ("NatLoad", formattingGroup, setText, FormatType.NATLOAD);
+        addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
     btnAsa =
-        addFormatTypeButton ("Line Printer", formattingGroup, setText, FormatType.ASA);
+        addFormatTypeButton ("Line Printer", formattingGroup, paginate, FormatType.ASA);
     vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
 
     btnHex.setSelected (true);
@@ -259,10 +257,10 @@ public class Reporter extends Application
     VBox vbox4 = new VBox (10);
     vbox4.setPadding (new Insets (10));
 
-    btnNoPaging = addRadioButton ("None", pagingGroup, setText);
+    btnNoPaging = addRadioButton ("None", pagingGroup, paginate);
     btnNoPaging.setSelected (true);
-    btn66 = addRadioButton ("66", pagingGroup, setText);
-    btnOther = addRadioButton ("Other", pagingGroup, setText);
+    btn66 = addRadioButton ("66", pagingGroup, paginate);
+    btnOther = addRadioButton ("Other", pagingGroup, paginate);
     vbox4.getChildren ().addAll (btnNoPaging, btn66, btnOther);
 
     VBox vbox = new VBox ();
@@ -274,14 +272,13 @@ public class Reporter extends Application
 
     //    VBox outerBox = new VBox ();
     //    outerBox.setAlignment (Pos.CENTER);
-    pagination = new Pagination (15);
+    //    pagination = new Pagination (15);
     //    pagination.setPrefHeight (600);
-    pagination.setPageFactory ( (Integer pageIndex) -> createTextPage (pageIndex));
+    //    pagination.setPageFactory ( (Integer pageIndex) -> createTextPage (pageIndex));
     //    outerBox.getChildren ().add (pagination);
 
-    BorderPane borderPane = new BorderPane ();
     //    borderPane.setCenter (textArea);
-    borderPane.setCenter (pagination);
+    //    borderPane.setCenter (pagination);
     borderPane.setRight (vbox);
 
     Scene scene = new Scene (borderPane, 800, 592);
@@ -296,18 +293,6 @@ public class Reporter extends Application
 
     createRecords ();
     primaryStage.show ();
-  }
-
-  private VBox createPage (int page)
-  {
-    VBox box = new VBox ();
-    box.getChildren ().add (textArea);
-    return box;
-  }
-
-  private TextArea createTextPage (int page)
-  {
-    return textArea;
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
@@ -362,10 +347,10 @@ public class Reporter extends Application
     asaReport = new AsaReport (records);
 
     spaceReport ();
-    setText ();
+    paginate ();
   }
 
-  private void setText ()
+  private void paginate ()
   {
     RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
     EncodingType encodingType = (EncodingType) btn.getUserData ();
@@ -379,20 +364,24 @@ public class Reporter extends Application
     switch (formatType)
     {
       case HEX:
-        textArea.setText (hexReport.getFormattedText (textMaker));
+        hexReport.setTextMaker (textMaker);
+        currentReport = hexReport;
         break;
       case TEXT:
-        textArea.setText (textReport.getFormattedText (textMaker));
+        textReport.setTextMaker (textMaker);
+        currentReport = textReport;
         break;
       case NATLOAD:
-        textArea.setText (natloadReport.getFormattedText (textMaker));
+        natloadReport.setTextMaker (textMaker);
+        currentReport = natloadReport;
         break;
       case ASA:
-        textArea.setText (asaReport.getFormattedText (textMaker));
+        asaReport.setTextMaker (textMaker);
+        currentReport = asaReport;
         break;
     }
 
-    textArea.positionCaret (0);
+    borderPane.setCenter (currentReport.getPagination ());
   }
 
   private void spaceReport ()
