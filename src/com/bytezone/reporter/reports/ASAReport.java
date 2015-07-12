@@ -80,11 +80,47 @@ public class AsaReport extends DefaultReport
   @Override
   protected void paginate ()
   {
+    int lineCount = 0;
+    Page page = new Page ();
+    pages.clear ();
+
+    for (int i = 0; i < records.size (); i++)
+    {
+      Record record = records.get (i);
+
+      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+      int lines = 0;
+      if (c == ' ')
+        lines = 1;
+      else if (c == '0')
+        lines = 2;
+      else if (c == '-')
+        lines = 3;
+
+      lineCount += lines;
+      if (lineCount > pageSize || (c == '1' && lineCount > 0))
+      {
+        pages.add (page);
+        page = new Page ();
+        lineCount = lines;
+      }
+
+      if (newlineBetweenRecords)
+        lineCount++;
+
+      page.records.add (record);
+    }
+
+    if (page.records.size () > 0)
+      pages.add (page);
   }
 
   @Override
   protected String getFormattedRecord (Record record)
   {
-    return "nope";
+    char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+    String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
+    return prefix
+        + textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
   }
 }
