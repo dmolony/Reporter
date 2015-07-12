@@ -13,7 +13,7 @@ import com.bytezone.reporter.record.Record;
  * '1' : 'C' - Skip to channel 1-12 (channel 1 is top of page)
  */
 
-public class AsaReport extends Report
+public class AsaReport extends DefaultReport
 {
   private int currentLine;
   private final int maxLines = 66;
@@ -23,7 +23,6 @@ public class AsaReport extends Report
     super (records);
   }
 
-  @Override
   protected List<String> getFormattedRecords ()
   {
     List<String> formattedRecords = new ArrayList<> (records.size ());
@@ -76,5 +75,16 @@ public class AsaReport extends Report
       if (currentLine >= maxLines)
         currentLine = 0;
     }
+  }
+
+  @Override
+  protected void paginate ()
+  {
+  }
+
+  @Override
+  protected String getFormattedRecord (Record record)
+  {
+    return "nope";
   }
 }

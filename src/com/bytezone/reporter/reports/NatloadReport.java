@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.bytezone.reporter.record.Record;
 
-public class NatloadReport extends Report
+public class NatloadReport extends TextReport
 {
   public NatloadReport (List<Record> records)
   {

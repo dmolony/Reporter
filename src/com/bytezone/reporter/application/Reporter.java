@@ -19,9 +19,10 @@ import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
 import com.bytezone.reporter.reports.AsaReport;
+import com.bytezone.reporter.reports.DefaultReport;
 import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
-import com.bytezone.reporter.reports.Report;
+import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -74,11 +75,11 @@ public class Reporter extends Application
   private final TextMaker asciiTextMaker = new AsciiTextMaker ();
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
-  private Report hexReport;
-  private Report textReport;
-  private Report natloadReport;
-  private Report asaReport;
-  private Report currentReport;
+  private DefaultReport hexReport;
+  private DefaultReport textReport;
+  private DefaultReport natloadReport;
+  private DefaultReport asaReport;
+  private DefaultReport currentReport;
 
   private final BorderPane borderPane = new BorderPane ();
   private WindowSaver windowSaver;
@@ -327,7 +328,8 @@ public class Reporter extends Application
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
 
     hexReport = new HexReport (records);
-    textReport = new Report (records);
+    hexReport.setNewlineBetweenRecords (true);
+    textReport = new TextReport (records);
     natloadReport = new NatloadReport (records);
     asaReport = new AsaReport (records);
 
