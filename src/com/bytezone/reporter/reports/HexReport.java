@@ -1,5 +1,6 @@
 package com.bytezone.reporter.reports;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.reporter.record.Record;
@@ -7,19 +8,52 @@ import com.bytezone.reporter.record.Record;
 public class HexReport extends Report
 {
   static final int HEX_LINE_SIZE = 16;
-  private final boolean newline;
+  List<Integer> pageStarts;
 
   public HexReport (List<Record> records)
   {
     super (records);
-    newline = true;
+
+    pageStarts = new ArrayList<> ();
+    pageStarts.add (0);
+    int lineCount = 0;
+
+    for (int i = 0; i < records.size (); i++)
+    {
+      Record record = records.get (i);
+      int lines = (record.length - 1) / 16 + 1;
+      lineCount += lines;
+      if (lineCount > pageSize)
+      {
+        lineCount = lines;
+        pageStarts.add (i);
+      }
+    }
+    pagination.setPageCount (pageStarts.size ());
+  }
+
+  @Override
+  protected List<Record> getPageRecords (int page)
+  {
+    List<Record> pageRecords = new ArrayList<> (records.size ());
+    if (page < 0 || page >= pageStarts.size ())
+      return pageRecords;
+
+    int first = pageStarts.get (page);
+    int last =
+        page == pageStarts.size () ? pageStarts.size () : pageStarts.get (page + 1);
+
+    for (int line = first; line < last; line++)
+      pageRecords.add (records.get (line));
+
+    return pageRecords;
   }
 
   @Override
   public String getFormattedRecord (Record record)
   {
     if (record.length == 0)
-      return String.format ("%06X%s", record.offset, newline ? "\n" : "");
+      return String.format ("%06X", record.offset);
 
     StringBuilder text = new StringBuilder ();
 
@@ -36,7 +70,7 @@ public class HexReport extends Report
                                   textMaker.getText (record.buffer, ptr, lineMax - ptr)));
     }
 
-    if (text.length () > 0 && !newline)
+    if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
 
     return text.toString ();

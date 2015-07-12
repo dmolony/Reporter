@@ -80,9 +80,7 @@ public class Reporter extends Application
   private Report asaReport;
   private Report currentReport;
 
-  //  private Pagination pagination;
   private final BorderPane borderPane = new BorderPane ();
-  //  private final TextArea textArea = new TextArea ();
   private WindowSaver windowSaver;
   private Preferences prefs;
 
@@ -120,7 +118,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 12;
+    int choice = 10;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -144,10 +142,6 @@ public class Reporter extends Application
                          i, types[i], encodings[i], formats[i], files[i], length);
     }
     System.out.println ("-----------------------------------------------------");
-
-    //    textArea.setFont (Font.font (fontNames[18], FontWeight.NORMAL, 14));
-    //    textArea.setEditable (false);
-    //    textArea.setPrefRowCount (10);
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
     EventHandler<ActionEvent> paginate = e -> paginate ();
@@ -270,15 +264,6 @@ public class Reporter extends Application
     addTitledPane ("Formatting", vbox3, vbox);
     //    addTitledPane ("Paging", vbox4, vbox);
 
-    //    VBox outerBox = new VBox ();
-    //    outerBox.setAlignment (Pos.CENTER);
-    //    pagination = new Pagination (15);
-    //    pagination.setPrefHeight (600);
-    //    pagination.setPageFactory ( (Integer pageIndex) -> createTextPage (pageIndex));
-    //    outerBox.getChildren ().add (pagination);
-
-    //    borderPane.setCenter (textArea);
-    //    borderPane.setCenter (pagination);
     borderPane.setRight (vbox);
 
     Scene scene = new Scene (borderPane, 800, 592);

@@ -68,9 +68,9 @@ public class Report
   public TextArea getFormattedPage (int page)
   {
     StringBuilder text = new StringBuilder ();
-    for (String record : getPageRecords (page))
+    for (Record record : getPageRecords (page))
     {
-      text.append (record);
+      text.append (getFormattedRecord (record));
       text.append ('\n');
     }
 
@@ -86,17 +86,17 @@ public class Report
     return textArea;
   }
 
-  protected List<String> getPageRecords (int page)
+  protected List<Record> getPageRecords (int page)
   {
-    List<String> formattedRecords = new ArrayList<> (records.size ());
+    List<Record> pageRecords = new ArrayList<> (records.size ());
     int first = page * pageSize;
     int last = first + pageSize;
 
     for (int line = first; line < last; line++)
       if (line < records.size ())
-        formattedRecords.add (getFormattedRecord (records.get (line)));
+        pageRecords.add (records.get (line));
 
-    return formattedRecords;
+    return pageRecords;
   }
 
   protected List<String> getFormattedRecords ()

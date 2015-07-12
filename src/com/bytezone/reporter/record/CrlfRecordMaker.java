@@ -59,6 +59,8 @@ public class CrlfRecordMaker extends DefaultRecordMaker
       buffer[ptr++] = 0x0A;
     }
 
+    assert ptr == buffer.length;
+
     return buffer;
   }
 }
