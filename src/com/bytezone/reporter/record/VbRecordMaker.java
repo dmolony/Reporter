@@ -26,11 +26,12 @@ public class VbRecordMaker extends DefaultRecordMaker
       int filler = (buffer[ptr++] & 0xFF) << 8;
       filler |= buffer[ptr++] & 0xFF;
       if (filler != 0)
-        //        System.out.println ("Non zero");
         break;
 
       int reclen = (buffer[ptr++] & 0xFF) << 8;
       reclen |= buffer[ptr++] & 0xFF;
+      if (reclen == 0)
+        break;
       int reclen2 = Math.min (reclen - 4, buffer.length - ptr);
 
       Record record = new Record (buffer, ptr, reclen2, recordNumber++);

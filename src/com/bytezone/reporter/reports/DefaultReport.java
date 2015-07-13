@@ -79,6 +79,8 @@ public abstract class DefaultReport implements Report
     {
       Record record = records.get (i);
       String formattedRecord = getFormattedRecord (record);
+      if (formattedRecord == null)
+        continue;
 
       if (page.firstRecordOffset > 0 && i == page.firstRecordIndex)
         formattedRecord = formattedRecord.substring (page.firstRecordOffset);
