@@ -65,17 +65,47 @@ public abstract class DefaultReport implements Report
     return pagination;
   }
 
-  public TextArea getFormattedPage (int page)
+  public TextArea getFormattedPage (int pageNumber)
   {
     StringBuilder text = new StringBuilder ();
-    if (page < pages.size ())
-      for (Record record : pages.get (page).records)
+    if (pageNumber < pages.size ())
+    {
+      Page page = pages.get (pageNumber);
+      for (int i = 0; i < page.records.size (); i++)
       {
-        text.append (getFormattedRecord (record));
-        text.append ('\n');
+        Record record = records.get (i);
+        String formattedRecord = getFormattedRecord (record);
+
+        if (i == 0 && page.firstRecordSplit > 0)
+        {
+          String[] lines = formattedRecord.split ("\n");
+          for (int j = 0; j < lines.length; j++)
+            if (j > page.firstRecordSplit)
+            {
+              text.append (formattedRecord);
+              text.append ('\n');
+            }
+        }
+        else if (page.lastRecordSplit > 0 && i == page.records.size () - 1)
+        {
+          String[] lines = formattedRecord.split ("\n");
+          for (int j = 0; j < lines.length; j++)
+            if (j <= page.lastRecordSplit)
+            {
+              text.append (formattedRecord);
+              text.append ('\n');
+            }
+        }
+        else
+        {
+          text.append (formattedRecord);
+          text.append ('\n');
+        }
+
         if (newlineBetweenRecords)
           text.append ('\n');
       }
+    }
 
     // remove trailing newlines
     while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
@@ -94,6 +124,7 @@ public abstract class DefaultReport implements Report
   protected class Page
   {
     final List<Record> records = new ArrayList<> ();
-    int firstLine, lastLine;// for partial records over pagebreaks
+    int firstRecordSplit;
+    int lastRecordSplit;
   }
 }
