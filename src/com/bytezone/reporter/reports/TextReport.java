@@ -26,22 +26,10 @@ public class TextReport extends DefaultReport
   @Override
   protected void paginate ()
   {
-    Page page = new Page ();
     pages.clear ();
 
-    for (int i = 0; i < records.size (); i++)
-    {
-      Record record = records.get (i);
-      page.records.add (record);
-      if (page.records.size () == pageSize)
-      {
-        pages.add (page);
-        page = new Page ();
-      }
-    }
-
-    if (page.records.size () > 0)
-      pages.add (page);
+    for (int i = 0; i < records.size (); i += pageSize)
+      pages.add (new Page (records, i, Math.min (i + pageSize - 1, records.size () - 1)));
   }
 
   @Override

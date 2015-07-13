@@ -68,43 +68,28 @@ public abstract class DefaultReport implements Report
   public TextArea getFormattedPage (int pageNumber)
   {
     StringBuilder text = new StringBuilder ();
-    if (pageNumber < pages.size ())
+    if (pageNumber < 0 || pageNumber >= pages.size ())
     {
-      Page page = pages.get (pageNumber);
-      for (int i = 0; i < page.records.size (); i++)
-      {
-        Record record = records.get (i);
-        String formattedRecord = getFormattedRecord (record);
+      textArea.clear ();
+      return textArea;
+    }
 
-        if (i == 0 && page.firstRecordSplit > 0)
-        {
-          String[] lines = formattedRecord.split ("\n");
-          for (int j = 0; j < lines.length; j++)
-            if (j > page.firstRecordSplit)
-            {
-              text.append (formattedRecord);
-              text.append ('\n');
-            }
-        }
-        else if (page.lastRecordSplit > 0 && i == page.records.size () - 1)
-        {
-          String[] lines = formattedRecord.split ("\n");
-          for (int j = 0; j < lines.length; j++)
-            if (j <= page.lastRecordSplit)
-            {
-              text.append (formattedRecord);
-              text.append ('\n');
-            }
-        }
-        else
-        {
-          text.append (formattedRecord);
-          text.append ('\n');
-        }
+    Page page = pages.get (pageNumber);
+    for (int i = page.firstRecordIndex; i <= page.lastRecordIndex; i++)
+    {
+      Record record = records.get (i);
+      String formattedRecord = getFormattedRecord (record);
 
-        if (newlineBetweenRecords)
-          text.append ('\n');
-      }
+      if (page.firstRecordOffset > 0 && i == page.firstRecordIndex)
+        formattedRecord = formattedRecord.substring (page.firstRecordOffset);
+      else if (page.lastRecordOffset > 0 && i == page.lastRecordIndex)
+        formattedRecord = formattedRecord.substring (0, page.lastRecordOffset);
+
+      text.append (formattedRecord);
+      text.append ('\n');
+
+      if (newlineBetweenRecords)
+        text.append ('\n');
     }
 
     // remove trailing newlines
@@ -120,11 +105,4 @@ public abstract class DefaultReport implements Report
   protected abstract void paginate ();
 
   protected abstract String getFormattedRecord (Record record);
-
-  protected class Page
-  {
-    final List<Record> records = new ArrayList<> ();
-    int firstRecordSplit;
-    int lastRecordSplit;
-  }
 }

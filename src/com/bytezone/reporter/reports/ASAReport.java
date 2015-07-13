@@ -80,9 +80,10 @@ public class AsaReport extends DefaultReport
   @Override
   protected void paginate ()
   {
-    int lineCount = 0;
-    Page page = new Page ();
     pages.clear ();
+
+    int firstRecord = 0;
+    int lineCount = 0;
 
     for (int i = 0; i < records.size (); i++)
     {
@@ -100,19 +101,17 @@ public class AsaReport extends DefaultReport
       lineCount += lines;
       if (lineCount > pageSize || (c == '1' && lineCount > 0))
       {
-        pages.add (page);
-        page = new Page ();
+        pages.add (new Page (records, firstRecord, i - 1));
+        firstRecord = i;
         lineCount = lines;
       }
 
       if (newlineBetweenRecords)
         lineCount++;
-
-      page.records.add (record);
     }
 
-    if (page.records.size () > 0)
-      pages.add (page);
+    if (firstRecord < records.size () - 1)
+      pages.add (new Page (records, firstRecord, records.size () - 1));
   }
 
   @Override
