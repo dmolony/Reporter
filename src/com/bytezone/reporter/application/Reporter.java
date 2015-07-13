@@ -125,15 +125,6 @@ public class Reporter extends Application
     long fileLength = currentPath.toFile ().length ();
     byte[] buffer = Files.readAllBytes (currentPath);
 
-    //    int max = 120_000;
-    //    if (fileLength > max)
-    //    {
-    //      System.out.printf ("Reducing buffer to %,d%n", max);
-    //      byte[] shortBuffer = new byte[max];
-    //      System.arraycopy (buffer, 0, shortBuffer, 0, max);
-    //      buffer = shortBuffer;
-    //    }
-
     System.out.println ("-----------------------------------------------------");
     for (int i = 0; i < files.length; i++)
     {
@@ -244,7 +235,7 @@ public class Reporter extends Application
     btnNatload =
         addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
     btnAsa =
-        addFormatTypeButton ("Line Printer", formattingGroup, paginate, FormatType.ASA);
+        addFormatTypeButton ("ASA Printer", formattingGroup, paginate, FormatType.ASA);
     vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
 
     btnHex.setSelected (true);
