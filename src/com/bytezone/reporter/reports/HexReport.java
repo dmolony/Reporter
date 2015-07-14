@@ -62,22 +62,13 @@ public class HexReport extends DefaultReport
         {
           int offset = linesLeft * 74;
 
-          //          System.out.printf ("Lines left: %d%n", linesLeft);
-          //          System.out.printf ("Offset: %d%n", offset);
-          //          System.out.println ();
-          //          String rec = getFormattedRecord (record);
-          //          System.out.printf ("Length: %d%n", rec.length ());
-          //          System.out.println (rec);
-          //          System.out.println ();
-          //          System.out.println (rec.substring (0, offset - 1));
-          //          System.out.println ();
-          //          System.out.println (rec.substring (offset));
-          //          System.out.println ();
-
           Page page = new Page (records, firstRecord, i);
           pages.add (page);
           if (firstRecordOffset > 0)
+          {
             page.setFirstRecordOffset (firstRecordOffset - 1);
+            firstRecordOffset = 0;
+          }
           page.setLastRecordOffset (offset);
 
           lineCount = lines - linesLeft;
@@ -89,7 +80,10 @@ public class HexReport extends DefaultReport
           Page page = new Page (records, firstRecord, i - 1);
           pages.add (page);
           if (firstRecordOffset > 0)
+          {
             page.setFirstRecordOffset (firstRecordOffset);
+            firstRecordOffset = 0;
+          }
           lineCount = lines;
           firstRecord = i;
         }
@@ -108,5 +102,8 @@ public class HexReport extends DefaultReport
       if (firstRecordOffset > 0)
         page.setFirstRecordOffset (firstRecordOffset);
     }
+
+    for (Page page : pages)
+      System.out.println (page);
   }
 }

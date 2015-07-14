@@ -29,4 +29,12 @@ public class Page
   {
     lastRecordOffset = offset;
   }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("Records: %4d, first: %4d (%4d), last: %4d (%4d)",
+                          records.size (), firstRecordIndex, firstRecordOffset,
+                          lastRecordIndex, lastRecordOffset);
+  }
 }
