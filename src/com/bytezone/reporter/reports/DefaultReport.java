@@ -82,7 +82,7 @@ public abstract class DefaultReport implements Report
     {
       Record record = records.get (i);
       String formattedRecord = getFormattedRecord (record);
-      if (formattedRecord == null)
+      if (formattedRecord == null || formattedRecord.isEmpty ())
         continue;
 
       if (page.firstRecordOffset > 0 && i == page.firstRecordIndex)

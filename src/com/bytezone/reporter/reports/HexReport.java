@@ -53,22 +53,16 @@ public class HexReport extends DefaultReport
     for (int i = 0; i < records.size (); i++)
     {
       Record record = records.get (i);
-      int lines = (record.length - 1) / 16 + 1;
-      //      lineCount += lines;
+      int lines = record.length == 0 ? 1 : (record.length - 1) / 16 + 1;
       if (lineCount + lines > pageSize)
       {
         int linesLeft = pageSize - lineCount;
         if (allowSplitRecords && linesLeft > 0)
         {
-          int offset = linesLeft * 74;
+          int offset = linesLeft * 74;// includes the linefeed
 
-          Page page = new Page (records, firstRecord, i);
-          pages.add (page);
-          if (firstRecordOffset > 0)
-          {
-            page.setFirstRecordOffset (firstRecordOffset - 1);
-            firstRecordOffset = 0;
-          }
+          Page page = addPage (firstRecord, firstRecordOffset, i);
+          firstRecordOffset = 0;
           page.setLastRecordOffset (offset);
 
           lineCount = lines - linesLeft;
@@ -77,13 +71,9 @@ public class HexReport extends DefaultReport
         }
         else
         {
-          Page page = new Page (records, firstRecord, i - 1);
-          pages.add (page);
-          if (firstRecordOffset > 0)
-          {
-            page.setFirstRecordOffset (firstRecordOffset);
-            firstRecordOffset = 0;
-          }
+          addPage (firstRecord, firstRecordOffset, i - 1);
+          firstRecordOffset = 0;
+
           lineCount = lines;
           firstRecord = i;
         }
@@ -95,15 +85,20 @@ public class HexReport extends DefaultReport
         lineCount++;
     }
 
-    if (firstRecord < records.size () - 1)
-    {
-      Page page = new Page (records, firstRecord, records.size () - 1);
-      pages.add (page);
-      if (firstRecordOffset > 0)
-        page.setFirstRecordOffset (firstRecordOffset);
-    }
+    addPage (firstRecord, firstRecordOffset, records.size () - 1);
 
-    for (Page page : pages)
-      System.out.println (page);
+    for (Page page2 : pages)
+      System.out.println (page2);
+  }
+
+  private Page addPage (int firstRecord, int firstRecordOffset, int lastRecord)
+  {
+    Page page = new Page (records, firstRecord, lastRecord);
+    pages.add (page);
+
+    if (firstRecordOffset > 0)
+      page.setFirstRecordOffset (firstRecordOffset);
+
+    return page;
   }
 }
