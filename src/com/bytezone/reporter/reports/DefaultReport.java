@@ -1,5 +1,8 @@
 package com.bytezone.reporter.reports;
 
+import java.awt.Graphics;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +104,13 @@ public abstract class DefaultReport implements Report
     textArea.setText (text.toString ());
 
     return textArea;
+  }
+
+  @Override
+  public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
+      throws PrinterException
+  {
+    return 0;
   }
 
   // fill pages with records

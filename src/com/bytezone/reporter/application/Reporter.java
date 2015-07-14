@@ -1,11 +1,16 @@
 package com.bytezone.reporter.application;
 
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
+
+import javax.swing.SwingUtilities;
 
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
@@ -33,15 +38,24 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Reporter extends Application
 {
+  private final static String OS = System.getProperty ("os.name");
+  private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
+
   private static final String[] fontNames =
       { "Andale Mono", "Anonymous Pro", "Consolas", "Courier New", "DejaVu Sans Mono",
         "Hermit", "IBM 3270", "IBM 3270 Narrow", "Inconsolata", "Input Mono",
@@ -114,6 +128,7 @@ public class Reporter extends Application
   private RadioButton btnOther;
 
   private List<Record> records;
+  private final MenuBar menuBar = new MenuBar ();
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -258,6 +273,13 @@ public class Reporter extends Application
 
     borderPane.setRight (vbox);
 
+    menuBar.getMenus ().addAll (getFileMenu ());
+
+    BorderPane topBorderPane = new BorderPane ();
+    borderPane.setTop (menuBar);
+    if (SYSTEM_MENUBAR)
+      menuBar.useSystemMenuBarProperty ().set (true);
+
     Scene scene = new Scene (borderPane, 800, 592);
     primaryStage.setTitle ("Reporter");
     primaryStage.setScene (scene);
@@ -270,6 +292,91 @@ public class Reporter extends Application
 
     createRecords ();
     primaryStage.show ();
+  }
+
+  private Menu getFileMenu ()
+  {
+    Menu menuFile = new Menu ("File");
+
+    MenuItem menuItemOpen = getMenuItem ("Open...", e -> openFile (), KeyCode.O);
+    MenuItem menuItemSave = getMenuItem ("Save...", e -> saveFile (), KeyCode.S);
+    MenuItem menuItemPrint = getMenuItem ("Page setup", e -> pageSetup (), null);
+    MenuItem menuItemPageSetup = getMenuItem ("Print", e -> printFile (), KeyCode.P);
+    MenuItem menuItemClose = getMenuItem ("Close window", e -> closeWindow (), KeyCode.W);
+
+    menuFile.getItems ().addAll (menuItemOpen, menuItemSave, menuItemPageSetup,
+                                 menuItemPrint, menuItemClose);
+
+    return menuFile;
+  }
+
+  private MenuItem getMenuItem (String text, EventHandler<ActionEvent> eventHandler,
+      KeyCode keyCode)
+  {
+    MenuItem menuItem = new MenuItem (text);
+    menuItem.setOnAction (eventHandler);
+    if (keyCode != null)
+      menuItem.setAccelerator (new KeyCodeCombination (keyCode,
+          KeyCombination.SHORTCUT_DOWN));
+    return menuItem;
+  }
+
+  private void openFile ()
+  {
+    System.out.println ("Open");
+  }
+
+  private void pageSetup ()
+  {
+    SwingUtilities.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        PrinterJob printerJob = PrinterJob.getPrinterJob ();// AWT
+
+        PageFormat pageFormat = printerJob.defaultPage ();
+        printerJob.pageDialog (pageFormat);
+      }
+    });
+  }
+
+  private void printFile ()
+  {
+    //    FileTab fileTab = getSelectedTab ();
+    //    if (fileTab == null)
+    //      return;
+
+    SwingUtilities.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        PrinterJob printerJob = PrinterJob.getPrinterJob ();// AWT
+
+        if (printerJob.printDialog ())
+        {
+          printerJob.setPrintable (currentReport);
+          try
+          {
+            printerJob.print ();
+          }
+          catch (PrinterException e)
+          {
+            e.printStackTrace ();
+          }
+        }
+      }
+    });
+  }
+
+  private void saveFile ()
+  {
+    //    FileTab fileTab = getSelectedTab ();
+    //    if (fileTab == null)
+    //      return;
+
+    //    System.out.println ("Save:  " + fileTab.getTitle ());
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
