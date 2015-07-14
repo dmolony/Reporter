@@ -2,8 +2,20 @@ package com.bytezone.reporter.text;
 
 public class AsciiTextMaker implements TextMaker
 {
+
   @Override
   public String getText (byte[] buffer, int offset, int length)
+  {
+    return getStringBuilder (buffer, offset, length).toString ();
+  }
+
+  @Override
+  public String getTextRightTrim (byte[] buffer, int offset, int length)
+  {
+    return rightTrim (getStringBuilder (buffer, offset, length)).toString ();
+  }
+
+  private StringBuilder getStringBuilder (byte[] buffer, int offset, int length)
   {
     final StringBuilder textLine = new StringBuilder ();
 
@@ -17,7 +29,7 @@ public class AsciiTextMaker implements TextMaker
         textLine.append ((char) value);
     }
 
-    return rightTrim (textLine).toString ();
+    return textLine;
   }
 
   @Override

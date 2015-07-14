@@ -119,7 +119,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 12;
+    int choice = 9;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -320,6 +320,7 @@ public class Reporter extends Application
 
     hexReport = new HexReport (records);
     hexReport.setNewlineBetweenRecords (true);
+    hexReport.setAllowSplitRecords (true);
 
     textReport = new TextReport (records);
     natloadReport = new NatloadReport (records);

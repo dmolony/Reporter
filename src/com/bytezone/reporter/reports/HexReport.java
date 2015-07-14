@@ -46,25 +46,67 @@ public class HexReport extends DefaultReport
     pages.clear ();
 
     int firstRecord = 0;
+    int firstRecordOffset = 0;
     int lineCount = 0;
+    System.out.printf ("Split: %s%n", allowSplitRecords);
 
     for (int i = 0; i < records.size (); i++)
     {
       Record record = records.get (i);
       int lines = (record.length - 1) / 16 + 1;
-      lineCount += lines;
-      if (lineCount > pageSize)
+      //      lineCount += lines;
+      if (lineCount + lines > pageSize)
       {
-        pages.add (new Page (records, firstRecord, i - 1));
-        lineCount = lines;
-        firstRecord = i;
+        int linesLeft = pageSize - lineCount;
+        if (allowSplitRecords && linesLeft > 0)
+        {
+          int offset = linesLeft * 74;
+
+          //          System.out.printf ("Lines left: %d%n", linesLeft);
+          //          System.out.printf ("Offset: %d%n", offset);
+          //          System.out.println ();
+          //          String rec = getFormattedRecord (record);
+          //          System.out.printf ("Length: %d%n", rec.length ());
+          //          System.out.println (rec);
+          //          System.out.println ();
+          //          System.out.println (rec.substring (0, offset - 1));
+          //          System.out.println ();
+          //          System.out.println (rec.substring (offset));
+          //          System.out.println ();
+
+          Page page = new Page (records, firstRecord, i);
+          pages.add (page);
+          if (firstRecordOffset > 0)
+            page.setFirstRecordOffset (firstRecordOffset - 1);
+          page.setLastRecordOffset (offset);
+
+          lineCount = lines - linesLeft;
+          firstRecord = i;
+          firstRecordOffset = offset;
+        }
+        else
+        {
+          Page page = new Page (records, firstRecord, i - 1);
+          pages.add (page);
+          if (firstRecordOffset > 0)
+            page.setFirstRecordOffset (firstRecordOffset);
+          lineCount = lines;
+          firstRecord = i;
+        }
       }
+      else
+        lineCount += lines;
 
       if (newlineBetweenRecords)
         lineCount++;
     }
 
     if (firstRecord < records.size () - 1)
-      pages.add (new Page (records, firstRecord, records.size () - 1));
+    {
+      Page page = new Page (records, firstRecord, records.size () - 1);
+      pages.add (page);
+      if (firstRecordOffset > 0)
+        page.setFirstRecordOffset (firstRecordOffset);
+    }
   }
 }

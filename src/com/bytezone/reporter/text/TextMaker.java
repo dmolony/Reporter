@@ -6,6 +6,8 @@ public interface TextMaker
 {
   public String getText (byte[] buffer, int offset, int length);
 
+  public String getTextRightTrim (byte[] buffer, int offset, int length);
+
   public char getChar (int value);
 
   public boolean test (byte[] buffer, int offset, int length);

@@ -35,6 +35,17 @@ public class EbcdicTextMaker implements TextMaker
   @Override
   public String getText (byte[] buffer, int offset, int length)
   {
+    return getStringBuilder (buffer, offset, length).toString ();
+  }
+
+  @Override
+  public String getTextRightTrim (byte[] buffer, int offset, int length)
+  {
+    return rightTrim (getStringBuilder (buffer, offset, length)).toString ();
+  }
+
+  private StringBuilder getStringBuilder (byte[] buffer, int offset, int length)
+  {
     final StringBuilder textLine = new StringBuilder ();
 
     int max = Math.min (offset + length, buffer.length);
@@ -46,8 +57,7 @@ public class EbcdicTextMaker implements TextMaker
       else
         textLine.append ((char) ebc2asc[value]);
     }
-
-    return rightTrim (textLine).toString ();
+    return textLine;
   }
 
   @Override
