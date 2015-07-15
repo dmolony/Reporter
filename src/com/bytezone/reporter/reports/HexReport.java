@@ -46,37 +46,27 @@ public class HexReport extends DefaultReport
     pages.clear ();
 
     int firstRecord = 0;
-    int firstRecordOffset = 0;
     int lineCount = 0;
-    System.out.printf ("Split: %s%n", allowSplitRecords);
 
-    for (int i = 0; i < records.size (); i++)
+    for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
     {
-      Record record = records.get (i);
-      int lines = record.length == 0 ? 1 : (record.length - 1) / 16 + 1;
+      int recordLength = records.get (recordNumber).length;
+      int lines = recordLength == 0 ? 1 : (recordLength - 1) / 16 + 1;
       if (lineCount + lines > pageSize)
       {
         int linesLeft = pageSize - lineCount;
         if (allowSplitRecords && linesLeft > 0)
         {
-          int offset = linesLeft * 74;// includes the linefeed
-
-          Page page = addPage (firstRecord, firstRecordOffset, i);
-          firstRecordOffset = 0;
-          page.setLastRecordOffset (offset);
-
+          Page page = addPage (firstRecord, recordNumber);
+          page.setLastRecordOffset (linesLeft * 74);
           lineCount = lines - linesLeft;
-          firstRecord = i;
-          firstRecordOffset = offset;
         }
         else
         {
-          addPage (firstRecord, firstRecordOffset, i - 1);
-          firstRecordOffset = 0;
-
+          addPage (firstRecord, recordNumber - 1);
           lineCount = lines;
-          firstRecord = i;
         }
+        firstRecord = recordNumber;
       }
       else
         lineCount += lines;
@@ -85,19 +75,22 @@ public class HexReport extends DefaultReport
         lineCount++;
     }
 
-    addPage (firstRecord, firstRecordOffset, records.size () - 1);
+    addPage (firstRecord, records.size () - 1);
 
     for (Page page2 : pages)
       System.out.println (page2);
   }
 
-  private Page addPage (int firstRecord, int firstRecordOffset, int lastRecord)
+  private Page addPage (int firstRecord, int lastRecord)
   {
     Page page = new Page (records, firstRecord, lastRecord);
     pages.add (page);
 
-    if (firstRecordOffset > 0)
-      page.setFirstRecordOffset (firstRecordOffset);
+    if (pages.size () > 1)
+    {
+      Page previousPage = pages.get (pages.size () - 2);
+      page.setFirstRecordOffset (previousPage.lastRecordOffset);
+    }
 
     return page;
   }
