@@ -15,4 +15,6 @@ public interface Report extends Printable
   public void setAllowSplitRecords (boolean value);
 
   public Pagination getPagination ();
+
+  public boolean test ();
 }

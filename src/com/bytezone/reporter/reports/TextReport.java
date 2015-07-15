@@ -37,4 +37,10 @@ public class TextReport extends DefaultReport
   {
     return textMaker.getText (record.buffer, record.offset, record.length);
   }
+
+  @Override
+  public boolean test ()
+  {
+    return true;
+  }
 }

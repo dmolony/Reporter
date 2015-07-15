@@ -1,7 +1,10 @@
 package com.bytezone.reporter.reports;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.font.LineMetrics;
 import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,11 @@ public abstract class DefaultReport implements Report
   protected boolean newlineBetweenRecords;
   protected boolean allowSplitRecords;
 
+  private LineMetrics lineMetrics;
+  private int lineHeight;
+
+  private final java.awt.Font plainFont, boldFont, headerFont;
+
   public DefaultReport (List<Record> records)
   {
     this.records = records;
@@ -36,6 +44,11 @@ public abstract class DefaultReport implements Report
     textArea.setEditable (false);
 
     pagination.setPageFactory ( (Integer pageIndex) -> getFormattedPage (pageIndex));
+
+    plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
+    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
+        plainFont.getSize ());
+    headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
   }
 
   @Override
@@ -124,7 +137,46 @@ public abstract class DefaultReport implements Report
   public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
       throws PrinterException
   {
-    return 0;
+    if (pageIndex >= pages.size ())
+    {
+      lineMetrics = null;
+      return Printable.NO_SUCH_PAGE;
+    }
+
+    Graphics2D g2 = (Graphics2D) graphics;
+
+    if (lineMetrics == null)
+    {
+      lineMetrics = plainFont.getLineMetrics ("crap", g2.getFontRenderContext ());
+      lineHeight = (int) lineMetrics.getHeight () + 1;
+    }
+
+    int x = 50;
+    int y = 10;
+
+    g2.translate (pageFormat.getImageableX (), pageFormat.getImageableY ());
+
+    //    if (fileStructure.lineSize > 80)
+    //      pageFormat.setOrientation (PageFormat.LANDSCAPE);
+
+    //    if (pageFormat.getOrientation () == PageFormat.PORTRAIT)
+    //    {
+    //      g2.setFont (headerFont);
+    //      g2.drawString (name, x, y);
+    //      g2.drawLine (x, y + 3, g2.getClipBounds ().width - x, y + 3);
+    //      y += 30;
+    //    }
+
+    g2.setFont (plainFont);
+
+    String[] lines = getFormattedPage (pageIndex).getText ().split ("\n");
+    for (String line : lines)
+    {
+      g2.drawString (line, x, y);
+      y += lineHeight;
+    }
+
+    return (Printable.PAGE_EXISTS);
   }
 
   // fill pages with records

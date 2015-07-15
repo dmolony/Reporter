@@ -181,20 +181,40 @@ public class Reporter extends Application
     btnFb252 = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
     btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild);
 
+    int max = Math.min (1000, buffer.length);
+    int hex20 = 0;
+    int hex40 = 0;
+    for (int ptr = 0; ptr < max; ptr++)
+    {
+      if (buffer[ptr] == 0x20)
+        ++hex20;
+      else if (buffer[ptr] == 0x40)
+        ++hex40;
+    }
+
+    TextMaker textMaker = hex20 > hex40 ? asciiTextMaker : ebcdicTextMaker;
+
     RadioButton[] testableButtons =
         { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb, btnRavel };
     int maxRecords = 0;
     for (RadioButton button : testableButtons)
     {
-      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024).size ();
-      if (recordsFound <= 2)
+      List<Record> records = ((RecordMaker) button.getUserData ()).test (1024);
+      //      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024).size ();
+      if (records.size () <= 2)
         button.setDisable (true);
       else
       {
-        if (recordsFound > maxRecords)
+        if (records.size () > maxRecords)
         {
           button.setSelected (true);
-          maxRecords = recordsFound;
+          maxRecords = records.size ();
+        }
+        System.out.println (button);
+        for (Record record : records)
+        {
+          char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+          System.out.printf ("byte: %s%n", c);
         }
       }
     }
@@ -213,17 +233,6 @@ public class Reporter extends Application
       btnFb252.setDisable (true);
     else if (maxRecords < 2)
       btnFb252.setSelected (true);
-
-    int max = Math.min (1000, buffer.length);
-    int hex20 = 0;
-    int hex40 = 0;
-    for (int ptr = 0; ptr < max; ptr++)
-    {
-      if (buffer[ptr] == 0x20)
-        ++hex20;
-      else if (buffer[ptr] == 0x40)
-        ++hex40;
-    }
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
@@ -245,13 +254,23 @@ public class Reporter extends Application
     VBox vbox3 = new VBox (10);
     vbox3.setPadding (new Insets (10));
 
-    btnText = addFormatTypeButton ("Text", formattingGroup, paginate, FormatType.TEXT);
     btnHex = addFormatTypeButton ("Binary", formattingGroup, paginate, FormatType.HEX);
-    btnNatload =
-        addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
+    btnText = addFormatTypeButton ("Text", formattingGroup, paginate, FormatType.TEXT);
     btnAsa =
         addFormatTypeButton ("ASA Printer", formattingGroup, paginate, FormatType.ASA);
+    btnNatload =
+        addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
     vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
+
+    //    int count = 0;
+    //    max = 20;
+    //
+    //    for (Record record : records)
+    //    {
+    //      if (count++ > max)
+    //        break;
+    //      System.out.println (record.buffer[record.offset]);
+    //    }
 
     btnHex.setSelected (true);
 
@@ -275,7 +294,7 @@ public class Reporter extends Application
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
-    BorderPane topBorderPane = new BorderPane ();
+    //    BorderPane topBorderPane = new BorderPane ();
     borderPane.setTop (menuBar);
     if (SYSTEM_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);

@@ -126,8 +126,8 @@ public class AsaReport extends DefaultReport
 
     addPage (firstRecord, records.size () - 1);
 
-    for (Page page2 : pages)
-      System.out.println (page2);
+    //    for (Page page2 : pages)
+    //      System.out.println (page2);
   }
 
   @Override
@@ -137,5 +137,23 @@ public class AsaReport extends DefaultReport
     String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
     return prefix
         + textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
+  }
+
+  @Override
+  public boolean test ()
+  {
+    int count = 0;
+    int max = 20;
+
+    for (Record record : records)
+    {
+      if (count++ > max)
+        break;
+      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+      if (c != ' ' && c != '0' && c != '1' && c != '-')
+        return false;
+    }
+
+    return true;
   }
 }

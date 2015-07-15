@@ -79,17 +79,9 @@ public class HexReport extends DefaultReport
     addPage (firstRecord, records.size () - 1);
   }
 
-  //  private Page addPage (int firstRecord, int lastRecord)
-  //  {
-  //    Page page = new Page (records, firstRecord, lastRecord);
-  //    pages.add (page);
-  //
-  //    if (pages.size () > 1)
-  //    {
-  //      Page previousPage = pages.get (pages.size () - 2);
-  //      page.setFirstRecordOffset (previousPage.lastRecordOffset);
-  //    }
-  //
-  //    return page;
-  //  }
+  @Override
+  public boolean test ()
+  {
+    return true;
+  }
 }
