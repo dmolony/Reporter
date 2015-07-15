@@ -106,6 +106,20 @@ public abstract class DefaultReport implements Report
     return textArea;
   }
 
+  protected Page addPage (int firstRecord, int lastRecord)
+  {
+    Page page = new Page (records, firstRecord, lastRecord);
+    pages.add (page);
+
+    if (pages.size () > 1)
+    {
+      Page previousPage = pages.get (pages.size () - 2);
+      page.setFirstRecordOffset (previousPage.lastRecordOffset);
+    }
+
+    return page;
+  }
+
   @Override
   public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
       throws PrinterException

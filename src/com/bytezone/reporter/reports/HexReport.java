@@ -52,6 +52,7 @@ public class HexReport extends DefaultReport
     {
       int recordLength = records.get (recordNumber).length;
       int lines = recordLength == 0 ? 1 : (recordLength - 1) / 16 + 1;
+
       if (lineCount + lines > pageSize)
       {
         int linesLeft = pageSize - lineCount;
@@ -76,22 +77,19 @@ public class HexReport extends DefaultReport
     }
 
     addPage (firstRecord, records.size () - 1);
-
-    for (Page page2 : pages)
-      System.out.println (page2);
   }
 
-  private Page addPage (int firstRecord, int lastRecord)
-  {
-    Page page = new Page (records, firstRecord, lastRecord);
-    pages.add (page);
-
-    if (pages.size () > 1)
-    {
-      Page previousPage = pages.get (pages.size () - 2);
-      page.setFirstRecordOffset (previousPage.lastRecordOffset);
-    }
-
-    return page;
-  }
+  //  private Page addPage (int firstRecord, int lastRecord)
+  //  {
+  //    Page page = new Page (records, firstRecord, lastRecord);
+  //    pages.add (page);
+  //
+  //    if (pages.size () > 1)
+  //    {
+  //      Page previousPage = pages.get (pages.size () - 2);
+  //      page.setFirstRecordOffset (previousPage.lastRecordOffset);
+  //    }
+  //
+  //    return page;
+  //  }
 }

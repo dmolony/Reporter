@@ -85,9 +85,9 @@ public class AsaReport extends DefaultReport
     int firstRecord = 0;
     int lineCount = 0;
 
-    for (int i = 0; i < records.size (); i++)
+    for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
     {
-      Record record = records.get (i);
+      Record record = records.get (recordNumber);
 
       char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
       int lines = 0;
@@ -98,20 +98,36 @@ public class AsaReport extends DefaultReport
       else if (c == '-')
         lines = 3;
 
-      lineCount += lines;
-      if (lineCount > pageSize || (c == '1' && lineCount > 0))
+      if (c == '1' && lineCount > 0)
       {
-        pages.add (new Page (records, firstRecord, i - 1));
-        firstRecord = i;
-        lineCount = lines;
+        addPage (firstRecord, recordNumber - 1);
+        lineCount = 0;
+        firstRecord = recordNumber;
       }
-
-      if (newlineBetweenRecords)
-        lineCount++;
+      else if (lineCount + lines > pageSize)
+      {
+        int linesLeft = pageSize - lineCount;
+        if (allowSplitRecords && linesLeft > 0)
+        {
+          Page page = addPage (firstRecord, recordNumber);
+          page.setLastRecordOffset (linesLeft);
+          lineCount = lines - linesLeft;
+        }
+        else
+        {
+          addPage (firstRecord, recordNumber - 1);
+          lineCount = lines;
+        }
+        firstRecord = recordNumber;
+      }
+      else
+        lineCount += lines;
     }
 
-    if (firstRecord < records.size () - 1)
-      pages.add (new Page (records, firstRecord, records.size () - 1));
+    addPage (firstRecord, records.size () - 1);
+
+    for (Page page2 : pages)
+      System.out.println (page2);
   }
 
   @Override
