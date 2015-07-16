@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.bytezone.reporter.record.Record;
 
-public class NatloadReport extends TextReport
+public class NatloadReport extends DefaultReport
 {
   public NatloadReport (List<Record> records)
   {
@@ -87,5 +87,18 @@ public class NatloadReport extends TextReport
                           record.buffer[record.offset + 1] & 0xFF, textMaker
                               .getText (record.buffer, record.offset + 2, length - 2))
         .trim ();
+  }
+
+  @Override
+  public boolean test ()
+  {
+    if (records == null)
+    {
+      System.out.println ("No records");
+      return false;
+    }
+    Record firstRecord = records.get (0);
+    System.out.println (firstRecord);
+    return false;
   }
 }

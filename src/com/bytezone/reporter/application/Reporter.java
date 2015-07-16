@@ -202,7 +202,6 @@ public class Reporter extends Application
     {
       RecordMaker recordMaker = (RecordMaker) button.getUserData ();
       List<Record> records = recordMaker.test (1024);
-      //      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024).size ();
       if (records.size () <= 2)
         button.setDisable (true);
       else
@@ -213,12 +212,6 @@ public class Reporter extends Application
           maxRecords = records.size ();
           probableRecordMaker = recordMaker;
         }
-        //        System.out.println (button);
-        //        for (Record record : records)
-        //        {
-        //          char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-        //          System.out.printf ("byte: %s%n", c);
-        //        }
       }
     }
 
@@ -384,10 +377,6 @@ public class Reporter extends Application
 
   private void printFile ()
   {
-    //    FileTab fileTab = getSelectedTab ();
-    //    if (fileTab == null)
-    //      return;
-
     SwingUtilities.invokeLater (new Runnable ()
     {
       @Override
@@ -413,11 +402,6 @@ public class Reporter extends Application
 
   private void saveFile ()
   {
-    //    FileTab fileTab = getSelectedTab ();
-    //    if (fileTab == null)
-    //      return;
-
-    //    System.out.println ("Save:  " + fileTab.getTitle ());
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
