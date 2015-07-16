@@ -20,8 +20,6 @@ public abstract class DefaultRecordMaker implements RecordMaker
   @Override
   public List<Record> test (int testBufferSize)
   {
-    assert records == null;
-
     if (buffer.length <= testBufferSize)
     {
       records = split ();

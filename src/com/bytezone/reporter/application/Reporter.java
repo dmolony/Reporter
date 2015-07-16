@@ -134,7 +134,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 9;
+    int choice = 2;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -251,6 +251,16 @@ public class Reporter extends Application
       }
     }
 
+    boolean possibleText = true;
+    for (Record record : probableRecordMaker.test (1000))
+    {
+      if (!textMaker.test (record))
+      {
+        possibleText = false;
+        break;
+      }
+    }
+
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
 
@@ -281,6 +291,8 @@ public class Reporter extends Application
 
     if (possibleAsa)
       btnAsa.setSelected (true);
+    else if (possibleText)
+      btnText.setSelected (true);
     else
       btnHex.setSelected (true);
 
