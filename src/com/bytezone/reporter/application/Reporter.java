@@ -134,7 +134,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 7;
+    int choice = 9;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -213,12 +213,12 @@ public class Reporter extends Application
           maxRecords = records.size ();
           probableRecordMaker = recordMaker;
         }
-        System.out.println (button);
-        for (Record record : records)
-        {
-          char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-          System.out.printf ("byte: %s%n", c);
-        }
+        //        System.out.println (button);
+        //        for (Record record : records)
+        //        {
+        //          char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+        //          System.out.printf ("byte: %s%n", c);
+        //        }
       }
     }
 
@@ -244,7 +244,7 @@ public class Reporter extends Application
     for (Record record : probableRecordMaker.test (1000))
     {
       char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-      if (c != ' ' && c != '0' && c != '1')
+      if (record.length > 0 && c != ' ' && c != '0' && c != '1' && c != '-')
       {
         possibleAsa = false;
         break;
