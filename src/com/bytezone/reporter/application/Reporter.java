@@ -193,13 +193,15 @@ public class Reporter extends Application
     }
 
     TextMaker textMaker = hex20 > hex40 ? asciiTextMaker : ebcdicTextMaker;
+    RecordMaker probableRecordMaker = null;
 
     RadioButton[] testableButtons =
         { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb, btnRavel };
     int maxRecords = 0;
     for (RadioButton button : testableButtons)
     {
-      List<Record> records = ((RecordMaker) button.getUserData ()).test (1024);
+      RecordMaker recordMaker = (RecordMaker) button.getUserData ();
+      List<Record> records = recordMaker.test (1024);
       //      int recordsFound = ((RecordMaker) button.getUserData ()).test (1024).size ();
       if (records.size () <= 2)
         button.setDisable (true);
@@ -209,6 +211,7 @@ public class Reporter extends Application
         {
           button.setSelected (true);
           maxRecords = records.size ();
+          probableRecordMaker = recordMaker;
         }
         System.out.println (button);
         for (Record record : records)
@@ -233,6 +236,20 @@ public class Reporter extends Application
       btnFb252.setDisable (true);
     else if (maxRecords < 2)
       btnFb252.setSelected (true);
+
+    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
+    probableRecordMaker = (RecordMaker) btn.getUserData ();
+
+    boolean possibleAsa = true;
+    for (Record record : probableRecordMaker.test (1000))
+    {
+      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+      if (c != ' ' && c != '0' && c != '1')
+      {
+        possibleAsa = false;
+        break;
+      }
+    }
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
@@ -262,17 +279,10 @@ public class Reporter extends Application
         addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
     vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
 
-    //    int count = 0;
-    //    max = 20;
-    //
-    //    for (Record record : records)
-    //    {
-    //      if (count++ > max)
-    //        break;
-    //      System.out.println (record.buffer[record.offset]);
-    //    }
-
-    btnHex.setSelected (true);
+    if (possibleAsa)
+      btnAsa.setSelected (true);
+    else
+      btnHex.setSelected (true);
 
     VBox vbox4 = new VBox (10);
     vbox4.setPadding (new Insets (10));
