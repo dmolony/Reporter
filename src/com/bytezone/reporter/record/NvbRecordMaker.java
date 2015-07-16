@@ -12,13 +12,8 @@ public class NvbRecordMaker extends DefaultRecordMaker
   private static final int SOURCE_SIZE = 94;
   private static final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
-  public NvbRecordMaker (byte[] buffer)
-  {
-    super (buffer);
-  }
-
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
     if (buffer.length < 16 || buffer[0] != (byte) 0xFF || buffer[7] != (byte) 0xFF
@@ -26,10 +21,11 @@ public class NvbRecordMaker extends DefaultRecordMaker
       return records;
 
     int linesLeft = 0;
-    int ptr = 0;
+    int ptr = offset;
     int recordNumber = 0;
 
-    while (ptr < buffer.length)
+    int max = Math.min (offset + length, buffer.length);
+    while (ptr < max)
     {
       int reclen = linesLeft == 0 ? HEADER_SIZE : SOURCE_SIZE;
       if (buffer.length - ptr < reclen)
@@ -55,7 +51,7 @@ public class NvbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     int bufferLength = 0;
     for (Record record : records)

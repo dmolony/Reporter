@@ -5,26 +5,16 @@ import java.util.List;
 
 public class NoRecordMaker extends DefaultRecordMaker
 {
-  public NoRecordMaker (byte[] buffer)
-  {
-    super (buffer);
-  }
-
-  public NoRecordMaker (List<Record> records)
-  {
-    super (records);
-  }
-
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    records.add (new Record (buffer, 0, buffer.length, 0));
+    records.add (new Record (buffer, offset, offset + length, 0));
     return records;
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     return new byte[0];
   }

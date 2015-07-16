@@ -5,25 +5,17 @@ import java.util.List;
 
 public class CrlfRecordMaker extends DefaultRecordMaker
 {
-  public CrlfRecordMaker (byte[] buffer)
-  {
-    super (buffer);
-  }
-
-  public CrlfRecordMaker (List<Record> records)
-  {
-    super (records);
-  }
-
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    int start = 0;
+    int start = offset;
     int recordNumber = 0;
-    for (int ptr = 0; ptr < buffer.length; ptr++)
+
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr++)
     {
-      if (buffer[ptr] == 0x0A && ptr > start && buffer[ptr - 1] == 0x0D)
+      if (buffer[ptr] == 0x0A && ptr > offset && buffer[ptr - 1] == 0x0D)
       {
         records.add (new Record (buffer, start, ptr - start - 1, recordNumber++));
         start = ptr + 1;
@@ -41,7 +33,7 @@ public class CrlfRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     int bufferLength = 0;
 

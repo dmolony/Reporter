@@ -89,11 +89,23 @@ public class Reporter extends Application
   private final TextMaker asciiTextMaker = new AsciiTextMaker ();
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
-  private Report hexReport;
-  private Report textReport;
-  private Report natloadReport;
-  private Report asaReport;
+  private final Report hexReport = new HexReport ();
+  private final Report textReport = new TextReport ();
+  private final Report natloadReport = new NatloadReport ();
+  private final Report asaReport = new AsaReport ();
   private Report currentReport;
+
+  private final RecordMaker crlf = new CrlfRecordMaker ();
+  private final RecordMaker cr = new CrRecordMaker ();
+  private final RecordMaker lf = new LfRecordMaker ();
+  private final RecordMaker fb80 = new FbRecordMaker (80);
+  private final RecordMaker fb132 = new FbRecordMaker (132);
+  private final RecordMaker fb252 = new FbRecordMaker (252);
+  private final RecordMaker vb = new VbRecordMaker ();
+  private final RecordMaker nvb = new NvbRecordMaker ();
+  private final RecordMaker rdw = new RdwRecordMaker ();
+  private final RecordMaker ravel = new RavelRecordMaker ();
+  private final RecordMaker none = new NoRecordMaker ();
 
   private final BorderPane borderPane = new BorderPane ();
   private WindowSaver windowSaver;
@@ -134,7 +146,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 2;
+    int choice = 3;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -156,17 +168,17 @@ public class Reporter extends Application
     VBox vbox1 = new VBox (10);
     vbox1.setPadding (new Insets (10));
 
-    RecordMaker crlf = new CrlfRecordMaker (buffer);
-    RecordMaker cr = new CrRecordMaker (buffer);
-    RecordMaker lf = new LfRecordMaker (buffer);
-    RecordMaker fb80 = new FbRecordMaker (buffer, 80);
-    RecordMaker fb132 = new FbRecordMaker (buffer, 132);
-    RecordMaker fb252 = new FbRecordMaker (buffer, 252);
-    RecordMaker vb = new VbRecordMaker (buffer);
-    RecordMaker nvb = new NvbRecordMaker (buffer);
-    RecordMaker rdw = new RdwRecordMaker (buffer);
-    RecordMaker ravel = new RavelRecordMaker (buffer);
-    RecordMaker none = new NoRecordMaker (buffer);
+    crlf.setBuffer (buffer);
+    cr.setBuffer (buffer);
+    lf.setBuffer (buffer);
+    fb80.setBuffer (buffer);
+    fb132.setBuffer (buffer);
+    fb252.setBuffer (buffer);
+    vb.setBuffer (buffer);
+    nvb.setBuffer (buffer);
+    rdw.setBuffer (buffer);
+    ravel.setBuffer (buffer);
+    none.setBuffer (buffer);
 
     btnNoSplit = addRecordTypeButton (none, "None", splitterGroup, rebuild);
     btnNoSplit.setSelected (true);
@@ -201,7 +213,7 @@ public class Reporter extends Application
     for (RadioButton button : testableButtons)
     {
       RecordMaker recordMaker = (RecordMaker) button.getUserData ();
-      List<Record> records = recordMaker.test (1024);
+      List<Record> records = recordMaker.test (buffer, 0, 1024);
       if (records.size () <= 2)
         button.setDisable (true);
       else
@@ -234,7 +246,7 @@ public class Reporter extends Application
     probableRecordMaker = (RecordMaker) btn.getUserData ();
 
     boolean possibleAsa = true;
-    for (Record record : probableRecordMaker.test (1000))
+    for (Record record : probableRecordMaker.test (buffer, 0, 1000))
     {
       char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
       if (record.length > 0 && c != ' ' && c != '0' && c != '1' && c != '-')
@@ -245,7 +257,7 @@ public class Reporter extends Application
     }
 
     boolean possibleText = true;
-    for (Record record : probableRecordMaker.test (1000))
+    for (Record record : probableRecordMaker.test (buffer, 0, 1000))
     {
       if (!textMaker.test (record))
       {
@@ -450,14 +462,14 @@ public class Reporter extends Application
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
 
-    hexReport = new HexReport (records);
+    hexReport.setRecords (records);
     hexReport.setNewlineBetweenRecords (true);
     hexReport.setAllowSplitRecords (true);
 
-    textReport = new TextReport (records);
-    natloadReport = new NatloadReport (records);
+    textReport.setRecords (records);
+    natloadReport.setRecords (records);
 
-    asaReport = new AsaReport (records);
+    asaReport.setRecords (records);
     asaReport.setAllowSplitRecords (true);
 
     spaceReport ();
@@ -475,22 +487,23 @@ public class Reporter extends Application
     TextMaker textMaker =
         encodingType == EncodingType.EBCDIC ? ebcdicTextMaker : asciiTextMaker;
 
+    hexReport.setTextMaker (textMaker);
+    textReport.setTextMaker (textMaker);
+    natloadReport.setTextMaker (textMaker);
+    asaReport.setTextMaker (textMaker);
+
     switch (formatType)
     {
       case HEX:
-        hexReport.setTextMaker (textMaker);
         currentReport = hexReport;
         break;
       case TEXT:
-        textReport.setTextMaker (textMaker);
         currentReport = textReport;
         break;
       case NATLOAD:
-        natloadReport.setTextMaker (textMaker);
         currentReport = natloadReport;
         break;
       case ASA:
-        asaReport.setTextMaker (textMaker);
         currentReport = asaReport;
         break;
     }

@@ -19,12 +19,13 @@ import javafx.scene.text.FontWeight;
 
 public abstract class DefaultReport implements Report
 {
-  protected final List<Record> records;
   protected final List<Page> pages;
   protected final Pagination pagination = new Pagination ();
   protected final TextArea textArea;
 
+  protected List<Record> records;
   protected TextMaker textMaker;
+
   protected int pageSize = 66;
   protected boolean newlineBetweenRecords;
   protected boolean allowSplitRecords;
@@ -34,21 +35,25 @@ public abstract class DefaultReport implements Report
 
   private final java.awt.Font plainFont, boldFont, headerFont;
 
-  public DefaultReport (List<Record> records)
+  public DefaultReport ()
   {
-    this.records = records;
-    pages = new ArrayList<> ();
-
     textArea = new TextArea ();
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
+    pages = new ArrayList<> ();
     pagination.setPageFactory ( (Integer pageIndex) -> getFormattedPage (pageIndex));
 
     plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
     boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
         plainFont.getSize ());
     headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
+  }
+
+  @Override
+  public void setRecords (List<Record> records)
+  {
+    this.records = records;
   }
 
   @Override

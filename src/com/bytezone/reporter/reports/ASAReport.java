@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.text.TextMaker;
 
 /*
  * ' ' - One line
@@ -17,11 +18,6 @@ public class AsaReport extends DefaultReport
 {
   private int currentLine;
   private final int maxLines = 66;
-
-  public AsaReport (List<Record> records)
-  {
-    super (records);
-  }
 
   protected List<String> getFormattedRecords ()
   {
@@ -140,19 +136,11 @@ public class AsaReport extends DefaultReport
   }
 
   @Override
-  public boolean test ()
+  public boolean test (Record record, TextMaker textMaker)
   {
-    int count = 0;
-    int max = 20;
-
-    for (Record record : records)
-    {
-      if (count++ > max)
-        break;
-      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-      if (c != ' ' && c != '0' && c != '1' && c != '-')
-        return false;
-    }
+    char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+    if (c != ' ' && c != '0' && c != '1' && c != '-')
+      return false;
 
     return true;
   }

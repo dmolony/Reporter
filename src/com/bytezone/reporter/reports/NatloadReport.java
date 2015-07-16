@@ -1,16 +1,10 @@
 package com.bytezone.reporter.reports;
 
-import java.util.List;
-
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.text.TextMaker;
 
 public class NatloadReport extends DefaultReport
 {
-  public NatloadReport (List<Record> records)
-  {
-    super (records);
-  }
-
   @Override
   protected void paginate ()
   {
@@ -90,13 +84,8 @@ public class NatloadReport extends DefaultReport
   }
 
   @Override
-  public boolean test ()
+  public boolean test (Record record, TextMaker textMaker)
   {
-    if (records == null)
-    {
-      System.out.println ("No records");
-      return false;
-    }
     Record firstRecord = records.get (0);
     System.out.println (firstRecord);
     return false;

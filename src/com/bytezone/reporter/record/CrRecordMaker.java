@@ -5,23 +5,15 @@ import java.util.List;
 
 public class CrRecordMaker extends DefaultRecordMaker
 {
-  public CrRecordMaker (byte[] buffer)
-  {
-    super (buffer);
-  }
-
-  public CrRecordMaker (List<Record> records)
-  {
-    super (records);
-  }
-
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    int start = 0;
+    int start = offset;
     int recordNumber = 0;
-    for (int ptr = 0; ptr < buffer.length; ptr++)
+
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr++)
     {
       if (buffer[ptr] == 0x0D)
       {
@@ -37,7 +29,7 @@ public class CrRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     int bufferLength = 0;
 

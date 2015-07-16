@@ -1,17 +1,11 @@
 package com.bytezone.reporter.reports;
 
-import java.util.List;
-
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.text.TextMaker;
 
 public class HexReport extends DefaultReport
 {
   static final int HEX_LINE_SIZE = 16;
-
-  public HexReport (List<Record> records)
-  {
-    super (records);
-  }
 
   @Override
   public String getFormattedRecord (Record record)
@@ -80,8 +74,8 @@ public class HexReport extends DefaultReport
   }
 
   @Override
-  public boolean test ()
+  public boolean test (Record record, TextMaker textMaker)
   {
-    return true;
+    return false;
   }
 }

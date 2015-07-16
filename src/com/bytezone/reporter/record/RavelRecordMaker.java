@@ -7,26 +7,17 @@ public class RavelRecordMaker extends DefaultRecordMaker
 {
   byte[] temp = new byte[2048];
 
-  public RavelRecordMaker (byte[] buffer)
-  {
-    super (buffer);
-  }
-
-  public RavelRecordMaker (List<Record> records)
-  {
-    super (records);
-  }
-
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    int ptr = 0;
+    int ptr = offset;
     int tempPtr = 0;
-    int start = 0;
+    int start = ptr;
     int recordNumber = 0;
 
-    while (ptr < buffer.length)
+    int max = Math.min (offset + length, buffer.length);
+    while (ptr < max)
     {
       byte firstByte = buffer[ptr++];
       if (firstByte == (byte) 0xFF)
@@ -58,12 +49,14 @@ public class RavelRecordMaker extends DefaultRecordMaker
       }
       if (tempPtr < temp.length)
         temp[tempPtr++] = firstByte;
+      else
+        System.out.println ("Temp buffer too short");
     }
     return records;
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     int bufferLength = 0;
     int[] ravelLengths = new int[records.size ()];

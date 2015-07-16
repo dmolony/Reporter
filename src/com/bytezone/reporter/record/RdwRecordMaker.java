@@ -5,23 +5,15 @@ import java.util.List;
 
 public class RdwRecordMaker extends DefaultRecordMaker
 {
-  public RdwRecordMaker (byte[] buffer)
-  {
-    super (buffer);
-  }
-
-  public RdwRecordMaker (List<Record> records)
-  {
-    super (records);
-  }
-
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    int ptr = 0;
+    int ptr = offset;
     int recordNumber = 0;
-    while (ptr < buffer.length)
+
+    int max = Math.min (offset + length, buffer.length);
+    while (ptr < max)
     {
       int reclen = (buffer[ptr++] & 0xFF) << 8;
       reclen |= buffer[ptr++] & 0xFF;
@@ -44,7 +36,7 @@ public class RdwRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     int bufferLength = 0;
     for (Record record : records)

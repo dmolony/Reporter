@@ -7,24 +7,19 @@ public class FbRecordMaker extends DefaultRecordMaker
 {
   private final int recordLength;
 
-  public FbRecordMaker (byte[] buffer, int recordLength)
+  public FbRecordMaker (int recordLength)
   {
-    super (buffer);
-    this.recordLength = recordLength;
-  }
-
-  public FbRecordMaker (List<Record> records, int recordLength)
-  {
-    super (records);
     this.recordLength = recordLength;
   }
 
   @Override
-  protected List<Record> split ()
+  protected List<Record> split (byte[] buffer, int offset, int length)
   {
     List<Record> records = new ArrayList<Record> ();
     int recordNumber = 0;
-    for (int ptr = 0; ptr < buffer.length; ptr += recordLength)
+
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr += recordLength)
     {
       int reclen = Math.min (recordLength, buffer.length - ptr);
       if (reclen == recordLength)
@@ -45,7 +40,7 @@ public class FbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected byte[] join ()
+  protected byte[] join (List<Record> records)
   {
     byte[] buffer = new byte[records.size () * recordLength];
     int ptr = 0;

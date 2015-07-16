@@ -1,28 +1,10 @@
 package com.bytezone.reporter.reports;
 
-import java.util.List;
-
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.text.TextMaker;
 
 public class TextReport extends DefaultReport
 {
-  public TextReport (List<Record> records)
-  {
-    super (records);
-
-    //    if (false)
-    //      for (Record record : records)
-    //      {
-    //        if (record.length > 0)
-    //        {
-    //          boolean ascii = asciiTextMaker.test (record);
-    //          boolean ebcdic = ebcdicTextMaker.test (record);
-    //          System.out.printf ("%-6s %-6s %n", ascii ? "ascii" : "",
-    //                             ebcdic ? "ebcdic" : "");
-    //        }
-    //      }
-  }
-
   @Override
   protected void paginate ()
   {
@@ -39,8 +21,8 @@ public class TextReport extends DefaultReport
   }
 
   @Override
-  public boolean test ()
+  public boolean test (Record record, TextMaker textMaker)
   {
-    return true;
+    return false;
   }
 }
