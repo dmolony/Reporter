@@ -89,4 +89,18 @@ public class EbcdicTextMaker implements TextMaker
   {
     return getText (record.buffer, record.offset, record.length);
   }
+
+  @Override
+  public int countBadBytes (byte[] buffer, int offset, int length)
+  {
+    int total = 0;
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr++)
+    {
+      int value = buffer[ptr] & 0xFF;
+      if (value < 0x40 || value == 0xFF)
+        total++;
+    }
+    return total;
+  }
 }

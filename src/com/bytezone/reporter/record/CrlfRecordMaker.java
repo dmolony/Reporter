@@ -22,7 +22,7 @@ public class CrlfRecordMaker extends DefaultRecordMaker
       }
     }
 
-    if (start < buffer.length)
+    if (start < max)
     {
       // ignore 0x1A on the end - added by IND$FILE
       if (start != max - 1 || buffer[max - 1] != 0x1A)

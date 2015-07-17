@@ -4,7 +4,6 @@ import com.bytezone.reporter.record.Record;
 
 public class AsciiTextMaker implements TextMaker
 {
-
   @Override
   public String getText (byte[] buffer, int offset, int length)
   {
@@ -46,7 +45,8 @@ public class AsciiTextMaker implements TextMaker
     if (length == 0)
       return false;
 
-    for (int ptr = offset, max = offset + length; ptr < max; ptr++)
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
       if (value < 0x20 || value > 0xF0)
@@ -59,5 +59,19 @@ public class AsciiTextMaker implements TextMaker
   public String getText (Record record)
   {
     return getText (record.buffer, record.offset, record.length);
+  }
+
+  @Override
+  public int countBadBytes (byte[] buffer, int offset, int length)
+  {
+    int total = 0;
+    int max = Math.min (offset + length, buffer.length);
+    for (int ptr = offset; ptr < max; ptr++)
+    {
+      int value = buffer[ptr] & 0xFF;
+      if (value < 0x20 || value > 0xF0)
+        total++;
+    }
+    return total;
   }
 }

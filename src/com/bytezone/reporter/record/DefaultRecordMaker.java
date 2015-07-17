@@ -28,20 +28,8 @@ public abstract class DefaultRecordMaker implements RecordMaker
   @Override
   public List<Record> test (byte[] buffer, int offset, int length)
   {
-    //    if (offset == 0 && buffer.length <= length)
-    //    {
-    //      records = split ();
-    //      return records;
-    //    }
-    //    else
-    //    {
-    //    byte[] saveBuffer = buffer;
-    //    buffer = new byte[testBufferSize];
-    //    System.arraycopy (saveBuffer, 0, buffer, 0, buffer.length);
     List<Record> tempRecords = split (buffer, offset, length);
-    //    buffer = saveBuffer;
     return tempRecords;
-    //    }
   }
 
   @Override
