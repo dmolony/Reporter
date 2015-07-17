@@ -266,6 +266,16 @@ public class Reporter extends Application
       }
     }
 
+    boolean possibleNatload = true;
+    for (Record record : probableRecordMaker.test (buffer, 0, 1000))
+    {
+      if (!natloadReport.test (record, textMaker))
+      {
+        possibleNatload = false;
+        break;
+      }
+    }
+
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
 
@@ -294,7 +304,9 @@ public class Reporter extends Application
         addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
     vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
 
-    if (possibleAsa)
+    if (possibleNatload)
+      btnNatload.setSelected (true);
+    else if (possibleAsa)
       btnAsa.setSelected (true);
     else if (possibleText)
       btnText.setSelected (true);

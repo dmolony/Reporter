@@ -1,5 +1,7 @@
 package com.bytezone.reporter.text;
 
+import com.bytezone.reporter.record.Record;
+
 public class AsciiTextMaker implements TextMaker
 {
 
@@ -51,5 +53,11 @@ public class AsciiTextMaker implements TextMaker
         return false;
     }
     return true;
+  }
+
+  @Override
+  public String getText (Record record)
+  {
+    return getText (record.buffer, record.offset, record.length);
   }
 }

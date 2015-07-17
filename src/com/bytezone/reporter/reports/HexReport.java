@@ -76,6 +76,6 @@ public class HexReport extends DefaultReport
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
-    return false;
+    return true;
   }
 }

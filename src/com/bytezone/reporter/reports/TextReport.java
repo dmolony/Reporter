@@ -17,12 +17,12 @@ public class TextReport extends DefaultReport
   @Override
   public String getFormattedRecord (Record record)
   {
-    return textMaker.getText (record.buffer, record.offset, record.length);
+    return textMaker.getText (record);
   }
 
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
-    return false;
+    return textMaker.test (record);
   }
 }

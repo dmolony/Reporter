@@ -86,8 +86,47 @@ public class NatloadReport extends DefaultReport
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
-    Record firstRecord = records.get (0);
-    System.out.println (firstRecord);
-    return false;
+    byte[] buffer = record.buffer;
+    int offset = record.offset;
+    int length = record.length;
+
+    byte b1 = buffer[offset];
+    byte b2 = buffer[offset + 1];
+
+    //    System.out.println (record.getHex (textMaker));
+
+    if (b1 == (byte) 0xFF)
+    {
+      if (b2 == (byte) 0xFF)
+      {
+        return true;
+      }
+      else
+      {
+        return "NAT".equals (textMaker.getText (buffer, offset + 1, 3));
+      }
+    }
+    else if (b1 == (byte) 0x00 && b2 == (byte) 0x00)
+    {
+      // line number 0000
+      return true;
+    }
+    else if (b1 == (byte) 0x00 && b2 == (byte) 0xFF)
+    {
+      return true;
+    }
+    else
+    {
+      int i1 = b1 & 0xFF;
+      int i2 = b2 & 0xFF;
+      if (i1 > 95 && i2 > 95)
+      {
+        return textMaker.test (buffer, offset, 16);
+      }
+      else
+      {
+        return textMaker.test (buffer, offset + 2, length - 2);
+      }
+    }
   }
 }

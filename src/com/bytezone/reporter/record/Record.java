@@ -1,7 +1,11 @@
 package com.bytezone.reporter.record;
 
+import com.bytezone.reporter.text.TextMaker;
+
 public class Record
 {
+  static final int HEX_LINE_SIZE = 16;
+
   public final byte[] buffer;
   public final int recordNumber;
   public final int offset;
@@ -27,6 +31,32 @@ public class Record
         break;
     }
     return nulls;
+  }
+
+  public String getHex (TextMaker textMaker)
+  {
+    if (length == 0)
+      return String.format ("%06X", offset);
+
+    StringBuilder text = new StringBuilder ();
+
+    int max = offset + length;
+    for (int ptr = offset; ptr < max; ptr += HEX_LINE_SIZE)
+    {
+      StringBuilder hexLine = new StringBuilder ();
+
+      int lineMax = Math.min (ptr + HEX_LINE_SIZE, max);
+      for (int linePtr = ptr; linePtr < lineMax; linePtr++)
+        hexLine.append (String.format ("%02X ", buffer[linePtr] & 0xFF));
+
+      text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
+                                  textMaker.getText (buffer, ptr, lineMax - ptr)));
+    }
+
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+
+    return text.toString ();
   }
 
   @Override

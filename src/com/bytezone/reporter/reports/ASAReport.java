@@ -142,6 +142,6 @@ public class AsaReport extends DefaultReport
     if (c != ' ' && c != '0' && c != '1' && c != '-')
       return false;
 
-    return true;
+    return textMaker.test (record);
   }
 }
