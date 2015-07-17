@@ -244,38 +244,22 @@ public class Reporter extends Application
 
     RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
     probableRecordMaker = (RecordMaker) btn.getUserData ();
+    List<Record> testRecords = probableRecordMaker.test (buffer, 0, 1000);
 
     boolean possibleAsa = true;
-    for (Record record : probableRecordMaker.test (buffer, 0, 1000))
-    {
-      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-      if (record.length > 0 && c != ' ' && c != '0' && c != '1' && c != '-')
-      {
-        possibleAsa = false;
-        break;
-      }
-    }
-
     boolean possibleText = true;
-    for (Record record : probableRecordMaker.test (buffer, 0, 1000))
-    {
-      if (!textMaker.test (record))
-      {
-        possibleText = false;
-        break;
-      }
-    }
-
     boolean possibleNatload = true;
-    for (Record record : probableRecordMaker.test (buffer, 0, 1000))
-    {
-      if (!natloadReport.test (record, textMaker))
+
+    for (Record record : testRecords)
+      if (record.length > 0)
       {
-        possibleNatload = false;
-        System.out.println (record.toHex (textMaker));
-        break;
+        if (possibleAsa)
+          possibleAsa = asaReport.test (record, textMaker);
+        if (possibleNatload)
+          possibleNatload = natloadReport.test (record, textMaker);
+        if (possibleText)
+          possibleText = textMaker.test (record);
       }
-    }
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
@@ -284,7 +268,8 @@ public class Reporter extends Application
     vbox2.setPadding (new Insets (10));
 
     btnAscii =
-        addEncodingTypeButton ("ASCII", encodingGroup, paginate, EncodingType.ASCII);
+
+    addEncodingTypeButton ("ASCII", encodingGroup, paginate, EncodingType.ASCII);
     btnEbcdic =
         addEncodingTypeButton ("EBCDIC", encodingGroup, paginate, EncodingType.EBCDIC);
     vbox2.getChildren ().addAll (btnAscii, btnEbcdic);

@@ -138,6 +138,8 @@ public class AsaReport extends DefaultReport
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
+    if (record.length == 0)
+      return true;
     char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
     if (c != ' ' && c != '0' && c != '1' && c != '-')
       return false;
