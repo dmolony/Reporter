@@ -134,11 +134,6 @@ public class Reporter extends Application
   private RadioButton btnNatload;
   private RadioButton btnAsa;
 
-  private final ToggleGroup pagingGroup = new ToggleGroup ();
-  private RadioButton btnNoPaging;
-  private RadioButton btn66;
-  private RadioButton btnOther;
-
   private List<Record> records;
   private final MenuBar menuBar = new MenuBar ();
 
@@ -146,7 +141,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 2;
+    int choice = 7;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -168,18 +163,6 @@ public class Reporter extends Application
     VBox vbox1 = new VBox (10);
     vbox1.setPadding (new Insets (10));
 
-    crlf.setBuffer (buffer);
-    cr.setBuffer (buffer);
-    lf.setBuffer (buffer);
-    fb80.setBuffer (buffer);
-    fb132.setBuffer (buffer);
-    fb252.setBuffer (buffer);
-    vb.setBuffer (buffer);
-    nvb.setBuffer (buffer);
-    rdw.setBuffer (buffer);
-    ravel.setBuffer (buffer);
-    none.setBuffer (buffer);
-
     btnNoSplit = addRecordTypeButton (none, "None", splitterGroup, rebuild);
     btnNoSplit.setSelected (true);
     btnCrlf = addRecordTypeButton (crlf, "CRLF", splitterGroup, rebuild);
@@ -193,22 +176,79 @@ public class Reporter extends Application
     btnFb252 = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
     btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild);
 
-    int max = Math.min (1000, buffer.length);
-    int hex20 = 0;
-    int hex40 = 0;
-    for (int ptr = 0; ptr < max; ptr++)
-    {
-      if (buffer[ptr] == 0x20)
-        ++hex20;
-      else if (buffer[ptr] == 0x40)
-        ++hex40;
-    }
+    vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
+                                 btnRavel, btnFb80, btnFb132, btnFb252);
 
-    TextMaker textMaker = hex20 > hex40 ? asciiTextMaker : ebcdicTextMaker;
+    VBox vbox2 = new VBox (10);
+    vbox2.setPadding (new Insets (10));
+
+    btnAscii =
+        addEncodingTypeButton ("ASCII", encodingGroup, paginate, EncodingType.ASCII);
+    btnEbcdic =
+        addEncodingTypeButton ("EBCDIC", encodingGroup, paginate, EncodingType.EBCDIC);
+    vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
+
+    VBox vbox3 = new VBox (10);
+    vbox3.setPadding (new Insets (10));
+
+    btnHex = addFormatTypeButton ("Binary", formattingGroup, paginate, FormatType.HEX);
+    btnText = addFormatTypeButton ("Text", formattingGroup, paginate, FormatType.TEXT);
+    btnAsa =
+        addFormatTypeButton ("ASA Printer", formattingGroup, paginate, FormatType.ASA);
+    btnNatload =
+        addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
+    vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
+
+    VBox vbox = new VBox ();
+
+    addTitledPane ("Records", vbox1, vbox);
+    addTitledPane ("Encoding", vbox2, vbox);
+    addTitledPane ("Formatting", vbox3, vbox);
+
+    borderPane.setRight (vbox);
+
+    crlf.setBuffer (buffer);
+    cr.setBuffer (buffer);
+    lf.setBuffer (buffer);
+    fb80.setBuffer (buffer);
+    fb132.setBuffer (buffer);
+    fb252.setBuffer (buffer);
+    vb.setBuffer (buffer);
+    nvb.setBuffer (buffer);
+    rdw.setBuffer (buffer);
+    ravel.setBuffer (buffer);
+    none.setBuffer (buffer);
+
+    selectButtons (buffer, fileLength);
+    createRecords ();
+
+    menuBar.getMenus ().addAll (getFileMenu ());
+
+    borderPane.setTop (menuBar);
+    if (SYSTEM_MENUBAR)
+      menuBar.useSystemMenuBarProperty ().set (true);
+
+    Scene scene = new Scene (borderPane, 800, 592);
+    primaryStage.setTitle ("Reporter");
+    primaryStage.setScene (scene);
+    primaryStage.setOnCloseRequest (e -> closeWindow ());
+
+    prefs = Preferences.userNodeForPackage (this.getClass ());
+    windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");
+    if (!windowSaver.restoreWindow ())
+      primaryStage.centerOnScreen ();
+
+    primaryStage.show ();
+  }
+
+  private void selectButtons (byte[] buffer, long fileLength)
+  {
     RecordMaker probableRecordMaker = null;
 
     RadioButton[] testableButtons =
         { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb, btnRavel };
+    RadioButton[] recordMakerButtons = { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb,
+                                         btnRavel, btnFb80, btnFb132, btnFb252 };
     int maxRecords = 0;
     for (RadioButton button : testableButtons)
     {
@@ -216,35 +256,53 @@ public class Reporter extends Application
       List<Record> records = recordMaker.test (buffer, 0, 1024);
       if (records.size () <= 2)
         button.setDisable (true);
-      else
+      else if (records.size () > maxRecords)
       {
-        if (records.size () > maxRecords)
-        {
-          button.setSelected (true);
-          maxRecords = records.size ();
-          probableRecordMaker = recordMaker;
-        }
+        probableRecordMaker = recordMaker;
+        maxRecords = records.size ();
       }
     }
 
     if (fileLength % 80 != 0)
       btnFb80.setDisable (true);
-    else if (maxRecords < 2)
-      btnFb80.setSelected (true);
+    else if (probableRecordMaker == null)
+      probableRecordMaker = (RecordMaker) btnFb80.getUserData ();
 
     if (fileLength % 132 != 0)
       btnFb132.setDisable (true);
-    else if (maxRecords < 2)
-      btnFb132.setSelected (true);
+    else if (probableRecordMaker == null)
+      probableRecordMaker = (RecordMaker) btnFb132.getUserData ();
 
     if (fileLength % 252 != 0)
       btnFb252.setDisable (true);
-    else if (maxRecords < 2)
-      btnFb252.setSelected (true);
+    else if (probableRecordMaker == null)
+      probableRecordMaker = (RecordMaker) btnFb252.getUserData ();
 
-    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
-    probableRecordMaker = (RecordMaker) btn.getUserData ();
-    List<Record> testRecords = probableRecordMaker.test (buffer, 0, 1000);
+    for (RadioButton button : recordMakerButtons)
+      if (probableRecordMaker == button.getUserData ())
+      {
+        button.setSelected (true);
+        break;
+      }
+
+    List<Record> testRecords = probableRecordMaker.test (buffer, 0, 1024);
+
+    boolean possibleAscii = true;
+    boolean possibleEbcdic = true;
+
+    for (Record record : testRecords)
+      if (record.length > 0)
+      {
+        if (possibleAscii)
+          possibleAscii = asciiTextMaker.test (record);
+        if (possibleEbcdic)
+          possibleEbcdic = ebcdicTextMaker.test (record);
+      }
+
+    if (!possibleAscii && !possibleEbcdic)
+      System.out.println ("Neither encoding passes");
+
+    TextMaker textMaker = possibleAscii ? asciiTextMaker : ebcdicTextMaker;
 
     boolean possibleAsa = true;
     boolean possibleText = true;
@@ -261,34 +319,10 @@ public class Reporter extends Application
           possibleText = textMaker.test (record);
       }
 
-    vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
-                                 btnRavel, btnFb80, btnFb132, btnFb252);
-
-    VBox vbox2 = new VBox (10);
-    vbox2.setPadding (new Insets (10));
-
-    btnAscii =
-
-    addEncodingTypeButton ("ASCII", encodingGroup, paginate, EncodingType.ASCII);
-    btnEbcdic =
-        addEncodingTypeButton ("EBCDIC", encodingGroup, paginate, EncodingType.EBCDIC);
-    vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
-
-    if (hex20 > hex40)
+    if (textMaker == asciiTextMaker)
       btnAscii.setSelected (true);
     else
       btnEbcdic.setSelected (true);
-
-    VBox vbox3 = new VBox (10);
-    vbox3.setPadding (new Insets (10));
-
-    btnHex = addFormatTypeButton ("Binary", formattingGroup, paginate, FormatType.HEX);
-    btnText = addFormatTypeButton ("Text", formattingGroup, paginate, FormatType.TEXT);
-    btnAsa =
-        addFormatTypeButton ("ASA Printer", formattingGroup, paginate, FormatType.ASA);
-    btnNatload =
-        addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
-    vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
 
     if (possibleNatload)
       btnNatload.setSelected (true);
@@ -298,44 +332,6 @@ public class Reporter extends Application
       btnText.setSelected (true);
     else
       btnHex.setSelected (true);
-
-    VBox vbox4 = new VBox (10);
-    vbox4.setPadding (new Insets (10));
-
-    btnNoPaging = addRadioButton ("None", pagingGroup, paginate);
-    btnNoPaging.setSelected (true);
-    btn66 = addRadioButton ("66", pagingGroup, paginate);
-    btnOther = addRadioButton ("Other", pagingGroup, paginate);
-    vbox4.getChildren ().addAll (btnNoPaging, btn66, btnOther);
-
-    VBox vbox = new VBox ();
-
-    addTitledPane ("Records", vbox1, vbox);
-    addTitledPane ("Encoding", vbox2, vbox);
-    addTitledPane ("Formatting", vbox3, vbox);
-    //    addTitledPane ("Paging", vbox4, vbox);
-
-    borderPane.setRight (vbox);
-
-    menuBar.getMenus ().addAll (getFileMenu ());
-
-    //    BorderPane topBorderPane = new BorderPane ();
-    borderPane.setTop (menuBar);
-    if (SYSTEM_MENUBAR)
-      menuBar.useSystemMenuBarProperty ().set (true);
-
-    Scene scene = new Scene (borderPane, 800, 592);
-    primaryStage.setTitle ("Reporter");
-    primaryStage.setScene (scene);
-    primaryStage.setOnCloseRequest (e -> closeWindow ());
-
-    prefs = Preferences.userNodeForPackage (this.getClass ());
-    windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");
-    if (!windowSaver.restoreWindow ())
-      primaryStage.centerOnScreen ();
-
-    createRecords ();
-    primaryStage.show ();
   }
 
   private Menu getFileMenu ()
