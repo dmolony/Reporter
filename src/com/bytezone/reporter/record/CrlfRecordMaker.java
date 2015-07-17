@@ -25,8 +25,8 @@ public class CrlfRecordMaker extends DefaultRecordMaker
     if (start < buffer.length)
     {
       // ignore 0x1A on the end - added by IND$FILE
-      if (start != buffer.length - 1 || buffer[buffer.length - 1] != 0x1A)
-        records.add (new Record (buffer, start, buffer.length - start, recordNumber++));
+      if (start != max - 1 || buffer[max - 1] != 0x1A)
+        records.add (new Record (buffer, start, max - start, recordNumber++));
     }
 
     return records;

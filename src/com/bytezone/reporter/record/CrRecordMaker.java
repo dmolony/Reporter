@@ -22,8 +22,8 @@ public class CrRecordMaker extends DefaultRecordMaker
       }
     }
 
-    if (start < buffer.length)
-      records.add (new Record (buffer, start, buffer.length - start, recordNumber++));
+    if (start < max)
+      records.add (new Record (buffer, start, max - start, recordNumber++));
 
     return records;
   }

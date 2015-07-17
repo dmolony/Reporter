@@ -95,16 +95,13 @@ public class NatloadReport extends DefaultReport
 
     //    System.out.println (record.getHex (textMaker));
 
-    if (b1 == (byte) 0xFF)
+    if (record.recordNumber == 0)
+      return b1 == (byte) 0xFF
+          && "NAT".equals (textMaker.getText (buffer, offset + 1, 3));
+
+    if (b1 == (byte) 0xFF && b2 == (byte) 0xFF)
     {
-      if (b2 == (byte) 0xFF)
-      {
-        return true;
-      }
-      else
-      {
-        return "NAT".equals (textMaker.getText (buffer, offset + 1, 3));
-      }
+      return true;
     }
     else if (b1 == (byte) 0x00 && b2 == (byte) 0x00)
     {

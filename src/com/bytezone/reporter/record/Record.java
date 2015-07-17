@@ -33,7 +33,7 @@ public class Record
     return nulls;
   }
 
-  public String getHex (TextMaker textMaker)
+  public String toHex (TextMaker textMaker)
   {
     if (length == 0)
       return String.format ("%06X", offset);
