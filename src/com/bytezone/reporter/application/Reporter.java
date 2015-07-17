@@ -141,7 +141,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 7;
+    int choice = 0;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -206,6 +206,35 @@ public class Reporter extends Application
     addTitledPane ("Formatting", vbox3, vbox);
 
     borderPane.setRight (vbox);
+
+    List<Tester> testers = new ArrayList<> ();
+    testers.add (new Tester ("CRLF", crlf, buffer, 1024));
+    testers.add (new Tester ("CR", cr, buffer, 1024));
+    testers.add (new Tester ("LF", lf, buffer, 1024));
+    testers.add (new Tester ("FB80", fb80, buffer, 1024));
+    testers.add (new Tester ("FB132", fb132, buffer, 1024));
+    testers.add (new Tester ("FB252", fb252, buffer, 1024));
+    testers.add (new Tester ("VB", vb, buffer, 1024));
+    testers.add (new Tester ("RDW", rdw, buffer, 1024));
+    testers.add (new Tester ("NVB", nvb, buffer, 1024));
+    testers.add (new Tester ("Ravel", ravel, buffer, 1024));
+
+    List<TextMaker> textMakers = new ArrayList<> ();
+    textMakers.add (asciiTextMaker);
+    textMakers.add (ebcdicTextMaker);
+
+    for (Tester tester : testers)
+    {
+      if (tester.records.size () > 1)
+      {
+        for (TextMaker textMaker : textMakers)
+          tester.countBadBytes (textMaker);
+        TextMaker preferredTextMaker = tester.getPreferredTextMaker ();
+      }
+    }
+
+    for (Tester tester : testers)
+      System.out.println (tester);
 
     crlf.setBuffer (buffer);
     cr.setBuffer (buffer);
@@ -275,7 +304,7 @@ public class Reporter extends Application
 
     if (fileLength % 252 != 0)
       btnFb252.setDisable (true);
-    else if (probableRecordMaker == null)
+    else//if (probableRecordMaker == null)
       probableRecordMaker = (RecordMaker) btnFb252.getUserData ();
 
     for (RadioButton button : recordMakerButtons)

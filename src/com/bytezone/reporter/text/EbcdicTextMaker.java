@@ -54,7 +54,7 @@ public class EbcdicTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x40 || value == 0xFF)
+      if (value != 0x40 && (value < 0x4B || value == 0xFF))
         textLine.append ('.');
       else
         textLine.append ((char) ebc2asc[value]);
@@ -78,7 +78,7 @@ public class EbcdicTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x40 || value == 0xFF)
+      if (value != 0x40 && (value < 0x4B || value == 0xFF))
         return false;
     }
     return true;
@@ -98,9 +98,15 @@ public class EbcdicTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x40 || value == 0xFF)
+      if (value != 0x40 && (value < 0x4B || value == 0xFF))
         total++;
     }
     return total;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return "EBCDIC";
   }
 }

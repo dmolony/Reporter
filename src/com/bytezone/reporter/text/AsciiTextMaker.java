@@ -24,7 +24,7 @@ public class AsciiTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x20 || value > 0xF0)
+      if (value < 0x20 || value > 0xC0)
         textLine.append ('.');
       else
         textLine.append ((char) value);
@@ -49,7 +49,7 @@ public class AsciiTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x20 || value > 0xF0)
+      if (value < 0x20 || value >= 0xC0)
         return false;
     }
     return true;
@@ -69,9 +69,15 @@ public class AsciiTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x20 || value > 0xF0)
+      if (value < 0x20 || value >= 0xC0)
         total++;
     }
     return total;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return "ASCII";
   }
 }
