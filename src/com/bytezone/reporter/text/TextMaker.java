@@ -14,11 +14,11 @@ public interface TextMaker
 
   public boolean test (byte[] buffer, int offset, int length);
 
-  public int countBadBytes (byte[] buffer, int offset, int length);
+  public int countAlphanumericBytes (byte[] buffer, int offset, int length);
 
-  public default int countBadBytes (Record record)
+  public default int countAlphanumericBytes (Record record)
   {
-    return countBadBytes (record.buffer, record.offset, record.length);
+    return countAlphanumericBytes (record.buffer, record.offset, record.length);
   }
 
   public default boolean test (Record record)

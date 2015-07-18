@@ -6,7 +6,8 @@ import com.bytezone.reporter.text.TextMaker;
 public class TextTester
 {
   TextMaker textMaker;
-  int badBytes;
+  int alphanumericBytes;
+  int bytesTested;
 
   public TextTester (TextMaker textMaker)
   {
@@ -15,6 +16,18 @@ public class TextTester
 
   public void testRecord (Record record)
   {
-    badBytes += textMaker.countBadBytes (record);
+    alphanumericBytes += textMaker.countAlphanumericBytes (record);
+    bytesTested += record.length;
+  }
+
+  public double getAlphanumericRatio ()
+  {
+    return (double) alphanumericBytes / bytesTested * 100;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%-6.6s %6.2f", textMaker, getAlphanumericRatio ());
   }
 }

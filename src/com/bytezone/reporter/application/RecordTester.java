@@ -47,13 +47,13 @@ public class RecordTester
 
   public TextMaker getPreferredTextMaker ()
   {
-    int max = Integer.MAX_VALUE;
+    double max = Double.MIN_VALUE;
     TextMaker preferredTextMaker = null;
     for (TextTester textTester : textTesters)
     {
-      if (textTester.badBytes < max)
+      if (textTester.getAlphanumericRatio () > max)
       {
-        max = textTester.badBytes;
+        max = textTester.getAlphanumericRatio ();
         preferredTextMaker = textTester.textMaker;
       }
     }
@@ -65,15 +65,17 @@ public class RecordTester
   {
     StringBuilder text = new StringBuilder ();
     text.append (String.format ("%-8s %,5d", recordMaker, records.size ()));
+
     for (TextTester textTester : textTesters)
-      text.append (String.format ("  %,5d", textTester.badBytes));
+      text.append (String.format ("  %s", textTester));
 
     TextMaker preferredTextMaker = getPreferredTextMaker ();
     String textMaker = preferredTextMaker == null ? "" : preferredTextMaker.toString ();
     text.append ("  " + textMaker);
 
     for (ReportTester reportTester : reportTesters)
-      text.append (String.format ("  %3d", reportTester.validRecords));
+      text.append (String.format (" %s %3d", reportTester.reportMaker,
+                                  reportTester.validRecords));
 
     return text.toString ();
   }

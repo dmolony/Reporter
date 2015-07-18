@@ -91,14 +91,14 @@ public class EbcdicTextMaker implements TextMaker
   }
 
   @Override
-  public int countBadBytes (byte[] buffer, int offset, int length)
+  public int countAlphanumericBytes (byte[] buffer, int offset, int length)
   {
     int total = 0;
     int max = Math.min (offset + length, buffer.length);
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value != 0x40 && (value < 0x4B || value == 0xFF))
+      if (value == 0x40 || (value >= 0x81 && value <= 0xF9))
         total++;
     }
     return total;

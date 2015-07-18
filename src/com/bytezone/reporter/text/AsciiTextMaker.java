@@ -62,14 +62,14 @@ public class AsciiTextMaker implements TextMaker
   }
 
   @Override
-  public int countBadBytes (byte[] buffer, int offset, int length)
+  public int countAlphanumericBytes (byte[] buffer, int offset, int length)
   {
     int total = 0;
     int max = Math.min (offset + length, buffer.length);
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x20 || value >= 0xC0)
+      if (value == 0x20 || (value >= 0x30 && value <= 0x7A))
         total++;
     }
     return total;
