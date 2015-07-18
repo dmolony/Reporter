@@ -166,18 +166,20 @@ public class Reporter extends Application
     VBox vbox1 = new VBox (10);
     vbox1.setPadding (new Insets (10));
 
-    btnNoSplit = addRecordTypeButton (none, "None", splitterGroup, rebuild);
+    RecordMaker[] recordMakers =
+        { none, crlf, cr, lf, vb, rdw, ravel, fb80, fb132, fb252, nvb };
+    btnNoSplit = addRecordTypeButton (none, splitterGroup, rebuild);
     btnNoSplit.setSelected (true);
-    btnCrlf = addRecordTypeButton (crlf, "CRLF", splitterGroup, rebuild);
-    btnCr = addRecordTypeButton (cr, "CR", splitterGroup, rebuild);
-    btnLf = addRecordTypeButton (lf, "LF", splitterGroup, rebuild);
-    btnVB = addRecordTypeButton (vb, "VB", splitterGroup, rebuild);
-    btnRDW = addRecordTypeButton (rdw, "RDW", splitterGroup, rebuild);
-    btnRavel = addRecordTypeButton (ravel, "Ravel", splitterGroup, rebuild);
-    btnFb80 = addRecordTypeButton (fb80, "FB80", splitterGroup, rebuild);
-    btnFb132 = addRecordTypeButton (fb132, "FB132", splitterGroup, rebuild);
-    btnFb252 = addRecordTypeButton (fb252, "FB252", splitterGroup, rebuild);
-    btnNvb = addRecordTypeButton (nvb, "NVB", splitterGroup, rebuild);
+    btnCrlf = addRecordTypeButton (crlf, splitterGroup, rebuild);
+    btnCr = addRecordTypeButton (cr, splitterGroup, rebuild);
+    btnLf = addRecordTypeButton (lf, splitterGroup, rebuild);
+    btnVB = addRecordTypeButton (vb, splitterGroup, rebuild);
+    btnRDW = addRecordTypeButton (rdw, splitterGroup, rebuild);
+    btnRavel = addRecordTypeButton (ravel, splitterGroup, rebuild);
+    btnFb80 = addRecordTypeButton (fb80, splitterGroup, rebuild);
+    btnFb132 = addRecordTypeButton (fb132, splitterGroup, rebuild);
+    btnFb252 = addRecordTypeButton (fb252, splitterGroup, rebuild);
+    btnNvb = addRecordTypeButton (nvb, splitterGroup, rebuild);
 
     vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
                                  btnRavel, btnFb80, btnFb132, btnFb252);
@@ -224,6 +226,9 @@ public class Reporter extends Application
 
     selectButtons (buffer, fileLength);
     createRecords ();
+
+    TreePanel treePanel = new TreePanel ();
+    treePanel.initialise ();
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
@@ -441,10 +446,10 @@ public class Reporter extends Application
     return titledPane;
   }
 
-  private RadioButton addRecordTypeButton (RecordMaker recordMaker, String text,
-      ToggleGroup group, EventHandler<ActionEvent> evt)
+  private RadioButton addRecordTypeButton (RecordMaker recordMaker, ToggleGroup group,
+      EventHandler<ActionEvent> evt)
   {
-    RadioButton button = addRadioButton (text, group, evt);
+    RadioButton button = addRadioButton (recordMaker.toString (), group, evt);
     button.setUserData (recordMaker);
     return button;
   }
