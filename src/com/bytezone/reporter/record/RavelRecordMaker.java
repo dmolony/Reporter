@@ -5,6 +5,11 @@ import java.util.List;
 
 public class RavelRecordMaker extends DefaultRecordMaker
 {
+  public RavelRecordMaker ()
+  {
+    super ("Ravel");
+  }
+
   byte[] temp = new byte[2048];
 
   @Override

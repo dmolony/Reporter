@@ -6,6 +6,12 @@ public abstract class DefaultRecordMaker implements RecordMaker
 {
   protected byte[] buffer;
   protected List<Record> records;
+  protected final String name;
+
+  public DefaultRecordMaker (String name)
+  {
+    this.name = name;
+  }
 
   @Override
   public void setBuffer (byte[] buffer)
@@ -53,4 +59,10 @@ public abstract class DefaultRecordMaker implements RecordMaker
   protected abstract List<Record> split (byte[] buffer, int offset, int length);
 
   protected abstract byte[] join (List<Record> records);
+
+  @Override
+  public String toString ()
+  {
+    return name;
+  }
 }

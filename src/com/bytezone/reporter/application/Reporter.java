@@ -26,7 +26,7 @@ import com.bytezone.reporter.record.VbRecordMaker;
 import com.bytezone.reporter.reports.AsaReport;
 import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
-import com.bytezone.reporter.reports.Report;
+import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
@@ -89,11 +89,11 @@ public class Reporter extends Application
   private final TextMaker asciiTextMaker = new AsciiTextMaker ();
   private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
-  private final Report hexReport = new HexReport ();
-  private final Report textReport = new TextReport ();
-  private final Report natloadReport = new NatloadReport ();
-  private final Report asaReport = new AsaReport ();
-  private Report currentReport;
+  private final ReportMaker hexReport = new HexReport ();
+  private final ReportMaker textReport = new TextReport ();
+  private final ReportMaker natloadReport = new NatloadReport ();
+  private final ReportMaker asaReport = new AsaReport ();
+  private ReportMaker currentReport;
 
   private final RecordMaker crlf = new CrlfRecordMaker ();
   private final RecordMaker cr = new CrRecordMaker ();
@@ -141,7 +141,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 0;
+    int choice = 10;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -206,35 +206,6 @@ public class Reporter extends Application
     addTitledPane ("Formatting", vbox3, vbox);
 
     borderPane.setRight (vbox);
-
-    List<Tester> testers = new ArrayList<> ();
-    testers.add (new Tester ("CRLF", crlf, buffer, 1024));
-    testers.add (new Tester ("CR", cr, buffer, 1024));
-    testers.add (new Tester ("LF", lf, buffer, 1024));
-    testers.add (new Tester ("FB80", fb80, buffer, 1024));
-    testers.add (new Tester ("FB132", fb132, buffer, 1024));
-    testers.add (new Tester ("FB252", fb252, buffer, 1024));
-    testers.add (new Tester ("VB", vb, buffer, 1024));
-    testers.add (new Tester ("RDW", rdw, buffer, 1024));
-    testers.add (new Tester ("NVB", nvb, buffer, 1024));
-    testers.add (new Tester ("Ravel", ravel, buffer, 1024));
-
-    List<TextMaker> textMakers = new ArrayList<> ();
-    textMakers.add (asciiTextMaker);
-    textMakers.add (ebcdicTextMaker);
-
-    for (Tester tester : testers)
-    {
-      if (tester.records.size () > 1)
-      {
-        for (TextMaker textMaker : textMakers)
-          tester.countBadBytes (textMaker);
-        TextMaker preferredTextMaker = tester.getPreferredTextMaker ();
-      }
-    }
-
-    for (Tester tester : testers)
-      System.out.println (tester);
 
     crlf.setBuffer (buffer);
     cr.setBuffer (buffer);
@@ -314,24 +285,52 @@ public class Reporter extends Application
         break;
       }
 
-    List<Record> testRecords = probableRecordMaker.test (buffer, 0, 1024);
+    List<RecordTester> testers = new ArrayList<> ();
+    testers.add (new RecordTester ("CRLF", crlf, buffer, 1024));
+    testers.add (new RecordTester ("CR", cr, buffer, 1024));
+    testers.add (new RecordTester ("LF", lf, buffer, 1024));
+    testers.add (new RecordTester ("FB80", fb80, buffer, 1024));
+    testers.add (new RecordTester ("FB132", fb132, buffer, 1024));
+    testers.add (new RecordTester ("FB252", fb252, buffer, 1024));
+    testers.add (new RecordTester ("VB", vb, buffer, 1024));
+    testers.add (new RecordTester ("RDW", rdw, buffer, 1024));
+    testers.add (new RecordTester ("NVB", nvb, buffer, 1024));
+    testers.add (new RecordTester ("Ravel", ravel, buffer, 1024));
 
-    boolean possibleAscii = true;
-    boolean possibleEbcdic = true;
+    List<TextMaker> textMakers = new ArrayList<> ();
+    textMakers.add (asciiTextMaker);
+    textMakers.add (ebcdicTextMaker);
+    TextMaker preferredTextMaker = null;
 
-    for (Record record : testRecords)
-      if (record.length > 0)
+    List<ReportMaker> reportMakers = new ArrayList<> ();
+    reportMakers.add (textReport);
+    reportMakers.add (asaReport);
+    reportMakers.add (natloadReport);
+    ReportMaker preferredReportMaker = null;
+
+    for (RecordTester tester : testers)
+    {
+      if (tester.records.size () > 1)
       {
-        if (possibleAscii)
-          possibleAscii = asciiTextMaker.test (record);
-        if (possibleEbcdic)
-          possibleEbcdic = ebcdicTextMaker.test (record);
+        for (TextMaker textMaker : textMakers)
+          tester.testTextMaker (textMaker);
+        preferredTextMaker = tester.getPreferredTextMaker ();
       }
+    }
 
-    if (!possibleAscii && !possibleEbcdic)
-      System.out.println ("Neither encoding passes");
+    for (RecordTester tester : testers)
+    {
+      if (tester.records.size () > 1)
+      {
+        for (ReportMaker reportMaker : reportMakers)
+          tester.testReportMaker (reportMaker, preferredTextMaker);
+      }
+    }
 
-    TextMaker textMaker = possibleAscii ? asciiTextMaker : ebcdicTextMaker;
+    for (RecordTester tester : testers)
+      System.out.println (tester);
+
+    List<Record> testRecords = probableRecordMaker.test (buffer, 0, 1024);
 
     boolean possibleAsa = true;
     boolean possibleText = true;
@@ -341,14 +340,14 @@ public class Reporter extends Application
       if (record.length > 0)
       {
         if (possibleAsa)
-          possibleAsa = asaReport.test (record, textMaker);
+          possibleAsa = asaReport.test (record, preferredTextMaker);
         if (possibleNatload)
-          possibleNatload = natloadReport.test (record, textMaker);
+          possibleNatload = natloadReport.test (record, preferredTextMaker);
         if (possibleText)
-          possibleText = textMaker.test (record);
+          possibleText = preferredTextMaker.test (record);
       }
 
-    if (textMaker == asciiTextMaker)
+    if (preferredTextMaker == asciiTextMaker)
       btnAscii.setSelected (true);
     else
       btnEbcdic.setSelected (true);

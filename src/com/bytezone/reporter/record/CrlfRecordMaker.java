@@ -5,6 +5,11 @@ import java.util.List;
 
 public class CrlfRecordMaker extends DefaultRecordMaker
 {
+  public CrlfRecordMaker ()
+  {
+    super ("CRLF");
+  }
+
   @Override
   protected List<Record> split (byte[] buffer, int offset, int length)
   {

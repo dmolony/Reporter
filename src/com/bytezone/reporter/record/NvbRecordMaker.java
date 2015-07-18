@@ -8,6 +8,11 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class NvbRecordMaker extends DefaultRecordMaker
 {
+  public NvbRecordMaker ()
+  {
+    super ("NVB");
+  }
+
   private static final int HEADER_SIZE = 24;
   private static final int SOURCE_SIZE = 94;
   private static final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();

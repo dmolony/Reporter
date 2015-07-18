@@ -5,21 +5,21 @@ import java.util.List;
 
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
+import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
 
-public class Tester
+public class RecordTester
 {
-  String name;
-  RecordMaker recordMaker;
-  byte[] buffer;
-  int testSize;
+  final RecordMaker recordMaker;
+  final byte[] buffer;
+  final int testSize;
+  final List<Record> records;
 
-  List<Record> records;
-  List<TextTester> textTesters = new ArrayList<> ();
+  final List<TextTester> textTesters = new ArrayList<> ();
+  final List<ReportTester> reportTesters = new ArrayList<> ();
 
-  public Tester (String name, RecordMaker recordMaker, byte[] buffer, int testSize)
+  public RecordTester (String name, RecordMaker recordMaker, byte[] buffer, int testSize)
   {
-    this.name = name;
     this.recordMaker = recordMaker;
     this.buffer = buffer;
     this.testSize = testSize;
@@ -27,15 +27,22 @@ public class Tester
     records = recordMaker.test (buffer, 0, testSize);
   }
 
-  public int countBadBytes (TextMaker textMaker)
+  public void testTextMaker (TextMaker textMaker)
   {
     TextTester textTester = new TextTester (textMaker);
     textTesters.add (textTester);
 
     for (Record record : records)
-      textTester.badBytes += textMaker.countBadBytes (record);
+      textTester.testRecord (record);
+  }
 
-    return textTester.badBytes;
+  public void testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
+  {
+    ReportTester reportTester = new ReportTester (reportMaker, textMaker);
+    reportTesters.add (reportTester);
+
+    for (Record record : records)
+      reportTester.testRecord (record);
   }
 
   public TextMaker getPreferredTextMaker ()
@@ -57,13 +64,17 @@ public class Tester
   public String toString ()
   {
     StringBuilder text = new StringBuilder ();
-    text.append (String.format ("%-8s %,5d", name, records.size ()));
+    text.append (String.format ("%-8s %,5d", recordMaker, records.size ()));
     for (TextTester textTester : textTesters)
       text.append (String.format ("  %,5d", textTester.badBytes));
 
     TextMaker preferredTextMaker = getPreferredTextMaker ();
     String textMaker = preferredTextMaker == null ? "" : preferredTextMaker.toString ();
     text.append ("  " + textMaker);
+
+    for (ReportTester reportTester : reportTesters)
+      text.append (String.format ("  %3d", reportTester.validRecords));
+
     return text.toString ();
   }
 }

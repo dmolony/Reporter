@@ -5,6 +5,11 @@ import java.util.List;
 
 public class LfRecordMaker extends DefaultRecordMaker
 {
+  public LfRecordMaker ()
+  {
+    super ("LF");
+  }
+
   @Override
   protected List<Record> split (byte[] buffer, int offset, int length)
   {

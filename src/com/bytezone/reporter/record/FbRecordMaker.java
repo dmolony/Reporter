@@ -9,6 +9,7 @@ public class FbRecordMaker extends DefaultRecordMaker
 
   public FbRecordMaker (int recordLength)
   {
+    super ("FB" + recordLength);
     this.recordLength = recordLength;
   }
 

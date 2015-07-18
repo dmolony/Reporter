@@ -5,6 +5,11 @@ import java.util.List;
 
 public class VbRecordMaker extends DefaultRecordMaker
 {
+  public VbRecordMaker ()
+  {
+    super ("VB");
+  }
+
   @Override
   protected List<Record> split (byte[] buffer, int offset, int length)
   {

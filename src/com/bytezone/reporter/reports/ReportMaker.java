@@ -8,7 +8,7 @@ import com.bytezone.reporter.text.TextMaker;
 
 import javafx.scene.control.Pagination;
 
-public interface Report extends Printable
+public interface ReportMaker extends Printable
 {
   public boolean test (Record record, TextMaker textMaker);
 

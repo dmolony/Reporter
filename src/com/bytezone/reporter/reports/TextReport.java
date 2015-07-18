@@ -3,8 +3,13 @@ package com.bytezone.reporter.reports;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
-public class TextReport extends DefaultReport
+public class TextReport extends DefaultReportMaker
 {
+  public TextReport ()
+  {
+    super ("Text");
+  }
+
   @Override
   protected void paginate ()
   {

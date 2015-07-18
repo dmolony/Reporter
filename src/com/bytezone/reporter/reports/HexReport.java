@@ -3,8 +3,13 @@ package com.bytezone.reporter.reports;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
-public class HexReport extends DefaultReport
+public class HexReport extends DefaultReportMaker
 {
+  public HexReport ()
+  {
+    super ("HEX");
+  }
+
   static final int HEX_LINE_SIZE = 16;
 
   @Override

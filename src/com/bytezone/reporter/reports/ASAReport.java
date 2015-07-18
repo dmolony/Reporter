@@ -14,8 +14,13 @@ import com.bytezone.reporter.text.TextMaker;
  * '1' : 'C' - Skip to channel 1-12 (channel 1 is top of page)
  */
 
-public class AsaReport extends DefaultReport
+public class AsaReport extends DefaultReportMaker
 {
+  public AsaReport ()
+  {
+    super ("ASA");
+  }
+
   private int currentLine;
   private final int maxLines = 66;
 

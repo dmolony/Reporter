@@ -5,6 +5,11 @@ import java.util.List;
 
 public class RdwRecordMaker extends DefaultRecordMaker
 {
+  public RdwRecordMaker ()
+  {
+    super ("RDW");
+  }
+
   @Override
   protected List<Record> split (byte[] buffer, int offset, int length)
   {

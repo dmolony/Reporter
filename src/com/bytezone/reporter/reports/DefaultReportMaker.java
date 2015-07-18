@@ -17,8 +17,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public abstract class DefaultReport implements Report
+public abstract class DefaultReportMaker implements ReportMaker
 {
+  protected final String name;
   protected final List<Page> pages;
   protected final Pagination pagination = new Pagination ();
   protected final TextArea textArea;
@@ -35,8 +36,9 @@ public abstract class DefaultReport implements Report
 
   private final java.awt.Font plainFont, boldFont, headerFont;
 
-  public DefaultReport ()
+  public DefaultReportMaker (String name)
   {
+    this.name = name;
     textArea = new TextArea ();
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
     textArea.setEditable (false);
@@ -188,4 +190,10 @@ public abstract class DefaultReport implements Report
   protected abstract void paginate ();
 
   protected abstract String getFormattedRecord (Record record);
+
+  @Override
+  public String toString ()
+  {
+    return name;
+  }
 }

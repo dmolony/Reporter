@@ -3,8 +3,13 @@ package com.bytezone.reporter.reports;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
-public class NatloadReport extends DefaultReport
+public class NatloadReport extends DefaultReportMaker
 {
+  public NatloadReport ()
+  {
+    super ("Natload");
+  }
+
   @Override
   protected void paginate ()
   {

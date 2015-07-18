@@ -5,6 +5,11 @@ import java.util.List;
 
 public class NoRecordMaker extends DefaultRecordMaker
 {
+  public NoRecordMaker ()
+  {
+    super ("NONE");
+  }
+
   @Override
   protected List<Record> split (byte[] buffer, int offset, int length)
   {
