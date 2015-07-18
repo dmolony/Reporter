@@ -1,4 +1,4 @@
-package com.bytezone.reporter.application;
+package com.bytezone.reporter.tests;
 
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;

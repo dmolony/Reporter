@@ -28,6 +28,7 @@ import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.reports.TextReport;
+import com.bytezone.reporter.tests.RecordTester;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -286,80 +287,65 @@ public class Reporter extends Application
       }
 
     List<RecordTester> testers = new ArrayList<> ();
-    testers.add (new RecordTester ("CRLF", crlf, buffer, 1024));
-    testers.add (new RecordTester ("CR", cr, buffer, 1024));
-    testers.add (new RecordTester ("LF", lf, buffer, 1024));
-    testers.add (new RecordTester ("FB80", fb80, buffer, 1024));
-    testers.add (new RecordTester ("FB132", fb132, buffer, 1024));
-    testers.add (new RecordTester ("FB252", fb252, buffer, 1024));
-    testers.add (new RecordTester ("VB", vb, buffer, 1024));
-    testers.add (new RecordTester ("RDW", rdw, buffer, 1024));
-    testers.add (new RecordTester ("NVB", nvb, buffer, 1024));
-    testers.add (new RecordTester ("Ravel", ravel, buffer, 1024));
+    testers.add (new RecordTester (crlf, buffer, 1024));
+    testers.add (new RecordTester (cr, buffer, 1024));
+    testers.add (new RecordTester (lf, buffer, 1024));
+    testers.add (new RecordTester (vb, buffer, 1024));
+    testers.add (new RecordTester (rdw, buffer, 1024));
+    testers.add (new RecordTester (nvb, buffer, 1024));
+    testers.add (new RecordTester (ravel, buffer, 1024));
+    testers.add (new RecordTester (fb80, buffer, 800));
+    testers.add (new RecordTester (fb132, buffer, 1320));
+    testers.add (new RecordTester (fb252, buffer, 2520));
 
     List<TextMaker> textMakers = new ArrayList<> ();
     textMakers.add (asciiTextMaker);
     textMakers.add (ebcdicTextMaker);
-    TextMaker preferredTextMaker = null;
 
     List<ReportMaker> reportMakers = new ArrayList<> ();
     reportMakers.add (textReport);
     reportMakers.add (asaReport);
     reportMakers.add (natloadReport);
-    ReportMaker preferredReportMaker = null;
 
+    RecordTester preferredRecordTester = null;
     for (RecordTester tester : testers)
-    {
-      if (tester.records.size () > 1)
+      if (tester.getTotalRecords () > 1)
       {
         for (TextMaker textMaker : textMakers)
           tester.testTextMaker (textMaker);
-        preferredTextMaker = tester.getPreferredTextMaker ();
-      }
-    }
 
-    for (RecordTester tester : testers)
-    {
-      if (tester.records.size () > 1)
-      {
+        TextMaker textMaker = tester.getPreferredTextMaker ();
+
         for (ReportMaker reportMaker : reportMakers)
-          tester.testReportMaker (reportMaker, preferredTextMaker);
+          tester.testReportMaker (reportMaker, textMaker);
       }
-    }
 
     for (RecordTester tester : testers)
       System.out.println (tester);
 
-    List<Record> testRecords = probableRecordMaker.test (buffer, 0, 1024);
+    if (preferredRecordTester != null)
+    {
+      TextMaker textMaker = preferredRecordTester.getPreferredTextMaker ();
+      if (textMaker == asciiTextMaker)
+        btnAscii.setSelected (true);
+      else
+        btnEbcdic.setSelected (true);
 
-    boolean possibleAsa = true;
-    boolean possibleText = true;
-    boolean possibleNatload = true;
-
-    for (Record record : testRecords)
-      if (record.length > 0)
-      {
-        if (possibleAsa)
-          possibleAsa = asaReport.test (record, preferredTextMaker);
-        if (possibleNatload)
-          possibleNatload = natloadReport.test (record, preferredTextMaker);
-        if (possibleText)
-          possibleText = preferredTextMaker.test (record);
-      }
-
-    if (preferredTextMaker == asciiTextMaker)
-      btnAscii.setSelected (true);
+      ReportMaker reportMaker = preferredRecordTester.getPreferredReportMaker ();
+      if (reportMaker == natloadReport)
+        btnNatload.setSelected (true);
+      else if (reportMaker == asaReport)
+        btnAsa.setSelected (true);
+      else if (reportMaker == textReport)
+        btnText.setSelected (true);
+      else
+        btnHex.setSelected (true);
+    }
     else
+    {
       btnEbcdic.setSelected (true);
-
-    if (possibleNatload)
-      btnNatload.setSelected (true);
-    else if (possibleAsa)
-      btnAsa.setSelected (true);
-    else if (possibleText)
-      btnText.setSelected (true);
-    else
       btnHex.setSelected (true);
+    }
   }
 
   private Menu getFileMenu ()

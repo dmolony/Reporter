@@ -1,4 +1,4 @@
-package com.bytezone.reporter.application;
+package com.bytezone.reporter.tests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,21 +10,21 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class RecordTester
 {
-  final RecordMaker recordMaker;
-  final byte[] buffer;
-  final int testSize;
-  final List<Record> records;
+  private final RecordMaker recordMaker;
+  private final List<Record> records;
 
-  final List<TextTester> textTesters = new ArrayList<> ();
-  final List<ReportTester> reportTesters = new ArrayList<> ();
+  private final List<TextTester> textTesters = new ArrayList<> ();
+  private final List<ReportTester> reportTesters = new ArrayList<> ();
 
-  public RecordTester (String name, RecordMaker recordMaker, byte[] buffer, int testSize)
+  public RecordTester (RecordMaker recordMaker, byte[] buffer, int testSize)
   {
     this.recordMaker = recordMaker;
-    this.buffer = buffer;
-    this.testSize = testSize;
-
     records = recordMaker.test (buffer, 0, testSize);
+  }
+
+  public int getTotalRecords ()
+  {
+    return records.size ();
   }
 
   public void testTextMaker (TextMaker textMaker)
@@ -49,15 +49,30 @@ public class RecordTester
   {
     double max = Double.MIN_VALUE;
     TextMaker preferredTextMaker = null;
+
     for (TextTester textTester : textTesters)
-    {
       if (textTester.getAlphanumericRatio () > max)
       {
         max = textTester.getAlphanumericRatio ();
         preferredTextMaker = textTester.textMaker;
       }
-    }
+
     return preferredTextMaker;
+  }
+
+  public ReportMaker getPreferredReportMaker ()
+  {
+    double max = Double.MIN_VALUE;
+    ReportMaker preferredReportMaker = null;
+
+    for (ReportTester reportTester : reportTesters)
+      if (reportTester.getRatio () > max)
+      {
+        max = reportTester.getRatio ();
+        preferredReportMaker = reportTester.reportMaker;
+      }
+
+    return preferredReportMaker;
   }
 
   @Override
@@ -76,6 +91,11 @@ public class RecordTester
     for (ReportTester reportTester : reportTesters)
       text.append (String.format (" %s %3d", reportTester.reportMaker,
                                   reportTester.validRecords));
+
+    ReportMaker preferredReportMaker = getPreferredReportMaker ();
+    String reportMaker =
+        preferredReportMaker == null ? "" : preferredReportMaker.toString ();
+    text.append ("  " + reportMaker);
 
     return text.toString ();
   }
