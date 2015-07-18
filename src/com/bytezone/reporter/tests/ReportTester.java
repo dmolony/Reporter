@@ -28,4 +28,10 @@ public class ReportTester
   {
     return (double) validRecords / recordsTested * 100;
   }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%-6.6s %6.2f", reportMaker, getRatio ());
+  }
 }

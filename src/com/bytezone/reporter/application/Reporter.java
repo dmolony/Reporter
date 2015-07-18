@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -29,6 +30,7 @@ import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.tests.RecordTester;
+import com.bytezone.reporter.tests.Score;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -308,6 +310,8 @@ public class Reporter extends Application
     reportMakers.add (natloadReport);
 
     RecordTester preferredRecordTester = null;
+    List<Score> scores = new ArrayList<> ();
+
     for (RecordTester tester : testers)
       if (tester.getTotalRecords () > 1)
       {
@@ -317,11 +321,16 @@ public class Reporter extends Application
         TextMaker textMaker = tester.getPreferredTextMaker ();
 
         for (ReportMaker reportMaker : reportMakers)
-          tester.testReportMaker (reportMaker, textMaker);
+          scores.add (tester.testReportMaker (reportMaker, textMaker));
       }
 
     for (RecordTester tester : testers)
       System.out.println (tester);
+
+    Collections.sort (scores);
+    Collections.reverse (scores);
+    for (Score score : scores)
+      System.out.println (score);
 
     if (preferredRecordTester != null)
     {

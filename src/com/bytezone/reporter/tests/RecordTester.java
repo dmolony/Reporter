@@ -36,13 +36,16 @@ public class RecordTester
       textTester.testRecord (record);
   }
 
-  public void testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
+  public Score testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
   {
     ReportTester reportTester = new ReportTester (reportMaker, textMaker);
     reportTesters.add (reportTester);
+    //    System.out.printf ("%-10s %-10s %-10s%n", recordMaker, textMaker, reportMaker);
 
     for (Record record : records)
       reportTester.testRecord (record);
+
+    return new Score (recordMaker, textMaker, reportMaker, reportTester.getRatio ());
   }
 
   public TextMaker getPreferredTextMaker ()
@@ -66,7 +69,7 @@ public class RecordTester
     ReportMaker preferredReportMaker = null;
 
     for (ReportTester reportTester : reportTesters)
-      if (reportTester.getRatio () > max)
+      if (reportTester.getRatio () >= max)
       {
         max = reportTester.getRatio ();
         preferredReportMaker = reportTester.reportMaker;
@@ -89,8 +92,7 @@ public class RecordTester
     text.append ("  " + textMaker);
 
     for (ReportTester reportTester : reportTesters)
-      text.append (String.format (" %s %3d", reportTester.reportMaker,
-                                  reportTester.validRecords));
+      text.append (String.format (" %s", reportTester));
 
     ReportMaker preferredReportMaker = getPreferredReportMaker ();
     String reportMaker =
