@@ -150,7 +150,7 @@ public class AsaReport extends DefaultReportMaker
       return false;
 
     // check for program listing
-    if (record.length > 4)
+    if (record.recordNumber == 0 && record.length > 4)
     {
       int digits = 0;
       for (int i = 0; i < 4; i++)
