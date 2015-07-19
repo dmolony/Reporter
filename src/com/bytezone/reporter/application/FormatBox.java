@@ -35,31 +35,19 @@ public class FormatBox extends VBox
     recordsBox.setPadding (new Insets (10));
 
     for (RecordMaker recordMaker : recordMakers)
-    {
-      RadioButton button = addRecordTypeButton (recordMaker, recordsGroup, rebuild);
-      recordMakerButtons.add (button);
-      recordsBox.getChildren ().add (button);
-    }
+      addButton (recordMaker, recordsGroup, rebuild, recordMakerButtons, recordsBox);
 
     VBox encodingsBox = new VBox (10);
     encodingsBox.setPadding (new Insets (10));
 
     for (TextMaker textMaker : textMakers)
-    {
-      RadioButton button = addEncodingTypeButton (textMaker, encodingsGroup, paginate);
-      textMakerButtons.add (button);
-      encodingsBox.getChildren ().add (button);
-    }
+      addButton (textMaker, encodingsGroup, paginate, textMakerButtons, encodingsBox);
 
     VBox reportsBox = new VBox (10);
     reportsBox.setPadding (new Insets (10));
 
     for (ReportMaker reportMaker : reportMakers)
-    {
-      RadioButton button = addFormatTypeButton (reportMaker, reportsGroup, paginate);
-      reportMakerButtons.add (button);
-      reportsBox.getChildren ().add (button);
-    }
+      addButton (reportMaker, reportsGroup, paginate, reportMakerButtons, reportsBox);
 
     VBox formattingBox = new VBox ();
 
@@ -102,36 +90,15 @@ public class FormatBox extends VBox
     return titledPane;
   }
 
-  private RadioButton addRecordTypeButton (RecordMaker recordMaker, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
+  private RadioButton addButton (Object userData, ToggleGroup group,
+      EventHandler<ActionEvent> evt, List<RadioButton> buttonList, VBox vbox)
   {
-    RadioButton button = addRadioButton (recordMaker.toString (), group, evt);
-    button.setUserData (recordMaker);
-    return button;
-  }
-
-  private RadioButton addEncodingTypeButton (TextMaker textMaker, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = addRadioButton (textMaker.toString (), group, evt);
-    button.setUserData (textMaker);
-    return button;
-  }
-
-  private RadioButton addFormatTypeButton (ReportMaker reportMaker, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = addRadioButton (reportMaker.toString (), group, evt);
-    button.setUserData (reportMaker);
-    return button;
-  }
-
-  private RadioButton addRadioButton (String text, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = new RadioButton (text);
+    RadioButton button = new RadioButton (userData.toString ());
     button.setToggleGroup (group);
     button.setOnAction (evt);
+    button.setUserData (userData);
+    buttonList.add (button);
+    vbox.getChildren ().add (button);
     return button;
   }
 }
