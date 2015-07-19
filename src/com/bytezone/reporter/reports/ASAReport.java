@@ -149,6 +149,20 @@ public class AsaReport extends DefaultReportMaker
     if (c != ' ' && c != '0' && c != '1' && c != '-')
       return false;
 
+    // check for program listing
+    if (record.length > 4)
+    {
+      int digits = 0;
+      for (int i = 0; i < 4; i++)
+      {
+        c = textMaker.getChar (record.buffer[record.offset + i] & 0xFF);
+        if (c == '0' || c == '1')
+          ++digits;
+      }
+      if (digits == 4)
+        return false;
+    }
+
     return textMaker.test (record);
   }
 }
