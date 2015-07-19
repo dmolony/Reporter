@@ -6,10 +6,10 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class Score implements Comparable<Score>
 {
-  RecordMaker recordMaker;
-  TextMaker textMaker;
-  ReportMaker reportMaker;
-  double score;
+  public final RecordMaker recordMaker;
+  public final TextMaker textMaker;
+  public final ReportMaker reportMaker;
+  public final double score;
 
   public Score (RecordMaker recordMaker, TextMaker textMaker, ReportMaker reportMaker,
       double score)

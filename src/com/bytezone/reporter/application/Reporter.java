@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -38,20 +39,15 @@ import com.bytezone.reporter.text.TextMaker;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Reporter extends Application
@@ -110,35 +106,17 @@ public class Reporter extends Application
   private final RecordMaker ravel = new RavelRecordMaker ();
   private final RecordMaker none = new NoRecordMaker ();
 
+  private final FormatBox formatBox = new FormatBox ();
   private final BorderPane borderPane = new BorderPane ();
   private WindowSaver windowSaver;
   private Preferences prefs;
 
-  private final ToggleGroup recordsGroup = new ToggleGroup ();
-  private RadioButton btnCrlf;
-  private RadioButton btnCr;
-  private RadioButton btnLf;
-  private RadioButton btnFb80;
-  private RadioButton btnFb132;
-  private RadioButton btnFb252;
-  private RadioButton btnVB;
-  private RadioButton btnNvb;
-  private RadioButton btnRDW;
-  private RadioButton btnRavel;
-  private RadioButton btnNoSplit;
-
-  private final ToggleGroup encodingsGroup = new ToggleGroup ();
-  private RadioButton btnAscii;
-  private RadioButton btnEbcdic;
-
-  private final ToggleGroup reportsGroup = new ToggleGroup ();
-  private RadioButton btnText;
-  private RadioButton btnHex;
-  private RadioButton btnNatload;
-  private RadioButton btnAsa;
-
   private List<Record> records;
   private final MenuBar menuBar = new MenuBar ();
+
+  private List<RecordMaker> recordMakers;
+  private List<TextMaker> textMakers;
+  private List<ReportMaker> reportMakers;
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -160,7 +138,17 @@ public class Reporter extends Application
     }
     System.out.println ("-----------------------------------------------------");
 
-    borderPane.setRight (getFormattingBox ());
+    EventHandler<ActionEvent> rebuild = e -> createRecords ();
+    EventHandler<ActionEvent> paginate = e -> paginate ();
+
+    recordMakers = new ArrayList<> (
+        Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb, ravel, fb80, fb132, fb252));
+    textMakers = new ArrayList<> (Arrays.asList (asciiTextMaker, ebcdicTextMaker));
+    reportMakers =
+        new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
+
+    borderPane.setRight (formatBox.getFormattingBox (rebuild, paginate, recordMakers,
+                                                     textMakers, reportMakers));
 
     crlf.setBuffer (buffer);
     cr.setBuffer (buffer);
@@ -173,9 +161,6 @@ public class Reporter extends Application
     rdw.setBuffer (buffer);
     ravel.setBuffer (buffer);
     none.setBuffer (buffer);
-
-    //    RecordMaker[] recordMakers =
-    //        { none, crlf, cr, lf, vb, rdw, ravel, fb80, fb132, fb252, nvb };
 
     selectButtons (buffer, fileLength);
     createRecords ();
@@ -204,48 +189,6 @@ public class Reporter extends Application
 
   private void selectButtons (byte[] buffer, long fileLength)
   {
-    RecordMaker probableRecordMaker = null;
-
-    RadioButton[] testableButtons =
-        { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb, btnRavel };
-    RadioButton[] recordMakerButtons = { btnCrlf, btnLf, btnCr, btnVB, btnRDW, btnNvb,
-                                         btnRavel, btnFb80, btnFb132, btnFb252 };
-    int maxRecords = 0;
-    for (RadioButton button : testableButtons)
-    {
-      RecordMaker recordMaker = (RecordMaker) button.getUserData ();
-      List<Record> records = recordMaker.test (buffer, 0, 1024);
-      if (records.size () <= 2)
-        button.setDisable (true);
-      else if (records.size () > maxRecords)
-      {
-        probableRecordMaker = recordMaker;
-        maxRecords = records.size ();
-      }
-    }
-
-    if (fileLength % 80 != 0)
-      btnFb80.setDisable (true);
-    else if (probableRecordMaker == null)
-      probableRecordMaker = (RecordMaker) btnFb80.getUserData ();
-
-    if (fileLength % 132 != 0)
-      btnFb132.setDisable (true);
-    else if (probableRecordMaker == null)
-      probableRecordMaker = (RecordMaker) btnFb132.getUserData ();
-
-    if (fileLength % 252 != 0)
-      btnFb252.setDisable (true);
-    else//if (probableRecordMaker == null)
-      probableRecordMaker = (RecordMaker) btnFb252.getUserData ();
-
-    for (RadioButton button : recordMakerButtons)
-      if (probableRecordMaker == button.getUserData ())
-      {
-        button.setSelected (true);
-        break;
-      }
-
     List<RecordTester> testers = new ArrayList<> ();
     testers.add (new RecordTester (crlf, buffer, 1024));
     testers.add (new RecordTester (cr, buffer, 1024));
@@ -258,16 +201,6 @@ public class Reporter extends Application
     testers.add (new RecordTester (fb132, buffer, 1320));
     testers.add (new RecordTester (fb252, buffer, 2520));
 
-    List<TextMaker> textMakers = new ArrayList<> ();
-    textMakers.add (asciiTextMaker);
-    textMakers.add (ebcdicTextMaker);
-
-    List<ReportMaker> reportMakers = new ArrayList<> ();
-    reportMakers.add (textReport);
-    reportMakers.add (asaReport);
-    reportMakers.add (natloadReport);
-
-    RecordTester preferredRecordTester = null;
     List<Score> scores = new ArrayList<> ();
 
     for (RecordTester tester : testers)
@@ -282,37 +215,12 @@ public class Reporter extends Application
           scores.add (tester.testReportMaker (reportMaker, textMaker));
       }
 
-    for (RecordTester tester : testers)
-      System.out.println (tester);
-
     Collections.sort (scores);
     Collections.reverse (scores);
     for (Score score : scores)
       System.out.println (score);
 
-    if (preferredRecordTester != null)
-    {
-      TextMaker textMaker = preferredRecordTester.getPreferredTextMaker ();
-      if (textMaker == asciiTextMaker)
-        btnAscii.setSelected (true);
-      else
-        btnEbcdic.setSelected (true);
-
-      ReportMaker reportMaker = preferredRecordTester.getPreferredReportMaker ();
-      if (reportMaker == natloadReport)
-        btnNatload.setSelected (true);
-      else if (reportMaker == asaReport)
-        btnAsa.setSelected (true);
-      else if (reportMaker == textReport)
-        btnText.setSelected (true);
-      else
-        btnHex.setSelected (true);
-    }
-    else
-    {
-      btnEbcdic.setSelected (true);
-      btnHex.setSelected (true);
-    }
+    formatBox.select (scores.get (0));
   }
 
   private Menu getFileMenu ()
@@ -327,7 +235,6 @@ public class Reporter extends Application
 
     menuFile.getItems ().addAll (menuItemOpen, menuItemSave, menuItemPageSetup,
                                  menuItemPrint, menuItemClose);
-
     return menuFile;
   }
 
@@ -391,50 +298,9 @@ public class Reporter extends Application
   {
   }
 
-  private TitledPane addTitledPane (String text, Node contents, VBox parent)
-  {
-    TitledPane titledPane = new TitledPane (text, contents);
-    titledPane.setCollapsible (false);
-    parent.getChildren ().add (titledPane);
-    return titledPane;
-  }
-
-  private RadioButton addRecordTypeButton (RecordMaker recordMaker, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = addRadioButton (recordMaker.toString (), group, evt);
-    button.setUserData (recordMaker);
-    return button;
-  }
-
-  private RadioButton addEncodingTypeButton (TextMaker textMaker, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = addRadioButton (textMaker.toString (), group, evt);
-    button.setUserData (textMaker);
-    return button;
-  }
-
-  private RadioButton addFormatTypeButton (ReportMaker reportMaker, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = addRadioButton (reportMaker.toString (), group, evt);
-    button.setUserData (reportMaker);
-    return button;
-  }
-
-  private RadioButton addRadioButton (String text, ToggleGroup group,
-      EventHandler<ActionEvent> evt)
-  {
-    RadioButton button = new RadioButton (text);
-    button.setToggleGroup (group);
-    button.setOnAction (evt);
-    return button;
-  }
-
   private void createRecords ()
   {
-    RadioButton btn = (RadioButton) recordsGroup.getSelectedToggle ();
+    RadioButton btn = (RadioButton) formatBox.recordsGroup.getSelectedToggle ();
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
 
     hexReport.setRecords (records);
@@ -453,10 +319,10 @@ public class Reporter extends Application
 
   private void paginate ()
   {
-    RadioButton btn = (RadioButton) encodingsGroup.getSelectedToggle ();
+    RadioButton btn = (RadioButton) formatBox.encodingsGroup.getSelectedToggle ();
     TextMaker textMaker = (TextMaker) btn.getUserData ();
 
-    btn = (RadioButton) reportsGroup.getSelectedToggle ();
+    btn = (RadioButton) formatBox.reportsGroup.getSelectedToggle ();
     ReportMaker reportMaker = (ReportMaker) btn.getUserData ();
 
     hexReport.setTextMaker (textMaker);
@@ -466,55 +332,6 @@ public class Reporter extends Application
 
     currentReport = reportMaker;
     borderPane.setCenter (currentReport.getPagination ());
-  }
-
-  private VBox getFormattingBox ()
-  {
-    EventHandler<ActionEvent> rebuild = e -> createRecords ();
-    EventHandler<ActionEvent> paginate = e -> paginate ();
-
-    VBox recordsBox = new VBox (10);
-    recordsBox.setPadding (new Insets (10));
-
-    btnNoSplit = addRecordTypeButton (none, recordsGroup, rebuild);
-    btnNoSplit.setSelected (true);
-    btnCrlf = addRecordTypeButton (crlf, recordsGroup, rebuild);
-    btnCr = addRecordTypeButton (cr, recordsGroup, rebuild);
-    btnLf = addRecordTypeButton (lf, recordsGroup, rebuild);
-    btnVB = addRecordTypeButton (vb, recordsGroup, rebuild);
-    btnRDW = addRecordTypeButton (rdw, recordsGroup, rebuild);
-    btnRavel = addRecordTypeButton (ravel, recordsGroup, rebuild);
-    btnFb80 = addRecordTypeButton (fb80, recordsGroup, rebuild);
-    btnFb132 = addRecordTypeButton (fb132, recordsGroup, rebuild);
-    btnFb252 = addRecordTypeButton (fb252, recordsGroup, rebuild);
-    btnNvb = addRecordTypeButton (nvb, recordsGroup, rebuild);
-
-    recordsBox.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb,
-                                      btnRDW, btnRavel, btnFb80, btnFb132, btnFb252);
-
-    VBox encodingsBox = new VBox (10);
-    encodingsBox.setPadding (new Insets (10));
-
-    btnAscii = addEncodingTypeButton (asciiTextMaker, encodingsGroup, paginate);
-    btnEbcdic = addEncodingTypeButton (ebcdicTextMaker, encodingsGroup, paginate);
-    encodingsBox.getChildren ().addAll (btnAscii, btnEbcdic);
-
-    VBox reportsBox = new VBox (10);
-    reportsBox.setPadding (new Insets (10));
-
-    btnHex = addFormatTypeButton (hexReport, reportsGroup, paginate);
-    btnText = addFormatTypeButton (textReport, reportsGroup, paginate);
-    btnAsa = addFormatTypeButton (asaReport, reportsGroup, paginate);
-    btnNatload = addFormatTypeButton (natloadReport, reportsGroup, paginate);
-    reportsBox.getChildren ().addAll (btnNatload, btnHex, btnText, btnAsa);
-
-    VBox formattingBox = new VBox ();
-
-    addTitledPane ("Records", recordsBox, formattingBox);
-    addTitledPane ("Encoding", encodingsBox, formattingBox);
-    addTitledPane ("Formatting", reportsBox, formattingBox);
-
-    return formattingBox;
   }
 
   private void spaceReport ()
