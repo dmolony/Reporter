@@ -40,12 +40,12 @@ public class RecordTester
   {
     ReportTester reportTester = new ReportTester (reportMaker, textMaker);
     reportTesters.add (reportTester);
-    //    System.out.printf ("%-10s %-10s %-10s%n", recordMaker, textMaker, reportMaker);
 
     for (Record record : records)
       reportTester.testRecord (record);
 
-    return new Score (recordMaker, textMaker, reportMaker, reportTester.getRatio ());
+    return new Score (recordMaker, textMaker, reportMaker, reportTester.getRatio (),
+        records.size ());
   }
 
   public TextMaker getPreferredTextMaker ()

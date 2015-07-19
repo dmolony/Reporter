@@ -43,7 +43,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -113,7 +112,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 10;
+    int choice = 0;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -176,16 +175,14 @@ public class Reporter extends Application
   private void selectButtons (byte[] buffer, long fileLength)
   {
     List<RecordTester> testers = new ArrayList<> ();
-    testers.add (new RecordTester (crlf, buffer, 1024));
-    testers.add (new RecordTester (cr, buffer, 1024));
-    testers.add (new RecordTester (lf, buffer, 1024));
-    testers.add (new RecordTester (vb, buffer, 1024));
-    testers.add (new RecordTester (rdw, buffer, 1024));
-    testers.add (new RecordTester (nvb, buffer, 1024));
-    testers.add (new RecordTester (ravel, buffer, 1024));
-    testers.add (new RecordTester (fb80, buffer, 800));
-    testers.add (new RecordTester (fb132, buffer, 1320));
-    testers.add (new RecordTester (fb252, buffer, 2520));
+    for (RecordMaker recordMaker : recordMakers)
+      if (recordMaker instanceof FbRecordMaker)
+      {
+        int length = ((FbRecordMaker) recordMaker).getRecordLength ();
+        testers.add (new RecordTester (recordMaker, buffer, 10 * length));
+      }
+      else
+        testers.add (new RecordTester (recordMaker, buffer, 1024));
 
     List<Score> scores = new ArrayList<> ();
 
@@ -201,12 +198,28 @@ public class Reporter extends Application
           scores.add (tester.testReportMaker (reportMaker, textMaker));
       }
 
-    Collections.sort (scores);
-    Collections.reverse (scores);
+    List<Score> perfectScores = new ArrayList<> ();
     for (Score score : scores)
+      if (score.score == 100.0)
+        perfectScores.add (score);
+
+    Collections.reverse (reportMakers);
+    loop: for (ReportMaker reportMaker : reportMakers)
+      for (Score score : perfectScores)
+        if (score.reportMaker == reportMaker)
+        {
+          formatBox.select (score);
+          System.out.println (score);
+          System.out.println ();
+          break loop;
+        }
+
+    //    Collections.sort (scores);
+    //    Collections.reverse (scores);
+    for (Score score : perfectScores)
       System.out.println (score);
 
-    formatBox.select (scores.get (0));
+    //    formatBox.select (scores.get (0));
   }
 
   private Menu getFileMenu ()
@@ -266,11 +279,9 @@ public class Reporter extends Application
 
         if (printerJob.printDialog ())
         {
-          RadioButton btn = (RadioButton) formatBox.reportsGroup.getSelectedToggle ();
-          ReportMaker reportMaker = (ReportMaker) btn.getUserData ();
-          printerJob.setPrintable (reportMaker);
           try
           {
+            printerJob.setPrintable (formatBox.getSelectedReportMaker ());
             printerJob.print ();
           }
           catch (PrinterException e)
@@ -303,8 +314,7 @@ public class Reporter extends Application
     for (ReportMaker reportMaker : reportMakers)
       reportMaker.setTextMaker (textMaker);
 
-    ReportMaker reportMaker = formatBox.getSelectedReportMaker ();
-    borderPane.setCenter (reportMaker.getPagination ());
+    borderPane.setCenter (formatBox.getSelectedReportMaker ().getPagination ());
   }
 
   private void spaceReport ()

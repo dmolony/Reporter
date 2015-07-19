@@ -91,14 +91,15 @@ public class NatloadReport extends DefaultReportMaker
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
+    if (record.length == 0)
+      return false;
+
     byte[] buffer = record.buffer;
     int offset = record.offset;
     int length = record.length;
 
     byte b1 = buffer[offset];
     byte b2 = buffer[offset + 1];
-
-    //    System.out.println (record.getHex (textMaker));
 
     if (record.recordNumber == 0)
       return b1 == (byte) 0xFF

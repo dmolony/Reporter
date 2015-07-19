@@ -10,14 +10,16 @@ public class Score implements Comparable<Score>
   public final TextMaker textMaker;
   public final ReportMaker reportMaker;
   public final double score;
+  public final int sampleSize;
 
   public Score (RecordMaker recordMaker, TextMaker textMaker, ReportMaker reportMaker,
-      double score)
+      double score, int sampleSize)
   {
     this.reportMaker = reportMaker;
     this.textMaker = textMaker;
     this.recordMaker = recordMaker;
     this.score = score;
+    this.sampleSize = sampleSize;
   }
 
   @Override
@@ -29,7 +31,7 @@ public class Score implements Comparable<Score>
   @Override
   public String toString ()
   {
-    return String.format ("%-10s %-10s %-10s %6.2f", recordMaker, textMaker, reportMaker,
-                          score);
+    return String.format ("%-10s %-10s %-10s %6.2f %3d", recordMaker, textMaker,
+                          reportMaker, score, sampleSize);
   }
 }

@@ -62,29 +62,25 @@ public abstract class DefaultReportMaker implements ReportMaker
   public void setTextMaker (TextMaker textMaker)
   {
     this.textMaker = textMaker;
-    paginate ();
-    pagination.setPageCount (pages.size ());
   }
 
   @Override
   public void setNewlineBetweenRecords (boolean value)
   {
     newlineBetweenRecords = value;
-    //    paginate ();
-    //    pagination.setPageCount (pages.size ());
   }
 
   @Override
   public void setAllowSplitRecords (boolean value)
   {
     allowSplitRecords = value;
-    //    paginate ();
-    //    pagination.setPageCount (pages.size ());
   }
 
   @Override
   public Pagination getPagination ()
   {
+    paginate ();
+    pagination.setPageCount (pages.size ());
     return pagination;
   }
 

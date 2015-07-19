@@ -33,24 +33,20 @@ public class FormatBox extends VBox
   {
     VBox recordsBox = new VBox (10);
     recordsBox.setPadding (new Insets (10));
-
     for (RecordMaker recordMaker : recordMakers)
       addButton (recordMaker, recordsGroup, rebuild, recordMakerButtons, recordsBox);
 
     VBox encodingsBox = new VBox (10);
     encodingsBox.setPadding (new Insets (10));
-
     for (TextMaker textMaker : textMakers)
       addButton (textMaker, encodingsGroup, paginate, textMakerButtons, encodingsBox);
 
     VBox reportsBox = new VBox (10);
     reportsBox.setPadding (new Insets (10));
-
     for (ReportMaker reportMaker : reportMakers)
       addButton (reportMaker, reportsGroup, paginate, reportMakerButtons, reportsBox);
 
     VBox formattingBox = new VBox ();
-
     addTitledPane ("Records", recordsBox, formattingBox);
     addTitledPane ("Encoding", encodingsBox, formattingBox);
     addTitledPane ("Formatting", reportsBox, formattingBox);

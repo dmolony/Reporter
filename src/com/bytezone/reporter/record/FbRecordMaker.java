@@ -13,6 +13,11 @@ public class FbRecordMaker extends DefaultRecordMaker
     this.recordLength = recordLength;
   }
 
+  public int getRecordLength ()
+  {
+    return recordLength;
+  }
+
   @Override
   protected List<Record> split (byte[] buffer, int offset, int length)
   {
