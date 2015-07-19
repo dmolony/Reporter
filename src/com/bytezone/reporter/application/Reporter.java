@@ -114,7 +114,7 @@ public class Reporter extends Application
   private WindowSaver windowSaver;
   private Preferences prefs;
 
-  private final ToggleGroup splitterGroup = new ToggleGroup ();
+  private final ToggleGroup recordsGroup = new ToggleGroup ();
   private RadioButton btnCrlf;
   private RadioButton btnCr;
   private RadioButton btnLf;
@@ -127,11 +127,11 @@ public class Reporter extends Application
   private RadioButton btnRavel;
   private RadioButton btnNoSplit;
 
-  private final ToggleGroup encodingGroup = new ToggleGroup ();
+  private final ToggleGroup encodingsGroup = new ToggleGroup ();
   private RadioButton btnAscii;
   private RadioButton btnEbcdic;
 
-  private final ToggleGroup formattingGroup = new ToggleGroup ();
+  private final ToggleGroup reportsGroup = new ToggleGroup ();
   private RadioButton btnText;
   private RadioButton btnHex;
   private RadioButton btnNatload;
@@ -160,57 +160,7 @@ public class Reporter extends Application
     }
     System.out.println ("-----------------------------------------------------");
 
-    EventHandler<ActionEvent> rebuild = e -> createRecords ();
-    EventHandler<ActionEvent> paginate = e -> paginate ();
-
-    VBox vbox1 = new VBox (10);
-    vbox1.setPadding (new Insets (10));
-
-    RecordMaker[] recordMakers =
-        { none, crlf, cr, lf, vb, rdw, ravel, fb80, fb132, fb252, nvb };
-    btnNoSplit = addRecordTypeButton (none, splitterGroup, rebuild);
-    btnNoSplit.setSelected (true);
-    btnCrlf = addRecordTypeButton (crlf, splitterGroup, rebuild);
-    btnCr = addRecordTypeButton (cr, splitterGroup, rebuild);
-    btnLf = addRecordTypeButton (lf, splitterGroup, rebuild);
-    btnVB = addRecordTypeButton (vb, splitterGroup, rebuild);
-    btnRDW = addRecordTypeButton (rdw, splitterGroup, rebuild);
-    btnRavel = addRecordTypeButton (ravel, splitterGroup, rebuild);
-    btnFb80 = addRecordTypeButton (fb80, splitterGroup, rebuild);
-    btnFb132 = addRecordTypeButton (fb132, splitterGroup, rebuild);
-    btnFb252 = addRecordTypeButton (fb252, splitterGroup, rebuild);
-    btnNvb = addRecordTypeButton (nvb, splitterGroup, rebuild);
-
-    vbox1.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb, btnRDW,
-                                 btnRavel, btnFb80, btnFb132, btnFb252);
-
-    VBox vbox2 = new VBox (10);
-    vbox2.setPadding (new Insets (10));
-
-    btnAscii =
-        addEncodingTypeButton ("ASCII", encodingGroup, paginate, EncodingType.ASCII);
-    btnEbcdic =
-        addEncodingTypeButton ("EBCDIC", encodingGroup, paginate, EncodingType.EBCDIC);
-    vbox2.getChildren ().addAll (btnAscii, btnEbcdic);
-
-    VBox vbox3 = new VBox (10);
-    vbox3.setPadding (new Insets (10));
-
-    btnHex = addFormatTypeButton ("Binary", formattingGroup, paginate, FormatType.HEX);
-    btnText = addFormatTypeButton ("Text", formattingGroup, paginate, FormatType.TEXT);
-    btnAsa =
-        addFormatTypeButton ("ASA Printer", formattingGroup, paginate, FormatType.ASA);
-    btnNatload =
-        addFormatTypeButton ("NatLoad", formattingGroup, paginate, FormatType.NATLOAD);
-    vbox3.getChildren ().addAll (btnHex, btnText, btnAsa, btnNatload);
-
-    VBox vbox = new VBox ();
-
-    addTitledPane ("Records", vbox1, vbox);
-    addTitledPane ("Encoding", vbox2, vbox);
-    addTitledPane ("Formatting", vbox3, vbox);
-
-    borderPane.setRight (vbox);
+    borderPane.setRight (getFormattingBox ());
 
     crlf.setBuffer (buffer);
     cr.setBuffer (buffer);
@@ -224,11 +174,14 @@ public class Reporter extends Application
     ravel.setBuffer (buffer);
     none.setBuffer (buffer);
 
+    //    RecordMaker[] recordMakers =
+    //        { none, crlf, cr, lf, vb, rdw, ravel, fb80, fb132, fb252, nvb };
+
     selectButtons (buffer, fileLength);
     createRecords ();
 
-    TreePanel treePanel = new TreePanel ();
-    treePanel.initialise ();
+    //    TreePanel treePanel = new TreePanel ();
+    //    treePanel.initialise ();
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
@@ -454,19 +407,19 @@ public class Reporter extends Application
     return button;
   }
 
-  private RadioButton addEncodingTypeButton (String text, ToggleGroup group,
-      EventHandler<ActionEvent> evt, EncodingType encodingType)
+  private RadioButton addEncodingTypeButton (TextMaker textMaker, ToggleGroup group,
+      EventHandler<ActionEvent> evt)
   {
-    RadioButton button = addRadioButton (text, group, evt);
-    button.setUserData (encodingType);
+    RadioButton button = addRadioButton (textMaker.toString (), group, evt);
+    button.setUserData (textMaker);
     return button;
   }
 
-  private RadioButton addFormatTypeButton (String text, ToggleGroup group,
-      EventHandler<ActionEvent> evt, FormatType formatType)
+  private RadioButton addFormatTypeButton (ReportMaker reportMaker, ToggleGroup group,
+      EventHandler<ActionEvent> evt)
   {
-    RadioButton button = addRadioButton (text, group, evt);
-    button.setUserData (formatType);
+    RadioButton button = addRadioButton (reportMaker.toString (), group, evt);
+    button.setUserData (reportMaker);
     return button;
   }
 
@@ -481,7 +434,7 @@ public class Reporter extends Application
 
   private void createRecords ()
   {
-    RadioButton btn = (RadioButton) splitterGroup.getSelectedToggle ();
+    RadioButton btn = (RadioButton) recordsGroup.getSelectedToggle ();
     records = ((RecordMaker) btn.getUserData ()).getRecords ();
 
     hexReport.setRecords (records);
@@ -500,37 +453,68 @@ public class Reporter extends Application
 
   private void paginate ()
   {
-    RadioButton btn = (RadioButton) encodingGroup.getSelectedToggle ();
-    EncodingType encodingType = (EncodingType) btn.getUserData ();
+    RadioButton btn = (RadioButton) encodingsGroup.getSelectedToggle ();
+    TextMaker textMaker = (TextMaker) btn.getUserData ();
 
-    btn = (RadioButton) formattingGroup.getSelectedToggle ();
-    FormatType formatType = (FormatType) btn.getUserData ();
-
-    TextMaker textMaker =
-        encodingType == EncodingType.EBCDIC ? ebcdicTextMaker : asciiTextMaker;
+    btn = (RadioButton) reportsGroup.getSelectedToggle ();
+    ReportMaker reportMaker = (ReportMaker) btn.getUserData ();
 
     hexReport.setTextMaker (textMaker);
     textReport.setTextMaker (textMaker);
     natloadReport.setTextMaker (textMaker);
     asaReport.setTextMaker (textMaker);
 
-    switch (formatType)
-    {
-      case HEX:
-        currentReport = hexReport;
-        break;
-      case TEXT:
-        currentReport = textReport;
-        break;
-      case NATLOAD:
-        currentReport = natloadReport;
-        break;
-      case ASA:
-        currentReport = asaReport;
-        break;
-    }
-
+    currentReport = reportMaker;
     borderPane.setCenter (currentReport.getPagination ());
+  }
+
+  private VBox getFormattingBox ()
+  {
+    EventHandler<ActionEvent> rebuild = e -> createRecords ();
+    EventHandler<ActionEvent> paginate = e -> paginate ();
+
+    VBox recordsBox = new VBox (10);
+    recordsBox.setPadding (new Insets (10));
+
+    btnNoSplit = addRecordTypeButton (none, recordsGroup, rebuild);
+    btnNoSplit.setSelected (true);
+    btnCrlf = addRecordTypeButton (crlf, recordsGroup, rebuild);
+    btnCr = addRecordTypeButton (cr, recordsGroup, rebuild);
+    btnLf = addRecordTypeButton (lf, recordsGroup, rebuild);
+    btnVB = addRecordTypeButton (vb, recordsGroup, rebuild);
+    btnRDW = addRecordTypeButton (rdw, recordsGroup, rebuild);
+    btnRavel = addRecordTypeButton (ravel, recordsGroup, rebuild);
+    btnFb80 = addRecordTypeButton (fb80, recordsGroup, rebuild);
+    btnFb132 = addRecordTypeButton (fb132, recordsGroup, rebuild);
+    btnFb252 = addRecordTypeButton (fb252, recordsGroup, rebuild);
+    btnNvb = addRecordTypeButton (nvb, recordsGroup, rebuild);
+
+    recordsBox.getChildren ().addAll (btnNoSplit, btnCrlf, btnCr, btnLf, btnVB, btnNvb,
+                                      btnRDW, btnRavel, btnFb80, btnFb132, btnFb252);
+
+    VBox encodingsBox = new VBox (10);
+    encodingsBox.setPadding (new Insets (10));
+
+    btnAscii = addEncodingTypeButton (asciiTextMaker, encodingsGroup, paginate);
+    btnEbcdic = addEncodingTypeButton (ebcdicTextMaker, encodingsGroup, paginate);
+    encodingsBox.getChildren ().addAll (btnAscii, btnEbcdic);
+
+    VBox reportsBox = new VBox (10);
+    reportsBox.setPadding (new Insets (10));
+
+    btnHex = addFormatTypeButton (hexReport, reportsGroup, paginate);
+    btnText = addFormatTypeButton (textReport, reportsGroup, paginate);
+    btnAsa = addFormatTypeButton (asaReport, reportsGroup, paginate);
+    btnNatload = addFormatTypeButton (natloadReport, reportsGroup, paginate);
+    reportsBox.getChildren ().addAll (btnNatload, btnHex, btnText, btnAsa);
+
+    VBox formattingBox = new VBox ();
+
+    addTitledPane ("Records", recordsBox, formattingBox);
+    addTitledPane ("Encoding", encodingsBox, formattingBox);
+    addTitledPane ("Formatting", reportsBox, formattingBox);
+
+    return formattingBox;
   }
 
   private void spaceReport ()
