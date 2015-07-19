@@ -82,6 +82,24 @@ public class FormatBox extends VBox
       }
   }
 
+  public RecordMaker getSelectedRecordMaker ()
+  {
+    RadioButton btn = (RadioButton) recordsGroup.getSelectedToggle ();
+    return ((RecordMaker) btn.getUserData ());
+  }
+
+  public TextMaker getSelectedTextMaker ()
+  {
+    RadioButton btn = (RadioButton) encodingsGroup.getSelectedToggle ();
+    return ((TextMaker) btn.getUserData ());
+  }
+
+  public ReportMaker getSelectedReportMaker ()
+  {
+    RadioButton btn = (RadioButton) reportsGroup.getSelectedToggle ();
+    return ((ReportMaker) btn.getUserData ());
+  }
+
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
   {
     TitledPane titledPane = new TitledPane (text, contents);

@@ -55,11 +55,11 @@ public class Reporter extends Application
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
-  private static final String[] fontNames =
-      { "Andale Mono", "Anonymous Pro", "Consolas", "Courier New", "DejaVu Sans Mono",
-        "Hermit", "IBM 3270", "IBM 3270 Narrow", "Inconsolata", "Input Mono",
-        "Input Mono Narrow", "Luculent", "Menlo", "Monaco", "M+ 1m", "Panic Sans",
-        "PT Mono", "Source Code Pro", "Ubuntu Mono", "Monospaced" };
+  //  private static final String[] fontNames =
+  //      { "Andale Mono", "Anonymous Pro", "Consolas", "Courier New", "DejaVu Sans Mono",
+  //        "Hermit", "IBM 3270", "IBM 3270 Narrow", "Inconsolata", "Input Mono",
+  //        "Input Mono Narrow", "Luculent", "Menlo", "Monaco", "M+ 1m", "Panic Sans",
+  //        "PT Mono", "Source Code Pro", "Ubuntu Mono", "Monospaced" };
 
   private static final String[] files =
       { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
@@ -76,23 +76,9 @@ public class Reporter extends Application
   private static final String[] formats =
       { "N", "T", "N", "N", "N", "N", "N", "T", "T", "T", "T", "T", "T" };
 
-  enum EncodingType
-  {
-    ASCII, EBCDIC
-  }
-
-  enum FormatType
-  {
-    HEX, TEXT, NATLOAD, ASA
-  }
-  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
-  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
-
-  private final ReportMaker hexReport = new HexReport ();
-  private final ReportMaker textReport = new TextReport ();
-  private final ReportMaker natloadReport = new NatloadReport ();
-  private final ReportMaker asaReport = new AsaReport ();
-  private ReportMaker currentReport;
+  private List<RecordMaker> recordMakers;
+  private List<TextMaker> textMakers;
+  private List<ReportMaker> reportMakers;
 
   private final RecordMaker crlf = new CrlfRecordMaker ();
   private final RecordMaker cr = new CrRecordMaker ();
@@ -106,17 +92,22 @@ public class Reporter extends Application
   private final RecordMaker ravel = new RavelRecordMaker ();
   private final RecordMaker none = new NoRecordMaker ();
 
+  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
+  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+
+  private final ReportMaker hexReport = new HexReport ();
+  private final ReportMaker textReport = new TextReport ();
+  private final ReportMaker natloadReport = new NatloadReport ();
+  private final ReportMaker asaReport = new AsaReport ();
+
   private final FormatBox formatBox = new FormatBox ();
   private final BorderPane borderPane = new BorderPane ();
+  private final MenuBar menuBar = new MenuBar ();
+
   private WindowSaver windowSaver;
   private Preferences prefs;
 
   private List<Record> records;
-  private final MenuBar menuBar = new MenuBar ();
-
-  private List<RecordMaker> recordMakers;
-  private List<TextMaker> textMakers;
-  private List<ReportMaker> reportMakers;
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -141,6 +132,10 @@ public class Reporter extends Application
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
     EventHandler<ActionEvent> paginate = e -> paginate ();
 
+    hexReport.setNewlineBetweenRecords (true);
+    hexReport.setAllowSplitRecords (true);
+    asaReport.setAllowSplitRecords (true);
+
     recordMakers = new ArrayList<> (
         Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb, ravel, fb80, fb132, fb252));
     textMakers = new ArrayList<> (Arrays.asList (asciiTextMaker, ebcdicTextMaker));
@@ -150,17 +145,8 @@ public class Reporter extends Application
     borderPane.setRight (formatBox.getFormattingBox (rebuild, paginate, recordMakers,
                                                      textMakers, reportMakers));
 
-    crlf.setBuffer (buffer);
-    cr.setBuffer (buffer);
-    lf.setBuffer (buffer);
-    fb80.setBuffer (buffer);
-    fb132.setBuffer (buffer);
-    fb252.setBuffer (buffer);
-    vb.setBuffer (buffer);
-    nvb.setBuffer (buffer);
-    rdw.setBuffer (buffer);
-    ravel.setBuffer (buffer);
-    none.setBuffer (buffer);
+    for (RecordMaker recordMaker : recordMakers)
+      recordMaker.setBuffer (buffer);
 
     selectButtons (buffer, fileLength);
     createRecords ();
@@ -280,7 +266,9 @@ public class Reporter extends Application
 
         if (printerJob.printDialog ())
         {
-          printerJob.setPrintable (currentReport);
+          RadioButton btn = (RadioButton) formatBox.reportsGroup.getSelectedToggle ();
+          ReportMaker reportMaker = (ReportMaker) btn.getUserData ();
+          printerJob.setPrintable (reportMaker);
           try
           {
             printerJob.print ();
@@ -300,18 +288,10 @@ public class Reporter extends Application
 
   private void createRecords ()
   {
-    RadioButton btn = (RadioButton) formatBox.recordsGroup.getSelectedToggle ();
-    records = ((RecordMaker) btn.getUserData ()).getRecords ();
+    records = formatBox.getSelectedRecordMaker ().getRecords ();
 
-    hexReport.setRecords (records);
-    hexReport.setNewlineBetweenRecords (true);
-    hexReport.setAllowSplitRecords (true);
-
-    textReport.setRecords (records);
-    natloadReport.setRecords (records);
-
-    asaReport.setRecords (records);
-    asaReport.setAllowSplitRecords (true);
+    for (ReportMaker reportMaker : reportMakers)
+      reportMaker.setRecords (records);
 
     spaceReport ();
     paginate ();
@@ -319,19 +299,12 @@ public class Reporter extends Application
 
   private void paginate ()
   {
-    RadioButton btn = (RadioButton) formatBox.encodingsGroup.getSelectedToggle ();
-    TextMaker textMaker = (TextMaker) btn.getUserData ();
+    TextMaker textMaker = formatBox.getSelectedTextMaker ();
+    for (ReportMaker reportMaker : reportMakers)
+      reportMaker.setTextMaker (textMaker);
 
-    btn = (RadioButton) formatBox.reportsGroup.getSelectedToggle ();
-    ReportMaker reportMaker = (ReportMaker) btn.getUserData ();
-
-    hexReport.setTextMaker (textMaker);
-    textReport.setTextMaker (textMaker);
-    natloadReport.setTextMaker (textMaker);
-    asaReport.setTextMaker (textMaker);
-
-    currentReport = reportMaker;
-    borderPane.setCenter (currentReport.getPagination ());
+    ReportMaker reportMaker = formatBox.getSelectedReportMaker ();
+    borderPane.setCenter (reportMaker.getPagination ());
   }
 
   private void spaceReport ()
