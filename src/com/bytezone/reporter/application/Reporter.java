@@ -140,7 +140,8 @@ public class Reporter extends Application implements FileSelectionListener
       if (recordMaker instanceof FbRecordMaker)
       {
         int length = ((FbRecordMaker) recordMaker).getRecordLength ();
-        testers.add (new RecordTester (recordMaker, buffer, 10 * length));
+        if (recordMaker.getBuffer ().length % length == 0)
+          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
       }
       else
         testers.add (new RecordTester (recordMaker, buffer, 1024));
