@@ -3,6 +3,7 @@ package com.bytezone.reporter.application;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,7 +34,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class Reporter extends Application
+public class Reporter extends Application implements FileSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
@@ -107,6 +108,7 @@ public class Reporter extends Application
     createRecords ();
 
     TreePanel treePanel = new TreePanel ();
+    treePanel.addFileSelectionListener (this);
     borderPane.setLeft (treePanel.getTree ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
@@ -254,5 +256,11 @@ public class Reporter extends Application
   public static void main (String[] args)
   {
     launch (args);
+  }
+
+  @Override
+  public void fileSelected (File file)
+  {
+    System.out.println (file);
   }
 }

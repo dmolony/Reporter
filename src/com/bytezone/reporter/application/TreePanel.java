@@ -1,6 +1,8 @@
 package com.bytezone.reporter.application;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TreeItem;
@@ -25,7 +27,7 @@ public class TreePanel
 
   private void selection (TreeItem<FileNode> fileNode)
   {
-    System.out.println (fileNode.getValue ());
+    notifyFileSelected (fileNode.getValue ().file);
   }
 
   private void findFiles (FileNode directory, TreeItem<FileNode> parent)
@@ -44,22 +46,37 @@ public class TreePanel
     else
       parent.getChildren ().add (treeItem);
   }
+  private final Set<FileSelectionListener> fileSelectionListeners = new HashSet<> ();
+
+  void notifyFileSelected (File file)
+  {
+    for (FileSelectionListener listener : fileSelectionListeners)
+      listener.fileSelected (file);
+  }
+
+  public void addFileSelectionListener (FileSelectionListener listener)
+  {
+    fileSelectionListeners.add (listener);
+  }
+
+  public void removeFileSelectionListener (FileSelectionListener listener)
+  {
+    fileSelectionListeners.remove (listener);
+  }
 
   class FileNode
   {
     File file;
-    String text;
 
     public FileNode (File file)
     {
       this.file = file;
-      this.text = file.getName ();
     }
 
     @Override
     public String toString ()
     {
-      return text;
+      return file.getName ();
     }
   }
 }
