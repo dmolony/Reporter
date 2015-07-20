@@ -34,6 +34,9 @@ public class TreePanel
 
   private void selection (TreeItem<FileNode> fileNode)
   {
+    if (fileNode == null)
+      return;
+
     if (!fileNode.getValue ().file.isDirectory ())
       notifyFileSelected (fileNode.getValue ().file);
   }
