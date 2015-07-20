@@ -7,32 +7,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 
-import com.bytezone.reporter.record.CrRecordMaker;
-import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
-import com.bytezone.reporter.record.LfRecordMaker;
-import com.bytezone.reporter.record.NoRecordMaker;
-import com.bytezone.reporter.record.NvbRecordMaker;
-import com.bytezone.reporter.record.RavelRecordMaker;
-import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
-import com.bytezone.reporter.record.VbRecordMaker;
-import com.bytezone.reporter.reports.AsaReport;
-import com.bytezone.reporter.reports.HexReport;
-import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.tests.RecordTester;
 import com.bytezone.reporter.tests.Score;
-import com.bytezone.reporter.text.AsciiTextMaker;
-import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.application.Application;
@@ -78,26 +63,6 @@ public class Reporter extends Application
   private List<TextMaker> textMakers;
   private List<ReportMaker> reportMakers;
 
-  private final RecordMaker crlf = new CrlfRecordMaker ();
-  private final RecordMaker cr = new CrRecordMaker ();
-  private final RecordMaker lf = new LfRecordMaker ();
-  private final RecordMaker fb80 = new FbRecordMaker (80);
-  private final RecordMaker fb132 = new FbRecordMaker (132);
-  private final RecordMaker fb252 = new FbRecordMaker (252);
-  private final RecordMaker vb = new VbRecordMaker ();
-  private final RecordMaker nvb = new NvbRecordMaker ();
-  private final RecordMaker rdw = new RdwRecordMaker ();
-  private final RecordMaker ravel = new RavelRecordMaker ();
-  private final RecordMaker none = new NoRecordMaker ();
-
-  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
-  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
-
-  private final ReportMaker hexReport = new HexReport ();
-  private final ReportMaker textReport = new TextReport ();
-  private final ReportMaker natloadReport = new NatloadReport ();
-  private final ReportMaker asaReport = new AsaReport ();
-
   private final FormatBox formatBox = new FormatBox ();
   private final BorderPane borderPane = new BorderPane ();
   private final MenuBar menuBar = new MenuBar ();
@@ -111,7 +76,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 1;
+    int choice = 12;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -128,20 +93,12 @@ public class Reporter extends Application
     System.out.println ("-----------------------------------------------------");
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
-    EventHandler<ActionEvent> paginate = e -> paginate ();
 
-    hexReport.setNewlineBetweenRecords (true);
-    hexReport.setAllowSplitRecords (true);
-    asaReport.setAllowSplitRecords (true);
+    borderPane.setRight (formatBox.getFormattingBox (rebuild));
 
-    recordMakers = new ArrayList<> (
-        Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb, ravel, fb80, fb132, fb252));
-    textMakers = new ArrayList<> (Arrays.asList (asciiTextMaker, ebcdicTextMaker));
-    reportMakers =
-        new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
-
-    borderPane.setRight (formatBox.getFormattingBox (rebuild, paginate, recordMakers,
-                                                     textMakers, reportMakers));
+    recordMakers = formatBox.getRecordMakers ();
+    textMakers = formatBox.getTextMakers ();
+    reportMakers = formatBox.getReportMakers ();
 
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
@@ -149,8 +106,8 @@ public class Reporter extends Application
     test (buffer, fileLength);
     createRecords ();
 
-    //    TreePanel treePanel = new TreePanel ();
-    //    treePanel.initialise ();
+    TreePanel treePanel = new TreePanel ();
+    borderPane.setLeft (treePanel.getTree ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
@@ -282,41 +239,11 @@ public class Reporter extends Application
     for (ReportMaker reportMaker : reportMakers)
       reportMaker.setRecords (records);
 
-    spaceReport ();
-    paginate ();
-  }
-
-  private void paginate ()
-  {
     TextMaker textMaker = formatBox.getSelectedTextMaker ();
     for (ReportMaker reportMaker : reportMakers)
       reportMaker.setTextMaker (textMaker);
 
     borderPane.setCenter (formatBox.getSelectedReportMaker ().getPagination ());
-  }
-
-  private void spaceReport ()
-  {
-    List<byte[]> buffers = new ArrayList<> ();
-    int totalData = 0;
-    int bufferLength = 0;
-    for (Record record : records)
-    {
-      totalData += record.length;
-      if (!buffers.contains (record.buffer))
-      {
-        buffers.add (record.buffer);
-        bufferLength += record.buffer.length;
-      }
-    }
-
-    System.out.println ("--------------------------");
-    System.out.printf ("Records     : %,8d%n", records.size ());
-    System.out.printf ("Buffer space: %,8d%nrecord space: %,8d%n", bufferLength,
-                       totalData);
-    System.out.printf ("Utilisation :      %6.2f%%%n",
-                       ((float) totalData / bufferLength * 100));
-    System.out.println ("--------------------------");
   }
 
   private void closeWindow ()

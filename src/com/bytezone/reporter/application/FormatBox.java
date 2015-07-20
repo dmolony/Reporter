@@ -1,12 +1,28 @@
 package com.bytezone.reporter.application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.bytezone.reporter.record.CrRecordMaker;
+import com.bytezone.reporter.record.CrlfRecordMaker;
+import com.bytezone.reporter.record.FbRecordMaker;
+import com.bytezone.reporter.record.LfRecordMaker;
+import com.bytezone.reporter.record.NoRecordMaker;
+import com.bytezone.reporter.record.NvbRecordMaker;
+import com.bytezone.reporter.record.RavelRecordMaker;
+import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.RecordMaker;
+import com.bytezone.reporter.record.VbRecordMaker;
+import com.bytezone.reporter.reports.AsaReport;
+import com.bytezone.reporter.reports.HexReport;
+import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
+import com.bytezone.reporter.reports.TextReport;
 import com.bytezone.reporter.tests.Score;
+import com.bytezone.reporter.text.AsciiTextMaker;
+import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.event.ActionEvent;
@@ -32,28 +48,44 @@ class FormatBox extends VBox
   private List<TextMaker> textMakers;
   private List<ReportMaker> reportMakers;
 
-  public VBox getFormattingBox (EventHandler<ActionEvent> rebuild,
-      EventHandler<ActionEvent> paginate, List<RecordMaker> recordMakers,
-      List<TextMaker> textMakers, List<ReportMaker> reportMakers)
+  private final RecordMaker crlf = new CrlfRecordMaker ();
+  private final RecordMaker cr = new CrRecordMaker ();
+  private final RecordMaker lf = new LfRecordMaker ();
+  private final RecordMaker fb80 = new FbRecordMaker (80);
+  private final RecordMaker fb132 = new FbRecordMaker (132);
+  private final RecordMaker fb252 = new FbRecordMaker (252);
+  private final RecordMaker vb = new VbRecordMaker ();
+  private final RecordMaker nvb = new NvbRecordMaker ();
+  private final RecordMaker rdw = new RdwRecordMaker ();
+  private final RecordMaker ravel = new RavelRecordMaker ();
+  private final RecordMaker none = new NoRecordMaker ();
+
+  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
+  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+
+  private final ReportMaker hexReport = new HexReport ();
+  private final ReportMaker textReport = new TextReport ();
+  private final ReportMaker natloadReport = new NatloadReport ();
+  private final ReportMaker asaReport = new AsaReport ();
+
+  public VBox getFormattingBox (EventHandler<ActionEvent> rebuild)
   {
-    this.recordMakers = recordMakers;
-    this.textMakers = textMakers;
-    this.reportMakers = reportMakers;
+    hexReport.setNewlineBetweenRecords (true);
+    hexReport.setAllowSplitRecords (true);
+    asaReport.setAllowSplitRecords (true);
 
-    VBox recordsBox = new VBox (10);
-    recordsBox.setPadding (new Insets (10));
-    for (RecordMaker recordMaker : recordMakers)
-      addButton (recordMaker, recordsGroup, rebuild, recordMakerButtons, recordsBox);
+    recordMakers = new ArrayList<> (
+        Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb, ravel, fb80, fb132, fb252));
+    textMakers = new ArrayList<> (Arrays.asList (asciiTextMaker, ebcdicTextMaker));
+    reportMakers =
+        new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
 
-    VBox encodingsBox = new VBox (10);
-    encodingsBox.setPadding (new Insets (10));
-    for (TextMaker textMaker : textMakers)
-      addButton (textMaker, encodingsGroup, paginate, textMakerButtons, encodingsBox);
-
-    VBox reportsBox = new VBox (10);
-    reportsBox.setPadding (new Insets (10));
-    for (ReportMaker reportMaker : reportMakers)
-      addButton (reportMaker, reportsGroup, paginate, reportMakerButtons, reportsBox);
+    VBox recordsBox =
+        createVBox (recordMakers, recordMakerButtons, recordsGroup, rebuild);
+    VBox encodingsBox =
+        createVBox (textMakers, textMakerButtons, encodingsGroup, rebuild);
+    VBox reportsBox =
+        createVBox (reportMakers, reportMakerButtons, reportsGroup, rebuild);
 
     VBox formattingBox = new VBox ();
     addTitledPane ("Records", recordsBox, formattingBox);
@@ -63,7 +95,32 @@ class FormatBox extends VBox
     return formattingBox;
   }
 
-  public void select (Score score)
+  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
+      ToggleGroup group, EventHandler<ActionEvent> action)
+  {
+    VBox vbox = new VBox (10);
+    vbox.setPadding (new Insets (10));
+    for (Object userData : objects)
+    {
+      RadioButton button = new RadioButton (userData.toString ());
+      buttons.add (button);
+      button.setToggleGroup (group);
+      button.setOnAction (action);
+      button.setUserData (userData);
+      vbox.getChildren ().add (button);
+    }
+    return vbox;
+  }
+
+  private TitledPane addTitledPane (String text, Node contents, VBox parent)
+  {
+    TitledPane titledPane = new TitledPane (text, contents);
+    titledPane.setCollapsible (false);
+    parent.getChildren ().add (titledPane);
+    return titledPane;
+  }
+
+  void select (Score score)
   {
     selectButton (recordMakerButtons, score.recordMaker);
     selectButton (textMakerButtons, score.textMaker);
@@ -110,58 +167,45 @@ class FormatBox extends VBox
         if (score.reportMaker == reportMaker)
         {
           select (score);
-          System.out.println (score);
-          System.out.println ();
           break loop;
         }
-
-    for (Score score : perfectScores)
-      System.out.println (score);
   }
 
   private void disable (List<? extends Object> missingObjects, List<RadioButton> buttons)
   {
-    for (Object o : missingObjects)
+    for (Object userData : missingObjects)
       for (RadioButton button : buttons)
-        if (button.getUserData () == o)
+        if (button.getUserData () == userData)
           button.setDisable (true);
   }
 
-  public RecordMaker getSelectedRecordMaker ()
+  List<RecordMaker> getRecordMakers ()
   {
-    RadioButton btn = (RadioButton) recordsGroup.getSelectedToggle ();
-    return ((RecordMaker) btn.getUserData ());
+    return recordMakers;
   }
 
-  public TextMaker getSelectedTextMaker ()
+  List<TextMaker> getTextMakers ()
   {
-    RadioButton btn = (RadioButton) encodingsGroup.getSelectedToggle ();
-    return ((TextMaker) btn.getUserData ());
+    return textMakers;
   }
 
-  public ReportMaker getSelectedReportMaker ()
+  List<ReportMaker> getReportMakers ()
   {
-    RadioButton btn = (RadioButton) reportsGroup.getSelectedToggle ();
-    return ((ReportMaker) btn.getUserData ());
+    return reportMakers;
   }
 
-  private TitledPane addTitledPane (String text, Node contents, VBox parent)
+  RecordMaker getSelectedRecordMaker ()
   {
-    TitledPane titledPane = new TitledPane (text, contents);
-    titledPane.setCollapsible (false);
-    parent.getChildren ().add (titledPane);
-    return titledPane;
+    return (RecordMaker) recordsGroup.getSelectedToggle ().getUserData ();
   }
 
-  private RadioButton addButton (Object userData, ToggleGroup group,
-      EventHandler<ActionEvent> evt, List<RadioButton> buttonList, VBox vbox)
+  TextMaker getSelectedTextMaker ()
   {
-    RadioButton button = new RadioButton (userData.toString ());
-    button.setToggleGroup (group);
-    button.setOnAction (evt);
-    button.setUserData (userData);
-    buttonList.add (button);
-    vbox.getChildren ().add (button);
-    return button;
+    return (TextMaker) encodingsGroup.getSelectedToggle ().getUserData ();
+  }
+
+  ReportMaker getSelectedReportMaker ()
+  {
+    return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
   }
 }

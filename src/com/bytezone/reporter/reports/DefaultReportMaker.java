@@ -21,7 +21,7 @@ public abstract class DefaultReportMaker implements ReportMaker
 {
   protected final String name;
   protected final List<Page> pages;
-  protected final Pagination pagination = new Pagination ();
+  protected Pagination pagination;
   protected final TextArea textArea;
 
   protected List<Record> records;
@@ -44,7 +44,6 @@ public abstract class DefaultReportMaker implements ReportMaker
     textArea.setEditable (false);
 
     pages = new ArrayList<> ();
-    pagination.setPageFactory ( (Integer pageIndex) -> getFormattedPage (pageIndex));
 
     plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
     boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
@@ -79,6 +78,8 @@ public abstract class DefaultReportMaker implements ReportMaker
   @Override
   public Pagination getPagination ()
   {
+    pagination = new Pagination ();
+    pagination.setPageFactory ( (Integer pageIndex) -> getFormattedPage (pageIndex));
     paginate ();
     pagination.setPageCount (pages.size ());
     return pagination;

@@ -2,34 +2,64 @@ package com.bytezone.reporter.application;
 
 import java.io.File;
 
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
 public class TreePanel
 {
-  private final TreeView<File> fileTree = new TreeView<> ();
+  private final TreeView<FileNode> fileTree = new TreeView<> ();
 
-  public void initialise ()
+  public TreeView<FileNode> getTree ()
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    File currentDir = new File (home);// current directory
-    findFiles (currentDir, null);
+    FileNode directory = new FileNode (new File (home));
+    findFiles (directory, null);
+
+    ChangeListener<TreeItem<FileNode>> changeListener =
+        (observable, oldValue, newValue) -> selection (newValue);
+    fileTree.getSelectionModel ().selectedItemProperty ().addListener (changeListener);
+
+    return fileTree;
   }
 
-  private void findFiles (File directory, TreeItem<File> parent)
+  private void selection (TreeItem<FileNode> fileNode)
   {
-    TreeItem<File> root = new TreeItem<> (directory);
-    root.setExpanded (true);
+    System.out.println (fileNode.getValue ());
+  }
 
-    for (File file : directory.listFiles ())
+  private void findFiles (FileNode directory, TreeItem<FileNode> parent)
+  {
+    TreeItem<FileNode> treeItem = new TreeItem<> (directory);
+    treeItem.setExpanded (true);
+
+    for (File file : directory.file.listFiles ())
       if (file.isDirectory ())
-        findFiles (file, root);
+        findFiles (new FileNode (file), treeItem);
       else
-        root.getChildren ().add (new TreeItem<> (file));
+        treeItem.getChildren ().add (new TreeItem<FileNode> (new FileNode (file)));
 
     if (parent == null)
-      fileTree.setRoot (root);
+      fileTree.setRoot (treeItem);
     else
-      parent.getChildren ().add (root);
+      parent.getChildren ().add (treeItem);
+  }
+
+  class FileNode
+  {
+    File file;
+    String text;
+
+    public FileNode (File file)
+    {
+      this.file = file;
+      this.text = file.getName ();
+    }
+
+    @Override
+    public String toString ()
+    {
+      return text;
+    }
   }
 }

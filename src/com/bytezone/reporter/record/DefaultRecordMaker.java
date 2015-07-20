@@ -41,8 +41,8 @@ public abstract class DefaultRecordMaker implements RecordMaker
   @Override
   public List<Record> getRecords ()
   {
-    if (records == null)
-      records = split (buffer, 0, buffer.length);
+    //    if (records == null)
+    records = split (buffer, 0, buffer.length);
 
     return records;
   }
