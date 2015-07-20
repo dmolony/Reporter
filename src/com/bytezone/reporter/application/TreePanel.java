@@ -3,6 +3,7 @@ package com.bytezone.reporter.application;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TreeItem;
@@ -11,6 +12,12 @@ import javafx.scene.control.TreeView;
 public class TreePanel
 {
   private final TreeView<FileNode> fileTree = new TreeView<> ();
+  private final Preferences prefs;
+
+  public TreePanel (Preferences prefs)
+  {
+    this.prefs = prefs;
+  }
 
   public TreeView<FileNode> getTree ()
   {
@@ -27,7 +34,8 @@ public class TreePanel
 
   private void selection (TreeItem<FileNode> fileNode)
   {
-    notifyFileSelected (fileNode.getValue ().file);
+    if (!fileNode.getValue ().file.isDirectory ())
+      notifyFileSelected (fileNode.getValue ().file);
   }
 
   private void findFiles (FileNode directory, TreeItem<FileNode> parent)

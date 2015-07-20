@@ -157,12 +157,18 @@ class FormatBox extends VBox
         missingReportMakers.remove (score.reportMaker);
       }
 
+    enable (recordMakerButtons);
+    enable (textMakerButtons);
+    enable (reportMakerButtons);
+
     disable (missingRecordMakers, recordMakerButtons);
     disable (missingTextMakers, textMakerButtons);
     disable (missingReportMakers, reportMakerButtons);
 
-    Collections.reverse (reportMakers);
-    loop: for (ReportMaker reportMaker : reportMakers)
+    List<ReportMaker> reversedReportMakers = new ArrayList<> ();
+    reversedReportMakers.addAll (reportMakers);
+    Collections.reverse (reversedReportMakers);
+    loop: for (ReportMaker reportMaker : reversedReportMakers)
       for (Score score : perfectScores)
         if (score.reportMaker == reportMaker)
         {
@@ -177,6 +183,12 @@ class FormatBox extends VBox
       for (RadioButton button : buttons)
         if (button.getUserData () == userData)
           button.setDisable (true);
+  }
+
+  private void enable (List<RadioButton> buttons)
+  {
+    for (RadioButton button : buttons)
+      button.setDisable (false);
   }
 
   List<RecordMaker> getRecordMakers ()

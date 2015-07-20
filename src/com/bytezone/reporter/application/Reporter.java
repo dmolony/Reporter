@@ -4,6 +4,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -78,9 +79,8 @@ public class Reporter extends Application implements FileSelectionListener
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
     int choice = 12;
-    Path currentPath = Paths.get (home + files[choice]);
 
-    long fileLength = currentPath.toFile ().length ();
+    Path currentPath = Paths.get (home + files[choice]);
     byte[] buffer = Files.readAllBytes (currentPath);
 
     System.out.println ("-----------------------------------------------------");
@@ -104,10 +104,10 @@ public class Reporter extends Application implements FileSelectionListener
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
 
-    test (buffer, fileLength);
+    test (buffer);
     createRecords ();
 
-    TreePanel treePanel = new TreePanel ();
+    TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
     borderPane.setLeft (treePanel.getTree ());
 
@@ -130,7 +130,7 @@ public class Reporter extends Application implements FileSelectionListener
     primaryStage.show ();
   }
 
-  private void test (byte[] buffer, long fileLength)
+  private void test (byte[] buffer)
   {
     List<RecordTester> testers = new ArrayList<> ();
     for (RecordMaker recordMaker : recordMakers)
@@ -262,5 +262,18 @@ public class Reporter extends Application implements FileSelectionListener
   public void fileSelected (File file)
   {
     System.out.println (file);
+    try
+    {
+      byte[] buffer = Files.readAllBytes (file.toPath ());
+      for (RecordMaker recordMaker : recordMakers)
+        recordMaker.setBuffer (buffer);
+
+      test (buffer);
+      createRecords ();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+    }
   }
 }
