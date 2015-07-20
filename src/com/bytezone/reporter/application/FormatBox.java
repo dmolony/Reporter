@@ -18,7 +18,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 
-public class FormatBox extends VBox
+class FormatBox extends VBox
 {
   final ToggleGroup recordsGroup = new ToggleGroup ();
   final ToggleGroup encodingsGroup = new ToggleGroup ();
@@ -65,29 +65,22 @@ public class FormatBox extends VBox
 
   public void select (Score score)
   {
-    for (RadioButton button : recordMakerButtons)
-      if (button.getUserData () == score.recordMaker)
-      {
-        button.setSelected (true);
-        break;
-      }
+    selectButton (recordMakerButtons, score.recordMaker);
+    selectButton (textMakerButtons, score.textMaker);
+    selectButton (reportMakerButtons, score.reportMaker);
+  }
 
-    for (RadioButton button : textMakerButtons)
-      if (button.getUserData () == score.textMaker)
-      {
-        button.setSelected (true);
-        break;
-      }
-
-    for (RadioButton button : reportMakerButtons)
-      if (button.getUserData () == score.reportMaker)
+  private void selectButton (List<RadioButton> buttons, Object userData)
+  {
+    for (RadioButton button : buttons)
+      if (button.getUserData () == userData)
       {
         button.setSelected (true);
         break;
       }
   }
 
-  public void process (List<Score> scores)
+  void process (List<Score> scores)
   {
     List<RecordMaker> missingRecordMakers = new ArrayList<> ();
     List<TextMaker> missingTextMakers = new ArrayList<> ();
