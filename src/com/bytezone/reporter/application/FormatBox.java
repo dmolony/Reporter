@@ -51,6 +51,7 @@ class FormatBox extends VBox
   private final RecordMaker crlf = new CrlfRecordMaker ();
   private final RecordMaker cr = new CrRecordMaker ();
   private final RecordMaker lf = new LfRecordMaker ();
+  private final RecordMaker fb63 = new FbRecordMaker (63);
   private final RecordMaker fb80 = new FbRecordMaker (80);
   private final RecordMaker fb132 = new FbRecordMaker (132);
   private final RecordMaker fb252 = new FbRecordMaker (252);
@@ -74,8 +75,8 @@ class FormatBox extends VBox
     hexReport.setAllowSplitRecords (true);
     asaReport.setAllowSplitRecords (true);
 
-    recordMakers = new ArrayList<> (
-        Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb, ravel, fb80, fb132, fb252));
+    recordMakers = new ArrayList<> (Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb,
+                                                   ravel, fb63, fb80, fb132, fb252));
     textMakers = new ArrayList<> (Arrays.asList (asciiTextMaker, ebcdicTextMaker));
     reportMakers =
         new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
@@ -156,6 +157,8 @@ class FormatBox extends VBox
         missingTextMakers.remove (score.textMaker);
         missingReportMakers.remove (score.reportMaker);
       }
+
+    missingRecordMakers.remove (none);
 
     enable (recordMakerButtons);
     enable (textMakerButtons);

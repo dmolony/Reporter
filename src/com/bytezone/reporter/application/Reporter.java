@@ -33,6 +33,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Reporter extends Application implements FileSelectionListener
@@ -95,7 +96,9 @@ public class Reporter extends Application implements FileSelectionListener
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
 
-    borderPane.setRight (formatBox.getFormattingBox (rebuild));
+    VBox formatVBox = formatBox.getFormattingBox (rebuild);
+    formatVBox.setPrefWidth (150);
+    borderPane.setRight (formatVBox);
 
     recordMakers = formatBox.getRecordMakers ();
     textMakers = formatBox.getTextMakers ();
@@ -261,7 +264,6 @@ public class Reporter extends Application implements FileSelectionListener
   @Override
   public void fileSelected (File file)
   {
-    System.out.println (file);
     try
     {
       byte[] buffer = Files.readAllBytes (file.toPath ());
