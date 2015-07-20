@@ -1,6 +1,7 @@
 package com.bytezone.reporter.application;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.bytezone.reporter.record.RecordMaker;
@@ -27,10 +28,18 @@ public class FormatBox extends VBox
   private final List<RadioButton> textMakerButtons = new ArrayList<> ();
   private final List<RadioButton> reportMakerButtons = new ArrayList<> ();
 
+  private List<RecordMaker> recordMakers;
+  private List<TextMaker> textMakers;
+  private List<ReportMaker> reportMakers;
+
   public VBox getFormattingBox (EventHandler<ActionEvent> rebuild,
       EventHandler<ActionEvent> paginate, List<RecordMaker> recordMakers,
       List<TextMaker> textMakers, List<ReportMaker> reportMakers)
   {
+    this.recordMakers = recordMakers;
+    this.textMakers = textMakers;
+    this.reportMakers = reportMakers;
+
     VBox recordsBox = new VBox (10);
     recordsBox.setPadding (new Insets (10));
     for (RecordMaker recordMaker : recordMakers)
@@ -76,6 +85,53 @@ public class FormatBox extends VBox
         button.setSelected (true);
         break;
       }
+  }
+
+  public void process (List<Score> scores)
+  {
+    List<RecordMaker> missingRecordMakers = new ArrayList<> ();
+    List<TextMaker> missingTextMakers = new ArrayList<> ();
+    List<ReportMaker> missingReportMakers = new ArrayList<> ();
+
+    missingRecordMakers.addAll (recordMakers);
+    missingTextMakers.addAll (textMakers);
+    missingReportMakers.addAll (reportMakers);
+
+    List<Score> perfectScores = new ArrayList<> ();
+    for (Score score : scores)
+      if (score.score == 100.0)
+      {
+        perfectScores.add (score);
+        missingRecordMakers.remove (score.recordMaker);
+        missingTextMakers.remove (score.textMaker);
+        missingReportMakers.remove (score.reportMaker);
+      }
+
+    disable (missingRecordMakers, recordMakerButtons);
+    disable (missingTextMakers, textMakerButtons);
+    disable (missingReportMakers, reportMakerButtons);
+
+    Collections.reverse (reportMakers);
+    loop: for (ReportMaker reportMaker : reportMakers)
+      for (Score score : perfectScores)
+        if (score.reportMaker == reportMaker)
+        {
+          select (score);
+          System.out.println (score);
+          System.out.println ();
+          break loop;
+        }
+
+    for (Score score : perfectScores)
+      System.out.println (score);
+  }
+
+  private void disable (List<? extends Object> missingObjects, List<RadioButton> buttons)
+  {
+    for (Object o : missingObjects)
+      for (RadioButton button : buttons)
+        if (button.getUserData () == o)
+          button.setDisable (true);
   }
 
   public RecordMaker getSelectedRecordMaker ()

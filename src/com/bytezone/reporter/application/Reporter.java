@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -112,7 +111,7 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 1;
+    int choice = 12;
     Path currentPath = Paths.get (home + files[choice]);
 
     long fileLength = currentPath.toFile ().length ();
@@ -147,7 +146,7 @@ public class Reporter extends Application
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
 
-    selectButtons (buffer, fileLength);
+    test (buffer, fileLength);
     createRecords ();
 
     //    TreePanel treePanel = new TreePanel ();
@@ -172,7 +171,7 @@ public class Reporter extends Application
     primaryStage.show ();
   }
 
-  private void selectButtons (byte[] buffer, long fileLength)
+  private void test (byte[] buffer, long fileLength)
   {
     List<RecordTester> testers = new ArrayList<> ();
     for (RecordMaker recordMaker : recordMakers)
@@ -198,28 +197,7 @@ public class Reporter extends Application
           scores.add (tester.testReportMaker (reportMaker, textMaker));
       }
 
-    List<Score> perfectScores = new ArrayList<> ();
-    for (Score score : scores)
-      if (score.score == 100.0)
-        perfectScores.add (score);
-
-    Collections.reverse (reportMakers);
-    loop: for (ReportMaker reportMaker : reportMakers)
-      for (Score score : perfectScores)
-        if (score.reportMaker == reportMaker)
-        {
-          formatBox.select (score);
-          System.out.println (score);
-          System.out.println ();
-          break loop;
-        }
-
-    //    Collections.sort (scores);
-    //    Collections.reverse (scores);
-    for (Score score : perfectScores)
-      System.out.println (score);
-
-    //    formatBox.select (scores.get (0));
+    formatBox.process (scores);
   }
 
   private Menu getFileMenu ()
