@@ -6,18 +6,14 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 
-import com.bytezone.reporter.record.FbRecordMaker;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.tests.RecordTester;
-import com.bytezone.reporter.tests.Score;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.application.Application;
@@ -31,6 +27,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -69,7 +66,10 @@ public class Reporter extends Application implements FileSelectionListener
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
-    borderPane.setLeft (treePanel.getTree ());
+    StackPane stackPane = new StackPane ();
+    stackPane.setPrefWidth (200);
+    stackPane.getChildren ().add (treePanel.getTree ());
+    borderPane.setLeft (stackPane);
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
@@ -87,36 +87,6 @@ public class Reporter extends Application implements FileSelectionListener
       primaryStage.centerOnScreen ();
 
     primaryStage.show ();
-  }
-
-  private void test (byte[] buffer)
-  {
-    List<RecordTester> testers = new ArrayList<> ();
-    for (RecordMaker recordMaker : recordMakers)
-      if (recordMaker instanceof FbRecordMaker)
-      {
-        int length = ((FbRecordMaker) recordMaker).getRecordLength ();
-        if (recordMaker.getBuffer ().length % length == 0)
-          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
-      }
-      else
-        testers.add (new RecordTester (recordMaker, buffer, 1024));
-
-    List<Score> scores = new ArrayList<> ();
-
-    for (RecordTester tester : testers)
-      if (tester.getTotalRecords () > 1)
-      {
-        for (TextMaker textMaker : textMakers)
-          tester.testTextMaker (textMaker);
-
-        TextMaker textMaker = tester.getPreferredTextMaker ();
-
-        for (ReportMaker reportMaker : reportMakers)
-          scores.add (tester.testReportMaker (reportMaker, textMaker));
-      }
-
-    formatBox.process (scores);
   }
 
   private Menu getFileMenu ()
@@ -197,6 +167,7 @@ public class Reporter extends Application implements FileSelectionListener
   private void createRecords ()
   {
     records = formatBox.getSelectedRecordMaker ().getRecords ();
+    System.out.println (records.size ());
 
     for (ReportMaker reportMaker : reportMakers)
       reportMaker.setRecords (records);
@@ -227,7 +198,7 @@ public class Reporter extends Application implements FileSelectionListener
       for (RecordMaker recordMaker : recordMakers)
         recordMaker.setBuffer (buffer);
 
-      test (buffer);
+      formatBox.test (buffer);
       createRecords ();
     }
     catch (IOException e)

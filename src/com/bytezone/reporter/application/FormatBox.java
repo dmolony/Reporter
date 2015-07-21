@@ -20,6 +20,7 @@ import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.reports.TextReport;
+import com.bytezone.reporter.tests.RecordTester;
 import com.bytezone.reporter.tests.Score;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
@@ -29,10 +30,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 class FormatBox extends VBox
 {
@@ -69,8 +73,28 @@ class FormatBox extends VBox
   private final ReportMaker natloadReport = new NatloadReport ();
   private final ReportMaker asaReport = new AsaReport ();
 
+  private final Label lblSizeText = new Label ();
+  private final Label lblRecordsText = new Label ();
+
   public VBox getFormattingBox (EventHandler<ActionEvent> rebuild)
   {
+    Label lblSize = new Label ("Size");
+    Label lblRecords = new Label ("Records");
+    lblSizeText.setFont (Font.font ("monospaced", 14));
+    lblRecordsText.setFont (Font.font ("monospaced", 14));
+
+    HBox hbox1 = new HBox (10);
+    //    hbox1.setPadding (new Insets (10));
+    hbox1.getChildren ().addAll (lblSize, lblSizeText);
+
+    HBox hbox2 = new HBox (10);
+    //    hbox2.setPadding (new Insets (10));
+    hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
+
+    VBox vbox = new VBox (10);
+    vbox.setPadding (new Insets (10));
+    vbox.getChildren ().addAll (hbox1, hbox2);
+
     hexReport.setNewlineBetweenRecords (true);
     hexReport.setAllowSplitRecords (true);
     asaReport.setAllowSplitRecords (true);
@@ -89,6 +113,7 @@ class FormatBox extends VBox
         createVBox (reportMakers, reportMakerButtons, reportsGroup, rebuild);
 
     VBox formattingBox = new VBox ();
+    addTitledPane ("Data", vbox, formattingBox);
     addTitledPane ("Records", recordsBox, formattingBox);
     addTitledPane ("Encoding", encodingsBox, formattingBox);
     addTitledPane ("Formatting", reportsBox, formattingBox);
@@ -101,13 +126,16 @@ class FormatBox extends VBox
   {
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
+
+    // List of RecordMaker/TextMaker/ReportMaker
     for (Object userData : objects)
     {
       RadioButton button = new RadioButton (userData.toString ());
-      buttons.add (button);
       button.setToggleGroup (group);
       button.setOnAction (action);
       button.setUserData (userData);
+
+      buttons.add (button);
       vbox.getChildren ().add (button);
     }
     return vbox;
@@ -119,6 +147,38 @@ class FormatBox extends VBox
     titledPane.setCollapsible (false);
     parent.getChildren ().add (titledPane);
     return titledPane;
+  }
+
+  void test (byte[] buffer)
+  {
+    lblSizeText.setText (String.format ("%,11d", buffer.length));
+
+    List<RecordTester> testers = new ArrayList<> ();
+    for (RecordMaker recordMaker : recordMakers)
+      if (recordMaker instanceof FbRecordMaker)
+      {
+        int length = ((FbRecordMaker) recordMaker).getRecordLength ();
+        if (recordMaker.getBuffer ().length % length == 0)
+          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
+      }
+      else
+        testers.add (new RecordTester (recordMaker, buffer, 1024));
+
+    List<Score> scores = new ArrayList<> ();
+
+    for (RecordTester tester : testers)
+      if (tester.getTotalRecords () > 1)
+      {
+        for (TextMaker textMaker : textMakers)
+          tester.testTextMaker (textMaker);
+
+        TextMaker textMaker = tester.getPreferredTextMaker ();
+
+        for (ReportMaker reportMaker : reportMakers)
+          scores.add (tester.testReportMaker (reportMaker, textMaker));
+      }
+
+    process (scores);
   }
 
   void select (Score score)
