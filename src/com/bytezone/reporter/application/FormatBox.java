@@ -78,17 +78,15 @@ class FormatBox extends VBox
 
   public VBox getFormattingBox (EventHandler<ActionEvent> rebuild)
   {
-    Label lblSize = new Label ("Size");
+    Label lblSize = new Label ("Bytes");
     Label lblRecords = new Label ("Records");
     lblSizeText.setFont (Font.font ("monospaced", 14));
     lblRecordsText.setFont (Font.font ("monospaced", 14));
 
     HBox hbox1 = new HBox (10);
-    //    hbox1.setPadding (new Insets (10));
     hbox1.getChildren ().addAll (lblSize, lblSizeText);
 
     HBox hbox2 = new HBox (10);
-    //    hbox2.setPadding (new Insets (10));
     hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
 
     VBox vbox = new VBox (10);
@@ -114,7 +112,7 @@ class FormatBox extends VBox
 
     VBox formattingBox = new VBox ();
     addTitledPane ("Data", vbox, formattingBox);
-    addTitledPane ("Records", recordsBox, formattingBox);
+    addTitledPane ("Structure", recordsBox, formattingBox);
     addTitledPane ("Encoding", encodingsBox, formattingBox);
     addTitledPane ("Formatting", reportsBox, formattingBox);
 
@@ -151,7 +149,7 @@ class FormatBox extends VBox
 
   void test (byte[] buffer)
   {
-    lblSizeText.setText (String.format ("%,11d", buffer.length));
+    lblSizeText.setText (String.format ("%,12d", buffer.length));
 
     List<RecordTester> testers = new ArrayList<> ();
     for (RecordMaker recordMaker : recordMakers)

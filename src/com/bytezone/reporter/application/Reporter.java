@@ -57,7 +57,7 @@ public class Reporter extends Application implements FileSelectionListener
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
 
     VBox formatVBox = formatBox.getFormattingBox (rebuild);
-    formatVBox.setPrefWidth (150);
+    formatVBox.setPrefWidth (180);
     borderPane.setRight (formatVBox);
 
     recordMakers = formatBox.getRecordMakers ();
