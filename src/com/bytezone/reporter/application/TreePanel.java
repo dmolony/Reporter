@@ -13,10 +13,12 @@ public class TreePanel
 {
   private final TreeView<FileNode> fileTree = new TreeView<> ();
   private final Preferences prefs;
+  private File lastFile;
 
   public TreePanel (Preferences prefs)
   {
     this.prefs = prefs;
+    lastFile = getLastFile ();
   }
 
   public TreeView<FileNode> getTree ()
@@ -38,7 +40,11 @@ public class TreePanel
       return;
 
     if (!fileNode.getValue ().file.isDirectory ())
-      notifyFileSelected (fileNode.getValue ().file);
+    {
+      File file = fileNode.getValue ().file;
+      notifyFileSelected (file);
+      saveLastFile (file);
+    }
   }
 
   private void findFiles (FileNode directory, TreeItem<FileNode> parent)
@@ -73,6 +79,19 @@ public class TreePanel
   public void removeFileSelectionListener (FileSelectionListener listener)
   {
     fileSelectionListeners.remove (listener);
+  }
+
+  private File getLastFile ()
+  {
+    String fileName = prefs.get ("LastFile", "");
+    return fileName.isEmpty () ? null : new File (fileName);
+  }
+
+  private void saveLastFile (File file)
+  {
+    lastFile = file;
+    String fileName = file == null ? "" : lastFile.getAbsolutePath ();
+    prefs.put ("LastFile", fileName);
   }
 
   class FileNode
