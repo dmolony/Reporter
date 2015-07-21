@@ -183,6 +183,12 @@ public abstract class DefaultReportMaker implements ReportMaker
     return (Printable.PAGE_EXISTS);
   }
 
+  @Override
+  public boolean test (Record record, TextMaker textMaker)
+  {
+    return false;
+  }
+
   // fill pages with records
   protected abstract void paginate ();
 

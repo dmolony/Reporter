@@ -11,14 +11,16 @@ import javafx.scene.control.TreeView;
 
 public class TreePanel
 {
+  private final Set<FileSelectionListener> fileSelectionListeners = new HashSet<> ();
   private final TreeView<FileNode> fileTree = new TreeView<> ();
   private final Preferences prefs;
-  private File lastFile;
+  private File selectedFile;
+  private TreeItem<FileNode> selectedTreeItem;
 
   public TreePanel (Preferences prefs)
   {
     this.prefs = prefs;
-    lastFile = getLastFile ();
+    getLastFile ();
   }
 
   public TreeView<FileNode> getTree ()
@@ -31,19 +33,24 @@ public class TreePanel
         (observable, oldValue, newValue) -> selection (newValue);
     fileTree.getSelectionModel ().selectedItemProperty ().addListener (changeListener);
 
+    if (selectedTreeItem != null)
+      fileTree.getSelectionModel ().select (selectedTreeItem);
+
     return fileTree;
   }
 
-  private void selection (TreeItem<FileNode> fileNode)
+  private void selection (TreeItem<FileNode> treeItem)
   {
-    if (fileNode == null)
+    if (treeItem == null)
       return;
 
-    if (!fileNode.getValue ().file.isDirectory ())
+    FileNode fileNode = treeItem.getValue ();
+    if (!fileNode.file.isDirectory ())
     {
-      File file = fileNode.getValue ().file;
-      notifyFileSelected (file);
-      saveLastFile (file);
+      selectedFile = fileNode.file;
+      notifyFileSelected (selectedFile);
+      selectedTreeItem = treeItem;
+      saveLastFile ();
     }
   }
 
@@ -56,14 +63,18 @@ public class TreePanel
       if (file.isDirectory ())
         findFiles (new FileNode (file), treeItem);
       else
-        treeItem.getChildren ().add (new TreeItem<FileNode> (new FileNode (file)));
+      {
+        TreeItem<FileNode> newItem = new TreeItem<> (new FileNode (file));
+        treeItem.getChildren ().add (newItem);
+        if (file.equals (selectedFile))
+          selectedTreeItem = newItem;
+      }
 
     if (parent == null)
       fileTree.setRoot (treeItem);
     else
       parent.getChildren ().add (treeItem);
   }
-  private final Set<FileSelectionListener> fileSelectionListeners = new HashSet<> ();
 
   void notifyFileSelected (File file)
   {
@@ -81,16 +92,15 @@ public class TreePanel
     fileSelectionListeners.remove (listener);
   }
 
-  private File getLastFile ()
+  private void getLastFile ()
   {
     String fileName = prefs.get ("LastFile", "");
-    return fileName.isEmpty () ? null : new File (fileName);
+    selectedFile = fileName.isEmpty () ? null : new File (fileName);
   }
 
-  private void saveLastFile (File file)
+  private void saveLastFile ()
   {
-    lastFile = file;
-    String fileName = file == null ? "" : lastFile.getAbsolutePath ();
+    String fileName = selectedFile == null ? "" : selectedFile.getAbsolutePath ();
     prefs.put ("LastFile", fileName);
   }
 

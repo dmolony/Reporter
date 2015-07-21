@@ -6,8 +6,6 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -41,27 +39,6 @@ public class Reporter extends Application implements FileSelectionListener
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
-  //  private static final String[] fontNames =
-  //      { "Andale Mono", "Anonymous Pro", "Consolas", "Courier New", "DejaVu Sans Mono",
-  //        "Hermit", "IBM 3270", "IBM 3270 Narrow", "Inconsolata", "Input Mono",
-  //        "Input Mono Narrow", "Luculent", "Menlo", "Monaco", "M+ 1m", "Panic Sans",
-  //        "PT Mono", "Source Code Pro", "Ubuntu Mono", "Monospaced" };
-
-  private static final String[] files =
-      { "MOLONYD.NCD", "password.txt", "denis-000.src", "denis-005.src", "SMLIB-001.src",
-        "smutlib001.src", "DBALIB.SRC", "listcat.txt", "iehlist2.txt", "iehlist3.txt",
-        "out-idcams-listcat.txt", "jcl-idcams-listcat.txt", "iehlist.txt" };
-
-  private static final String[] types =
-      { "FB252", "LF", "CRLF", "RAV", "VB", "RDW", "NVB", "FB132", "FB132", "CRLF",
-        "FB132", "FB80", "FB132" };
-
-  private static final String[] encodings =
-      { "E", "A", "E", "E", "E", "E", "E", "E", "E", "A", "E", "E", "E" };
-
-  private static final String[] formats =
-      { "N", "T", "N", "N", "N", "N", "N", "T", "T", "T", "T", "T", "T" };
-
   private List<RecordMaker> recordMakers;
   private List<TextMaker> textMakers;
   private List<ReportMaker> reportMakers;
@@ -78,21 +55,7 @@ public class Reporter extends Application implements FileSelectionListener
   @Override
   public void start (Stage primaryStage) throws Exception
   {
-    String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    int choice = 12;
-
-    Path currentPath = Paths.get (home + files[choice]);
-    byte[] buffer = Files.readAllBytes (currentPath);
-
-    System.out.println ("-----------------------------------------------------");
-    for (int i = 0; i < files.length; i++)
-    {
-      Path path = Paths.get (home + files[i]);
-      long length = path.toFile ().length ();
-      System.out.printf ("%s %2d  %-5s  %s  %s  %-22s %,11d%n", (choice == i) ? "*" : " ",
-                         i, types[i], encodings[i], formats[i], files[i], length);
-    }
-    System.out.println ("-----------------------------------------------------");
+    prefs = Preferences.userNodeForPackage (this.getClass ());
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
 
@@ -103,12 +66,6 @@ public class Reporter extends Application implements FileSelectionListener
     recordMakers = formatBox.getRecordMakers ();
     textMakers = formatBox.getTextMakers ();
     reportMakers = formatBox.getReportMakers ();
-
-    for (RecordMaker recordMaker : recordMakers)
-      recordMaker.setBuffer (buffer);
-
-    test (buffer);
-    createRecords ();
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
@@ -125,7 +82,6 @@ public class Reporter extends Application implements FileSelectionListener
     primaryStage.setScene (scene);
     primaryStage.setOnCloseRequest (e -> closeWindow ());
 
-    prefs = Preferences.userNodeForPackage (this.getClass ());
     windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");
     if (!windowSaver.restoreWindow ())
       primaryStage.centerOnScreen ();
