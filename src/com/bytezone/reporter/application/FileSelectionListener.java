@@ -1,8 +1,8 @@
 package com.bytezone.reporter.application;
 
-import java.io.File;
+import com.bytezone.reporter.application.TreePanel.FileNode;
 
 public interface FileSelectionListener
 {
-  public abstract void fileSelected (File file);
+  public abstract void fileSelected (FileNode fileNode);
 }

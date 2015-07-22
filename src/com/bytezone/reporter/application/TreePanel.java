@@ -49,8 +49,8 @@ public class TreePanel
     if (!fileNode.file.isDirectory ())
     {
       selectedFile = fileNode.file;
-      notifyFileSelected (selectedFile);
       selectedTreeItem = treeItem;
+      notifyFileSelected (fileNode);
       saveLastFile ();
     }
   }
@@ -77,10 +77,10 @@ public class TreePanel
       parent.getChildren ().add (treeItem);
   }
 
-  void notifyFileSelected (File file)
+  void notifyFileSelected (FileNode fileNode)
   {
     for (FileSelectionListener listener : fileSelectionListeners)
-      listener.fileSelected (file);
+      listener.fileSelected (fileNode);
   }
 
   public void addFileSelectionListener (FileSelectionListener listener)
@@ -108,10 +108,12 @@ public class TreePanel
   class FileNode
   {
     File file;
+    ReportData reportData;
 
     public FileNode (File file)
     {
       this.file = file;
+      reportData = new ReportData ();
     }
 
     @Override

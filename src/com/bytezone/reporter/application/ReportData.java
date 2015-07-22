@@ -28,35 +28,57 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class ReportData
 {
-  final List<RecordMaker> recordMakers;
-  final List<TextMaker> textMakers;
-  final List<ReportMaker> reportMakers;
+  private List<RecordMaker> recordMakers;
+  private List<TextMaker> textMakers;
+  private List<ReportMaker> reportMakers;
 
-  private final RecordMaker crlf = new CrlfRecordMaker ();
-  private final RecordMaker cr = new CrRecordMaker ();
-  private final RecordMaker lf = new LfRecordMaker ();
-  private final RecordMaker fb63 = new FbRecordMaker (63);
-  private final RecordMaker fb80 = new FbRecordMaker (80);
-  private final RecordMaker fb132 = new FbRecordMaker (132);
-  private final RecordMaker fb252 = new FbRecordMaker (252);
-  private final RecordMaker vb = new VbRecordMaker ();
-  private final RecordMaker nvb = new NvbRecordMaker ();
-  private final RecordMaker rdw = new RdwRecordMaker ();
-  private final RecordMaker ravel = new RavelRecordMaker ();
-  private final RecordMaker none = new NoRecordMaker ();
+  private RecordMaker crlf;
+  private RecordMaker cr;
+  private RecordMaker lf;
+  private RecordMaker fb63;
+  private RecordMaker fb80;
+  private RecordMaker fb132;
+  private RecordMaker fb252;
+  private RecordMaker vb;
+  private RecordMaker nvb;
+  private RecordMaker rdw;
+  private RecordMaker ravel;
+  private RecordMaker none;
 
-  private final TextMaker asciiTextMaker = new AsciiTextMaker ();
-  private final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
+  private TextMaker asciiTextMaker;
+  private TextMaker ebcdicTextMaker;
 
-  private final ReportMaker hexReport = new HexReport ();
-  private final ReportMaker textReport = new TextReport ();
-  private final ReportMaker natloadReport = new NatloadReport ();
-  private final ReportMaker asaReport = new AsaReport ();
+  private ReportMaker hexReport;
+  private ReportMaker textReport;
+  private ReportMaker natloadReport;
+  private ReportMaker asaReport;
 
   private List<Score> scores;
+  private byte[] buffer;
 
-  public ReportData (byte[] buffer)
+  private void initialise ()
   {
+    crlf = new CrlfRecordMaker ();
+    cr = new CrRecordMaker ();
+    lf = new LfRecordMaker ();
+    fb63 = new FbRecordMaker (63);
+    fb80 = new FbRecordMaker (80);
+    fb132 = new FbRecordMaker (132);
+    fb252 = new FbRecordMaker (252);
+    vb = new VbRecordMaker ();
+    nvb = new NvbRecordMaker ();
+    rdw = new RdwRecordMaker ();
+    ravel = new RavelRecordMaker ();
+    none = new NoRecordMaker ();
+
+    asciiTextMaker = new AsciiTextMaker ();
+    ebcdicTextMaker = new EbcdicTextMaker ();
+
+    hexReport = new HexReport ();
+    textReport = new TextReport ();
+    natloadReport = new NatloadReport ();
+    asaReport = new AsaReport ();
+
     hexReport.setNewlineBetweenRecords (true);
     hexReport.setAllowSplitRecords (true);
     asaReport.setAllowSplitRecords (true);
@@ -68,10 +90,20 @@ public class ReportData
         new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
   }
 
-  private void setBuffer (byte[] buffer)
+  void setBuffer (byte[] buffer)
   {
+    this.buffer = buffer;
+
+    if (reportMakers == null)
+      initialise ();
+
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
+  }
+
+  byte[] getBuffer ()
+  {
+    return buffer;
   }
 
   void setSelections (List<Record> records, TextMaker textMaker)

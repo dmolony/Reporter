@@ -3,7 +3,6 @@ package com.bytezone.reporter.application;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 
+import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -176,14 +176,20 @@ public class Reporter extends Application implements FileSelectionListener
   }
 
   @Override
-  public void fileSelected (File file)
+  public void fileSelected (FileNode fileNode)
   {
     try
     {
-      byte[] buffer = Files.readAllBytes (file.toPath ());
-      reportData = new ReportData (buffer);// move this to the fileNode
+      reportData = fileNode.reportData;
+      byte[] buffer = reportData.getBuffer ();
+      if (buffer == null)
+      {
+        buffer = Files.readAllBytes (fileNode.file.toPath ());
+        reportData.setBuffer (buffer);
+      }
+
       formatBox.setData (reportData, e -> createRecords ());
-      reportData.test (buffer);
+      reportData.test (buffer);// remove buffer later
       formatBox.process ();
       createRecords ();
     }
