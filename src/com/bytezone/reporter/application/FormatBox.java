@@ -2,7 +2,9 @@ package com.bytezone.reporter.application;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
@@ -14,6 +16,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
@@ -21,8 +24,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-class FormatBox extends VBox
+class FormatBox
 {
+  private final Set<PaginationChangeListener> paginationChangeListeners =
+      new HashSet<> ();
+
   final ToggleGroup recordsGroup = new ToggleGroup ();
   final ToggleGroup encodingsGroup = new ToggleGroup ();
   final ToggleGroup reportsGroup = new ToggleGroup ();
@@ -228,5 +234,21 @@ class FormatBox extends VBox
   ReportMaker getSelectedReportMaker ()
   {
     return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
+  }
+
+  void notifyPaginationChanged (Pagination pagination)
+  {
+    for (PaginationChangeListener listener : paginationChangeListeners)
+      listener.paginationChanged (pagination);
+  }
+
+  public void addPaginationChangeListener (PaginationChangeListener listener)
+  {
+    paginationChangeListeners.add (listener);
+  }
+
+  public void removePaginationChangeListener (PaginationChangeListener listener)
+  {
+    paginationChangeListeners.remove (listener);
   }
 }

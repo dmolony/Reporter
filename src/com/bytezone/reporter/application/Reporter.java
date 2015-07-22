@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Pagination;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -30,7 +31,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Reporter extends Application implements FileSelectionListener
+public class Reporter extends Application
+    implements FileSelectionListener, PaginationChangeListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
@@ -51,6 +53,7 @@ public class Reporter extends Application implements FileSelectionListener
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
+    formatBox.addPaginationChangeListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (200);
     stackPane.getChildren ().add (treePanel.getTree ());
@@ -153,18 +156,6 @@ public class Reporter extends Application implements FileSelectionListener
   {
   }
 
-  private void createRecords ()
-  {
-    List<Record> records = formatBox.getSelectedRecordMaker ().getRecords ();
-    TextMaker textMaker = formatBox.getSelectedTextMaker ();
-    ReportMaker reportMaker = formatBox.getSelectedReportMaker ();
-
-    formatBox.setDataSize (records.size ());
-
-    reportData.setSelections (records, textMaker);
-    borderPane.setCenter (reportMaker.getPagination ());
-  }
-
   private void closeWindow ()
   {
     windowSaver.saveWindow ();
@@ -197,5 +188,23 @@ public class Reporter extends Application implements FileSelectionListener
     {
       e.printStackTrace ();
     }
+  }
+
+  private void createRecords ()
+  {
+    List<Record> records = formatBox.getSelectedRecordMaker ().getRecords ();
+    TextMaker textMaker = formatBox.getSelectedTextMaker ();
+    ReportMaker reportMaker = formatBox.getSelectedReportMaker ();
+
+    formatBox.setDataSize (records.size ());
+    reportData.setSelections (records, textMaker);
+
+    borderPane.setCenter (reportMaker.getPagination ());
+  }
+
+  @Override
+  public void paginationChanged (Pagination pagination)
+  {
+    borderPane.setCenter (pagination);
   }
 }

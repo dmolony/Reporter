@@ -32,60 +32,28 @@ public class ReportData
   private List<TextMaker> textMakers;
   private List<ReportMaker> reportMakers;
 
-  private RecordMaker crlf;
-  private RecordMaker cr;
-  private RecordMaker lf;
-  private RecordMaker fb63;
-  private RecordMaker fb80;
-  private RecordMaker fb132;
-  private RecordMaker fb252;
-  private RecordMaker vb;
-  private RecordMaker nvb;
-  private RecordMaker rdw;
-  private RecordMaker ravel;
-  private RecordMaker none;
-
-  private TextMaker asciiTextMaker;
-  private TextMaker ebcdicTextMaker;
-
-  private ReportMaker hexReport;
-  private ReportMaker textReport;
-  private ReportMaker natloadReport;
-  private ReportMaker asaReport;
-
   private List<Score> scores;
   private byte[] buffer;
 
   private void initialise ()
   {
-    crlf = new CrlfRecordMaker ();
-    cr = new CrRecordMaker ();
-    lf = new LfRecordMaker ();
-    fb63 = new FbRecordMaker (63);
-    fb80 = new FbRecordMaker (80);
-    fb132 = new FbRecordMaker (132);
-    fb252 = new FbRecordMaker (252);
-    vb = new VbRecordMaker ();
-    nvb = new NvbRecordMaker ();
-    rdw = new RdwRecordMaker ();
-    ravel = new RavelRecordMaker ();
-    none = new NoRecordMaker ();
-
-    asciiTextMaker = new AsciiTextMaker ();
-    ebcdicTextMaker = new EbcdicTextMaker ();
-
-    hexReport = new HexReport ();
-    textReport = new TextReport ();
-    natloadReport = new NatloadReport ();
-    asaReport = new AsaReport ();
+    ReportMaker hexReport = new HexReport ();
+    ReportMaker textReport = new TextReport ();
+    ReportMaker natloadReport = new NatloadReport ();
+    ReportMaker asaReport = new AsaReport ();
 
     hexReport.setNewlineBetweenRecords (true);
     hexReport.setAllowSplitRecords (true);
     asaReport.setAllowSplitRecords (true);
 
-    recordMakers = new ArrayList<> (Arrays.asList (none, crlf, cr, lf, vb, rdw, nvb,
-                                                   ravel, fb63, fb80, fb132, fb252));
-    textMakers = new ArrayList<> (Arrays.asList (asciiTextMaker, ebcdicTextMaker));
+    recordMakers = new ArrayList<> (
+        Arrays.asList (new NoRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
+                       new LfRecordMaker (), new VbRecordMaker (), new RdwRecordMaker (),
+                       new NvbRecordMaker (), new RavelRecordMaker (),
+                       new FbRecordMaker (63), new FbRecordMaker (80),
+                       new FbRecordMaker (132), new FbRecordMaker (252)));
+    textMakers =
+        new ArrayList<> (Arrays.asList (new AsciiTextMaker (), new EbcdicTextMaker ()));
     reportMakers =
         new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
   }
