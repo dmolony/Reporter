@@ -64,12 +64,10 @@ class FormatBox extends VBox
 
   public VBox getFormattingBox ()
   {
-    Label lblSize = new Label ("Bytes");
-    Label lblRecords = new Label ("Records");
+    Label lblSize = setLabel ("Bytes", 60);
+    Label lblRecords = setLabel ("Records", 60);
     lblSizeText.setFont (Font.font ("monospaced", 14));
     lblRecordsText.setFont (Font.font ("monospaced", 14));
-    lblSize.setPrefWidth (60);
-    lblRecords.setPrefWidth (60);
 
     HBox hbox1 = new HBox (10);
     hbox1.getChildren ().addAll (lblSize, lblSizeText);
@@ -82,12 +80,19 @@ class FormatBox extends VBox
     vbox.getChildren ().addAll (hbox1, hbox2);
 
     VBox formattingBox = new VBox ();
-    addTitledPane ("Data", vbox, formattingBox);
+    addTitledPane ("Data size", vbox, formattingBox);
     addTitledPane ("Structure", recordsBox, formattingBox);
     addTitledPane ("Encoding", encodingsBox, formattingBox);
     addTitledPane ("Formatting", reportsBox, formattingBox);
 
     return formattingBox;
+  }
+
+  private Label setLabel (String text, int width)
+  {
+    Label label = new Label (text);
+    label.setPrefWidth (width);
+    return label;
   }
 
   private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,

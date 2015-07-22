@@ -7,7 +7,7 @@ public class NoRecordMaker extends DefaultRecordMaker
 {
   public NoRecordMaker ()
   {
-    super ("None");
+    super ("No records");
   }
 
   @Override
