@@ -12,7 +12,6 @@ import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 
 import com.bytezone.reporter.record.Record;
-import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -36,9 +35,9 @@ public class Reporter extends Application implements FileSelectionListener
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
-  private List<RecordMaker> recordMakers;
-  private List<TextMaker> textMakers;
-  private List<ReportMaker> reportMakers;
+  //  private List<RecordMaker> recordMakers;
+  //  private List<TextMaker> textMakers;
+  //  private List<ReportMaker> reportMakers;
 
   private final FormatBox formatBox = new FormatBox ();
   private final BorderPane borderPane = new BorderPane ();
@@ -48,6 +47,7 @@ public class Reporter extends Application implements FileSelectionListener
   private Preferences prefs;
 
   private List<Record> records;
+  private ReportData reportData;
 
   @Override
   public void start (Stage primaryStage) throws Exception
@@ -56,20 +56,16 @@ public class Reporter extends Application implements FileSelectionListener
 
     EventHandler<ActionEvent> rebuild = e -> createRecords ();
 
-    VBox formatVBox = formatBox.getFormattingBox (rebuild);
-    formatVBox.setPrefWidth (180);
-    borderPane.setRight (formatVBox);
-
-    recordMakers = formatBox.getRecordMakers ();
-    textMakers = formatBox.getTextMakers ();
-    reportMakers = formatBox.getReportMakers ();
-
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (200);
     stackPane.getChildren ().add (treePanel.getTree ());
     borderPane.setLeft (stackPane);
+
+    VBox formatVBox = formatBox.getFormattingBox ();
+    formatVBox.setPrefWidth (180);
+    borderPane.setRight (formatVBox);
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
@@ -169,6 +165,10 @@ public class Reporter extends Application implements FileSelectionListener
     records = formatBox.getSelectedRecordMaker ().getRecords ();
     System.out.println (records.size ());
 
+    //    recordMakers = reportData.getRecordMakers ();
+    //    textMakers = reportData.getTextMakers ();
+    List<ReportMaker> reportMakers = reportData.getReportMakers ();
+
     for (ReportMaker reportMaker : reportMakers)
       reportMaker.setRecords (records);
 
@@ -195,9 +195,9 @@ public class Reporter extends Application implements FileSelectionListener
     try
     {
       byte[] buffer = Files.readAllBytes (file.toPath ());
-      for (RecordMaker recordMaker : recordMakers)
-        recordMaker.setBuffer (buffer);
+      reportData = new ReportData (buffer);
 
+      formatBox.setData (reportData, e -> createRecords ());
       formatBox.test (buffer);
       createRecords ();
     }
