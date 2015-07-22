@@ -12,6 +12,7 @@ import com.bytezone.reporter.record.NoRecordMaker;
 import com.bytezone.reporter.record.NvbRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
+import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
 import com.bytezone.reporter.reports.AsaReport;
@@ -19,6 +20,8 @@ import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.reports.TextReport;
+import com.bytezone.reporter.tests.RecordTester;
+import com.bytezone.reporter.tests.Score;
 import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -50,12 +53,10 @@ public class ReportData
   private final ReportMaker natloadReport = new NatloadReport ();
   private final ReportMaker asaReport = new AsaReport ();
 
-  private final byte[] buffer;
+  private List<Score> scores;
 
   public ReportData (byte[] buffer)
   {
-    this.buffer = buffer;
-
     hexReport.setNewlineBetweenRecords (true);
     hexReport.setAllowSplitRecords (true);
     asaReport.setAllowSplitRecords (true);
@@ -67,10 +68,54 @@ public class ReportData
         new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
   }
 
-  public void setBuffer (byte[] buffer)
+  private void setBuffer (byte[] buffer)
   {
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
+  }
+
+  void setSelections (List<Record> records, TextMaker textMaker)
+  {
+    for (ReportMaker reportMaker : reportMakers)
+    {
+      reportMaker.setRecords (records);
+      reportMaker.setTextMaker (textMaker);
+    }
+  }
+
+  void test (byte[] buffer)
+  {
+    setBuffer (buffer);
+
+    List<RecordTester> testers = new ArrayList<> ();
+    for (RecordMaker recordMaker : recordMakers)
+      if (recordMaker instanceof FbRecordMaker)
+      {
+        int length = ((FbRecordMaker) recordMaker).getRecordLength ();
+        if (recordMaker.getBuffer ().length % length == 0)
+          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
+      }
+      else
+        testers.add (new RecordTester (recordMaker, buffer, 1024));
+
+    scores = new ArrayList<> ();
+
+    for (RecordTester tester : testers)
+      if (tester.getTotalRecords () > 1)
+      {
+        for (TextMaker textMaker : textMakers)
+          tester.testTextMaker (textMaker);
+
+        TextMaker textMaker = tester.getPreferredTextMaker ();
+
+        for (ReportMaker reportMaker : reportMakers)
+          scores.add (tester.testReportMaker (reportMaker, textMaker));
+      }
+  }
+
+  public List<Score> getScores ()
+  {
+    return scores;
   }
 
   List<RecordMaker> getRecordMakers ()

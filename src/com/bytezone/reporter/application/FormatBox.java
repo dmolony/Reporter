@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.bytezone.reporter.record.FbRecordMaker;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.tests.RecordTester;
 import com.bytezone.reporter.tests.Score;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -70,6 +68,8 @@ class FormatBox extends VBox
     Label lblRecords = new Label ("Records");
     lblSizeText.setFont (Font.font ("monospaced", 14));
     lblRecordsText.setFont (Font.font ("monospaced", 14));
+    lblSize.setPrefWidth (60);
+    lblRecords.setPrefWidth (60);
 
     HBox hbox1 = new HBox (10);
     hbox1.getChildren ().addAll (lblSize, lblSizeText);
@@ -124,42 +124,10 @@ class FormatBox extends VBox
     return titledPane;
   }
 
-  void test (byte[] buffer)
+  void process ()
   {
-    lblSizeText.setText (String.format ("%,12d", buffer.length));
+    List<Score> scores = reportData.getScores ();
 
-    reportData.setBuffer (buffer);
-
-    List<RecordTester> testers = new ArrayList<> ();
-    for (RecordMaker recordMaker : reportData.getRecordMakers ())
-      if (recordMaker instanceof FbRecordMaker)
-      {
-        int length = ((FbRecordMaker) recordMaker).getRecordLength ();
-        if (recordMaker.getBuffer ().length % length == 0)
-          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
-      }
-      else
-        testers.add (new RecordTester (recordMaker, buffer, 1024));
-
-    List<Score> scores = new ArrayList<> ();
-
-    for (RecordTester tester : testers)
-      if (tester.getTotalRecords () > 1)
-      {
-        for (TextMaker textMaker : reportData.getTextMakers ())
-          tester.testTextMaker (textMaker);
-
-        TextMaker textMaker = tester.getPreferredTextMaker ();
-
-        for (ReportMaker reportMaker : reportData.getReportMakers ())
-          scores.add (tester.testReportMaker (reportMaker, textMaker));
-      }
-
-    process (scores);
-  }
-
-  private void process (List<Score> scores)
-  {
     List<RecordMaker> missingRecordMakers = new ArrayList<> ();
     List<TextMaker> missingTextMakers = new ArrayList<> ();
     List<ReportMaker> missingReportMakers = new ArrayList<> ();
@@ -219,6 +187,13 @@ class FormatBox extends VBox
         button.setSelected (true);
         return;
       }
+  }
+
+  void setDataSize (int records)
+  {
+    RecordMaker recordMaker = getSelectedRecordMaker ();
+    lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
+    lblRecordsText.setText (String.format ("%,10d", records));
   }
 
   private void disable (List<? extends Object> missingObjects, List<RadioButton> buttons)

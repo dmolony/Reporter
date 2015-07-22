@@ -35,10 +35,6 @@ public class Reporter extends Application implements FileSelectionListener
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
-  //  private List<RecordMaker> recordMakers;
-  //  private List<TextMaker> textMakers;
-  //  private List<ReportMaker> reportMakers;
-
   private final FormatBox formatBox = new FormatBox ();
   private final BorderPane borderPane = new BorderPane ();
   private final MenuBar menuBar = new MenuBar ();
@@ -46,15 +42,12 @@ public class Reporter extends Application implements FileSelectionListener
   private WindowSaver windowSaver;
   private Preferences prefs;
 
-  private List<Record> records;
   private ReportData reportData;
 
   @Override
   public void start (Stage primaryStage) throws Exception
   {
     prefs = Preferences.userNodeForPackage (this.getClass ());
-
-    //    EventHandler<ActionEvent> rebuild = e -> createRecords ();
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
@@ -162,19 +155,14 @@ public class Reporter extends Application implements FileSelectionListener
 
   private void createRecords ()
   {
-    records = formatBox.getSelectedRecordMaker ().getRecords ();
-    System.out.println (records.size ());
-
-    List<ReportMaker> reportMakers = reportData.getReportMakers ();
-
-    for (ReportMaker reportMaker : reportMakers)
-      reportMaker.setRecords (records);
-
+    List<Record> records = formatBox.getSelectedRecordMaker ().getRecords ();
     TextMaker textMaker = formatBox.getSelectedTextMaker ();
-    for (ReportMaker reportMaker : reportMakers)
-      reportMaker.setTextMaker (textMaker);
+    ReportMaker reportMaker = formatBox.getSelectedReportMaker ();
 
-    borderPane.setCenter (formatBox.getSelectedReportMaker ().getPagination ());
+    formatBox.setDataSize (records.size ());
+
+    reportData.setSelections (records, textMaker);
+    borderPane.setCenter (reportMaker.getPagination ());
   }
 
   private void closeWindow ()
@@ -193,10 +181,10 @@ public class Reporter extends Application implements FileSelectionListener
     try
     {
       byte[] buffer = Files.readAllBytes (file.toPath ());
-      reportData = new ReportData (buffer);
-
+      reportData = new ReportData (buffer);// move this to the fileNode
       formatBox.setData (reportData, e -> createRecords ());
-      formatBox.test (buffer);
+      reportData.test (buffer);
+      formatBox.process ();
       createRecords ();
     }
     catch (IOException e)
