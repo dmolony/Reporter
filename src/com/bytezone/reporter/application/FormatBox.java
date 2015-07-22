@@ -49,7 +49,6 @@ class FormatBox extends VBox
     List<RecordMaker> recordMakers = reportData.getRecordMakers ();
     List<TextMaker> textMakers = reportData.getTextMakers ();
     List<ReportMaker> reportMakers = reportData.getReportMakers ();
-    System.out.println ("report makers: " + reportMakers);
 
     if (recordsBox == null)
     {
@@ -59,9 +58,9 @@ class FormatBox extends VBox
     }
     else
     {
-      assignButtons (recordMakers, recordMakerButtons);
-      assignButtons (textMakers, textMakerButtons);
-      assignButtons (reportMakers, reportMakerButtons);
+      assignButtons (recordMakerButtons, recordMakers);
+      assignButtons (textMakerButtons, textMakers);
+      assignButtons (reportMakerButtons, reportMakers);
     }
   }
 
@@ -111,12 +110,10 @@ class FormatBox extends VBox
     return vbox;
   }
 
-  private void assignButtons (List<? extends Object> objects, List<RadioButton> buttons)
+  private void assignButtons (List<RadioButton> buttons, List<? extends Object> objects)
   {
     for (int i = 0; i < buttons.size (); i++)
-    {
       buttons.get (i).setUserData (objects.get (i));
-    }
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
@@ -133,12 +130,8 @@ class FormatBox extends VBox
 
     reportData.setBuffer (buffer);
 
-    List<RecordMaker> recordMakers = reportData.getRecordMakers ();
-    List<TextMaker> textMakers = reportData.getTextMakers ();
-    List<ReportMaker> reportMakers = reportData.getReportMakers ();
-
     List<RecordTester> testers = new ArrayList<> ();
-    for (RecordMaker recordMaker : recordMakers)
+    for (RecordMaker recordMaker : reportData.getRecordMakers ())
       if (recordMaker instanceof FbRecordMaker)
       {
         int length = ((FbRecordMaker) recordMaker).getRecordLength ();
@@ -153,45 +146,20 @@ class FormatBox extends VBox
     for (RecordTester tester : testers)
       if (tester.getTotalRecords () > 1)
       {
-        for (TextMaker textMaker : textMakers)
+        for (TextMaker textMaker : reportData.getTextMakers ())
           tester.testTextMaker (textMaker);
 
         TextMaker textMaker = tester.getPreferredTextMaker ();
 
-        for (ReportMaker reportMaker : reportMakers)
+        for (ReportMaker reportMaker : reportData.getReportMakers ())
           scores.add (tester.testReportMaker (reportMaker, textMaker));
       }
 
     process (scores);
   }
 
-  void select (Score score)
+  private void process (List<Score> scores)
   {
-    System.out.println ("selecting: " + score);
-    selectButton (recordMakerButtons, score.recordMaker);
-    selectButton (textMakerButtons, score.textMaker);
-    selectButton (reportMakerButtons, score.reportMaker);
-  }
-
-  private void selectButton (List<RadioButton> buttons, Object userData)
-  {
-    System.out.println (buttons.size ());
-    for (RadioButton button : buttons)
-    {
-      System.out.printf ("comparing %s to %s%n", button.getUserData (), userData);
-      if (button.getUserData () == userData)
-      {
-        System.out.println ("found");
-        button.setSelected (true);
-        return;
-      }
-    }
-    System.out.println ("not found");
-  }
-
-  void process (List<Score> scores)
-  {
-    System.out.println ("process");
     List<RecordMaker> missingRecordMakers = new ArrayList<> ();
     List<TextMaker> missingTextMakers = new ArrayList<> ();
     List<ReportMaker> missingReportMakers = new ArrayList<> ();
@@ -204,7 +172,9 @@ class FormatBox extends VBox
     missingTextMakers.addAll (textMakers);
     missingReportMakers.addAll (reportMakers);
 
+    missingRecordMakers.remove (0);// the 'None' option
     List<Score> perfectScores = new ArrayList<> ();
+
     for (Score score : scores)
       if (score.score == 100.0)
       {
@@ -212,10 +182,7 @@ class FormatBox extends VBox
         missingRecordMakers.remove (score.recordMaker);
         missingTextMakers.remove (score.textMaker);
         missingReportMakers.remove (score.reportMaker);
-        System.out.println (score);
       }
-
-    //    missingRecordMakers.remove (none);
 
     enable (recordMakerButtons);
     enable (textMakerButtons);
@@ -229,18 +196,29 @@ class FormatBox extends VBox
     reversedReportMakers.addAll (reportMakers);
     Collections.reverse (reversedReportMakers);
     loop: for (ReportMaker reportMaker : reversedReportMakers)
-    {
-      System.out.println (reportMaker);
       for (Score score : perfectScores)
-      {
-        System.out.printf ("%s -- %s%n", score.reportMaker, reportMaker);
         if (score.reportMaker == reportMaker)
         {
           select (score);
           break loop;
         }
+  }
+
+  void select (Score score)
+  {
+    selectButton (recordMakerButtons, score.recordMaker);
+    selectButton (textMakerButtons, score.textMaker);
+    selectButton (reportMakerButtons, score.reportMaker);
+  }
+
+  private void selectButton (List<RadioButton> buttons, Object userData)
+  {
+    for (RadioButton button : buttons)
+      if (button.getUserData () == userData)
+      {
+        button.setSelected (true);
+        return;
       }
-    }
   }
 
   private void disable (List<? extends Object> missingObjects, List<RadioButton> buttons)

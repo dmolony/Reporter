@@ -54,7 +54,7 @@ public class Reporter extends Application implements FileSelectionListener
   {
     prefs = Preferences.userNodeForPackage (this.getClass ());
 
-    EventHandler<ActionEvent> rebuild = e -> createRecords ();
+    //    EventHandler<ActionEvent> rebuild = e -> createRecords ();
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
@@ -165,8 +165,6 @@ public class Reporter extends Application implements FileSelectionListener
     records = formatBox.getSelectedRecordMaker ().getRecords ();
     System.out.println (records.size ());
 
-    //    recordMakers = reportData.getRecordMakers ();
-    //    textMakers = reportData.getTextMakers ();
     List<ReportMaker> reportMakers = reportData.getReportMakers ();
 
     for (ReportMaker reportMaker : reportMakers)
