@@ -5,15 +5,11 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
-import com.bytezone.reporter.record.Record;
-import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.text.TextMaker;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -179,27 +175,17 @@ public class Reporter extends Application
         reportData.setBuffer (buffer);
       }
 
-      formatBox.setData (reportData, e -> createRecords ());
+      formatBox.setReportData (reportData);
+
       reportData.test (buffer);// remove buffer later
+
       formatBox.process ();
-      createRecords ();
+      formatBox.createRecords ();
     }
     catch (IOException e)
     {
       e.printStackTrace ();
     }
-  }
-
-  private void createRecords ()
-  {
-    List<Record> records = formatBox.getSelectedRecordMaker ().getRecords ();
-    TextMaker textMaker = formatBox.getSelectedTextMaker ();
-    ReportMaker reportMaker = formatBox.getSelectedReportMaker ();
-
-    formatBox.setDataSize (records.size ());
-    reportData.setSelections (records, textMaker);
-
-    borderPane.setCenter (reportMaker.getPagination ());
   }
 
   @Override

@@ -21,7 +21,6 @@ public class TreePanel
   {
     this.prefs = prefs;
     getLastFile ();
-    //    getChildren ().add (getTree ());
   }
 
   public TreeView<FileNode> getTree ()

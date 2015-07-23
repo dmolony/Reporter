@@ -6,13 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.tests.Score;
 import com.bytezone.reporter.text.TextMaker;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -46,7 +45,7 @@ class FormatBox
 
   private ReportData reportData;
 
-  public void setData (ReportData reportData, EventHandler<ActionEvent> rebuild)
+  public void setReportData (ReportData reportData)
   {
     this.reportData = reportData;
 
@@ -56,9 +55,9 @@ class FormatBox
 
     if (recordsBox == null)
     {
-      recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup, rebuild);
-      encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup, rebuild);
-      reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup, rebuild);
+      recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup);
+      encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
+      reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
     }
     else
     {
@@ -102,7 +101,7 @@ class FormatBox
   }
 
   private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
-      ToggleGroup group, EventHandler<ActionEvent> action)
+      ToggleGroup group)
   {
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
@@ -112,7 +111,7 @@ class FormatBox
     {
       RadioButton button = new RadioButton (userData.toString ());
       button.setToggleGroup (group);
-      button.setOnAction (action);
+      button.setOnAction (e -> createRecords ());
       button.setUserData (userData);
 
       buttons.add (button);
@@ -133,6 +132,18 @@ class FormatBox
     titledPane.setCollapsible (false);
     parent.getChildren ().add (titledPane);
     return titledPane;
+  }
+
+  void createRecords ()
+  {
+    List<Record> records = getSelectedRecordMaker ().getRecords ();
+    TextMaker textMaker = getSelectedTextMaker ();
+    ReportMaker reportMaker = getSelectedReportMaker ();
+
+    setDataSize (records.size ());
+    reportData.setSelections (records, textMaker);
+
+    notifyPaginationChanged (reportMaker.getPagination ());
   }
 
   void process ()
