@@ -99,7 +99,7 @@ public abstract class DefaultReportMaker implements ReportMaker
     {
       Record record = records.get (i);
       String formattedRecord = getFormattedRecord (record);
-      if (formattedRecord == null || formattedRecord.isEmpty ())
+      if (formattedRecord == null)
         continue;
 
       if (page.firstRecordOffset > 0 && i == page.firstRecordIndex)
