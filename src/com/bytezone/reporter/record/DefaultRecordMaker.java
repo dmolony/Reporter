@@ -26,18 +26,14 @@ public abstract class DefaultRecordMaker implements RecordMaker
   }
 
   @Override
-  //  public List<Record> test (byte[] buffer)
   public List<Record> test ()
   {
-    //    return test (buffer, 0, buffer.length);
     return test (buffer.length);
   }
 
   @Override
-  //  public List<Record> test (byte[] buffer, int offset, int length)
   public List<Record> test (int length)
   {
-    //    List<Record> tempRecords = split (buffer, offset, length);
     List<Record> tempRecords = split (length);
     return tempRecords;
   }
@@ -46,7 +42,6 @@ public abstract class DefaultRecordMaker implements RecordMaker
   public List<Record> getRecords ()
   {
     if (records == null)
-      //      records = split (buffer, 0, buffer.length);
       records = split (buffer.length);
 
     return records;
@@ -61,7 +56,6 @@ public abstract class DefaultRecordMaker implements RecordMaker
     return buffer;
   }
 
-  //  protected abstract List<Record> split (byte[] buffer, int offset, int length);
   protected abstract List<Record> split (int length);
 
   protected abstract byte[] join (List<Record> records);

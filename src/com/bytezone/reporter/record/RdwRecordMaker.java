@@ -11,15 +11,12 @@ public class RdwRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  //  protected List<Record> split (byte[] buffer, int offset, int length)
   protected List<Record> split (int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    //    int ptr = offset;
     int ptr = 0;
     int recordNumber = 0;
 
-    //    int max = Math.min (offset + length, buffer.length);
     int max = Math.min (length, buffer.length);
     while (ptr < max)
     {

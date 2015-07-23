@@ -16,11 +16,9 @@ public class RecordTester
   private final List<TextTester> textTesters = new ArrayList<> ();
   private final List<ReportTester> reportTesters = new ArrayList<> ();
 
-  //  public RecordTester (RecordMaker recordMaker, byte[] buffer, int testSize)
   public RecordTester (RecordMaker recordMaker, int testSize)
   {
     this.recordMaker = recordMaker;
-    //    records = recordMaker.test (buffer, 0, testSize);
     records = recordMaker.test (testSize);
   }
 

@@ -11,11 +11,9 @@ public class NoRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  //  protected List<Record> split (byte[] buffer, int offset, int length)
   protected List<Record> split (int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    //    records.add (new Record (buffer, offset, offset + length, 0));
     records.add (new Record (buffer, 0, length, 0));
     return records;
   }
