@@ -62,10 +62,8 @@ class FormatBox implements FileSelectionListener
     reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
   }
 
-  public void setReportData (ReportData reportData)
+  private void linkButtons ()
   {
-    this.reportData = reportData;
-
     linkButtons (recordMakerButtons, reportData.getRecordMakers ());
     linkButtons (textMakerButtons, reportData.getTextMakers ());
     linkButtons (reportMakerButtons, reportData.getReportMakers ());
@@ -149,7 +147,7 @@ class FormatBox implements FileSelectionListener
     notifyPaginationChanged (reportMaker.getPagination ());
   }
 
-  void process ()
+  void adjustButtons ()
   {
     List<Score> scores = reportData.getScores ();
 
@@ -272,19 +270,17 @@ class FormatBox implements FileSelectionListener
     try
     {
       reportData = fileNode.reportData;
-      byte[] buffer = reportData.getBuffer ();
-      if (buffer == null)
+      linkButtons ();
+
+      if (reportData.getBuffer () == null)
       {
-        buffer = Files.readAllBytes (fileNode.file.toPath ());
-        reportData.setBuffer (buffer);
+        reportData.setBuffer (Files.readAllBytes (fileNode.file.toPath ()));
+        reportData.test ();
       }
 
-      setReportData (reportData);
-
-      reportData.test (buffer);// remove buffer later
-
-      process ();
+      adjustButtons ();
       createRecords ();
+
     }
     catch (IOException e)
     {

@@ -35,7 +35,7 @@ public class ReportData
   private List<Score> scores;
   private byte[] buffer;
 
-  private void initialise ()
+  private void createMakers ()
   {
     ReportMaker hexReport = new HexReport ();
     ReportMaker textReport = new TextReport ();
@@ -62,8 +62,8 @@ public class ReportData
   {
     this.buffer = buffer;
 
-    if (reportMakers == null)
-      initialise ();
+    if (recordMakers == null)
+      createMakers ();
 
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
@@ -83,10 +83,8 @@ public class ReportData
     }
   }
 
-  void test (byte[] buffer)
+  void test ()
   {
-    setBuffer (buffer);
-
     List<RecordTester> testers = new ArrayList<> ();
     for (RecordMaker recordMaker : recordMakers)
       if (recordMaker instanceof FbRecordMaker)
@@ -120,16 +118,22 @@ public class ReportData
 
   List<RecordMaker> getRecordMakers ()
   {
+    if (recordMakers == null)
+      createMakers ();
     return recordMakers;
   }
 
   List<TextMaker> getTextMakers ()
   {
+    if (textMakers == null)
+      createMakers ();
     return textMakers;
   }
 
   List<ReportMaker> getReportMakers ()
   {
+    if (reportMakers == null)
+      createMakers ();
     return reportMakers;
   }
 }
