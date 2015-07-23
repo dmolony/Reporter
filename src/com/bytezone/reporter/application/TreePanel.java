@@ -108,6 +108,7 @@ public class TreePanel
   {
     File file;
     ReportData reportData;
+    String datasetName;
 
     public FileNode (File file)
     {
@@ -118,7 +119,7 @@ public class TreePanel
     @Override
     public String toString ()
     {
-      return file.getName ();
+      return datasetName == null ? file.getName () : datasetName;
     }
   }
 }
