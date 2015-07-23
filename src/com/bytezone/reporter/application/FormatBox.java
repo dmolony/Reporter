@@ -1,11 +1,14 @@
 package com.bytezone.reporter.application;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
@@ -23,7 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-class FormatBox
+class FormatBox implements FileSelectionListener
 {
   private final Set<PaginationChangeListener> paginationChangeListeners =
       new HashSet<> ();
@@ -232,12 +235,12 @@ class FormatBox
       button.setDisable (false);
   }
 
-  RecordMaker getSelectedRecordMaker ()
+  private RecordMaker getSelectedRecordMaker ()
   {
     return (RecordMaker) recordsGroup.getSelectedToggle ().getUserData ();
   }
 
-  TextMaker getSelectedTextMaker ()
+  private TextMaker getSelectedTextMaker ()
   {
     return (TextMaker) encodingsGroup.getSelectedToggle ().getUserData ();
   }
@@ -247,7 +250,7 @@ class FormatBox
     return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
   }
 
-  void notifyPaginationChanged (Pagination pagination)
+  private void notifyPaginationChanged (Pagination pagination)
   {
     for (PaginationChangeListener listener : paginationChangeListeners)
       listener.paginationChanged (pagination);
@@ -261,5 +264,31 @@ class FormatBox
   public void removePaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.remove (listener);
+  }
+
+  @Override
+  public void fileSelected (FileNode fileNode)
+  {
+    try
+    {
+      reportData = fileNode.reportData;
+      byte[] buffer = reportData.getBuffer ();
+      if (buffer == null)
+      {
+        buffer = Files.readAllBytes (fileNode.file.toPath ());
+        reportData.setBuffer (buffer);
+      }
+
+      setReportData (reportData);
+
+      reportData.test (buffer);// remove buffer later
+
+      process ();
+      createRecords ();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+    }
   }
 }

@@ -3,8 +3,6 @@ package com.bytezone.reporter.application;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
@@ -28,8 +26,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Reporter extends Application
-    implements FileSelectionListener, PaginationChangeListener
+public class Reporter extends Application implements PaginationChangeListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
@@ -50,7 +47,7 @@ public class Reporter extends Application
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     TreePanel treePanel = new TreePanel (prefs);
-    treePanel.addFileSelectionListener (this);
+    treePanel.addFileSelectionListener (formatBox);
     formatBox.addPaginationChangeListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (180);
@@ -166,32 +163,6 @@ public class Reporter extends Application
   public static void main (String[] args)
   {
     launch (args);
-  }
-
-  @Override
-  public void fileSelected (FileNode fileNode)
-  {
-    try
-    {
-      reportData = fileNode.reportData;
-      byte[] buffer = reportData.getBuffer ();
-      if (buffer == null)
-      {
-        buffer = Files.readAllBytes (fileNode.file.toPath ());
-        reportData.setBuffer (buffer);
-      }
-
-      formatBox.setReportData (reportData);
-
-      reportData.test (buffer);// remove buffer later
-
-      formatBox.process ();
-      formatBox.createRecords ();
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-    }
   }
 
   @Override
