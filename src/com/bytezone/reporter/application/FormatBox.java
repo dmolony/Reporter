@@ -39,32 +39,39 @@ class FormatBox
   private final Label lblSizeText = new Label ();
   private final Label lblRecordsText = new Label ();
 
-  private VBox recordsBox;
-  private VBox encodingsBox;
-  private VBox reportsBox;
+  private final VBox recordsBox;
+  private final VBox encodingsBox;
+  private final VBox reportsBox;
 
   private ReportData reportData;
 
-  public void setReportData (ReportData reportData)
+  public FormatBox ()
   {
-    this.reportData = reportData;
+    ReportData reportData = new ReportData ();
+    reportData.setBuffer (new byte[0]);// dummy buffer to instantiate the xxxMakers
 
     List<RecordMaker> recordMakers = reportData.getRecordMakers ();
     List<TextMaker> textMakers = reportData.getTextMakers ();
     List<ReportMaker> reportMakers = reportData.getReportMakers ();
 
-    if (recordsBox == null)
-    {
-      recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup);
-      encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
-      reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
-    }
-    else
-    {
-      assignButtons (recordMakerButtons, recordMakers);
-      assignButtons (textMakerButtons, textMakers);
-      assignButtons (reportMakerButtons, reportMakers);
-    }
+    recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup);
+    encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
+    reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
+  }
+
+  public void setReportData (ReportData reportData)
+  {
+    this.reportData = reportData;
+
+    linkButtons (recordMakerButtons, reportData.getRecordMakers ());
+    linkButtons (textMakerButtons, reportData.getTextMakers ());
+    linkButtons (reportMakerButtons, reportData.getReportMakers ());
+  }
+
+  private void linkButtons (List<RadioButton> buttons, List<? extends Object> objects)
+  {
+    for (int i = 0; i < buttons.size (); i++)
+      buttons.get (i).setUserData (objects.get (i));
   }
 
   public VBox getFormattingBox ()
@@ -112,18 +119,11 @@ class FormatBox
       RadioButton button = new RadioButton (userData.toString ());
       button.setToggleGroup (group);
       button.setOnAction (e -> createRecords ());
-      button.setUserData (userData);
 
       buttons.add (button);
       vbox.getChildren ().add (button);
     }
     return vbox;
-  }
-
-  private void assignButtons (List<RadioButton> buttons, List<? extends Object> objects)
-  {
-    for (int i = 0; i < buttons.size (); i++)
-      buttons.get (i).setUserData (objects.get (i));
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)

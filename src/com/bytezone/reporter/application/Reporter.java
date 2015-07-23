@@ -19,6 +19,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -46,22 +47,26 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     prefs = Preferences.userNodeForPackage (this.getClass ());
+    String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
     formatBox.addPaginationChangeListener (this);
     StackPane stackPane = new StackPane ();
-    stackPane.setPrefWidth (200);
-    stackPane.getChildren ().add (treePanel.getTree ());
-    borderPane.setLeft (stackPane);
+    stackPane.setPrefWidth (180);
+
+    TreeView<FileNode> tree = treePanel.getTree (home);
+    stackPane.getChildren ().add (tree);
 
     VBox formatVBox = formatBox.getFormattingBox ();
     formatVBox.setPrefWidth (180);
+
+    borderPane.setLeft (stackPane);
     borderPane.setRight (formatVBox);
+    borderPane.setTop (menuBar);
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
-    borderPane.setTop (menuBar);
     if (SYSTEM_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);
 
@@ -74,6 +79,7 @@ public class Reporter extends Application
     if (!windowSaver.restoreWindow ())
       primaryStage.centerOnScreen ();
 
+    tree.requestFocus ();
     primaryStage.show ();
   }
 

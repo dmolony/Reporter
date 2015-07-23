@@ -14,6 +14,7 @@ public class TreePanel
   private final Set<FileSelectionListener> fileSelectionListeners = new HashSet<> ();
   private final TreeView<FileNode> fileTree = new TreeView<> ();
   private final Preferences prefs;
+
   private File selectedFile;
   private TreeItem<FileNode> selectedTreeItem;
 
@@ -23,10 +24,9 @@ public class TreePanel
     getLastFile ();
   }
 
-  public TreeView<FileNode> getTree ()
+  public TreeView<FileNode> getTree (String directoryName)
   {
-    String home = System.getProperty ("user.home") + "/Dropbox/testfiles/";
-    FileNode directory = new FileNode (new File (home));
+    FileNode directory = new FileNode (new File (directoryName));
     findFiles (directory, null);
 
     ChangeListener<TreeItem<FileNode>> changeListener =
@@ -37,21 +37,6 @@ public class TreePanel
       fileTree.getSelectionModel ().select (selectedTreeItem);
 
     return fileTree;
-  }
-
-  private void selection (TreeItem<FileNode> treeItem)
-  {
-    if (treeItem == null)
-      return;
-
-    FileNode fileNode = treeItem.getValue ();
-    if (!fileNode.file.isDirectory ())
-    {
-      selectedFile = fileNode.file;
-      selectedTreeItem = treeItem;
-      notifyFileSelected (fileNode);
-      saveLastFile ();
-    }
   }
 
   private void findFiles (FileNode directory, TreeItem<FileNode> parent)
@@ -76,7 +61,22 @@ public class TreePanel
       parent.getChildren ().add (treeItem);
   }
 
-  void notifyFileSelected (FileNode fileNode)
+  private void selection (TreeItem<FileNode> treeItem)
+  {
+    if (treeItem == null)
+      return;
+
+    FileNode fileNode = treeItem.getValue ();
+    if (!fileNode.file.isDirectory ())
+    {
+      selectedFile = fileNode.file;
+      selectedTreeItem = treeItem;
+      notifyFileSelected (fileNode);
+      saveLastFile ();
+    }
+  }
+
+  private void notifyFileSelected (FileNode fileNode)
   {
     for (FileSelectionListener listener : fileSelectionListeners)
       listener.fileSelected (fileNode);
