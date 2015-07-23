@@ -1,5 +1,6 @@
 package com.bytezone.reporter.application;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -269,8 +270,15 @@ class FormatBox implements FileSelectionListener
     reportData = fileNode.reportData;
     linkButtons ();
 
-    if (reportData.getBuffer () == null)
-      reportData.readFile (fileNode.file);
+    if (!reportData.hasData ())
+      try
+      {
+        reportData.readFile (fileNode.file);
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
 
     // should restore the previous selections instead of starting over
     adjustButtons ();

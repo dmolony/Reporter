@@ -61,16 +61,9 @@ public class ReportData
         new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
   }
 
-  void readFile (File file)
+  void readFile (File file) throws IOException
   {
-    try
-    {
-      this.buffer = Files.readAllBytes (file.toPath ());
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-    }
+    this.buffer = Files.readAllBytes (file.toPath ());
 
     if (recordMakers == null)
       createMakers ();
@@ -78,25 +71,6 @@ public class ReportData
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
 
-    test ();
-  }
-
-  byte[] getBuffer ()
-  {
-    return buffer;
-  }
-
-  void setSelections (List<Record> records, TextMaker textMaker)
-  {
-    for (ReportMaker reportMaker : reportMakers)
-    {
-      reportMaker.setRecords (records);
-      reportMaker.setTextMaker (textMaker);
-    }
-  }
-
-  private void test ()
-  {
     List<RecordTester> testers = new ArrayList<> ();
     for (RecordMaker recordMaker : recordMakers)
       if (recordMaker instanceof FbRecordMaker)
@@ -121,6 +95,20 @@ public class ReportData
         for (ReportMaker reportMaker : reportMakers)
           scores.add (tester.testReportMaker (reportMaker, textMaker));
       }
+  }
+
+  public boolean hasData ()
+  {
+    return buffer != null;
+  }
+
+  void setSelections (List<Record> records, TextMaker textMaker)
+  {
+    for (ReportMaker reportMaker : reportMakers)
+    {
+      reportMaker.setRecords (records);
+      reportMaker.setTextMaker (textMaker);
+    }
   }
 
   public List<Score> getScores ()

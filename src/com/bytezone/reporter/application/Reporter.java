@@ -38,8 +38,6 @@ public class Reporter extends Application implements PaginationChangeListener
   private WindowSaver windowSaver;
   private Preferences prefs;
 
-  private ReportData reportData;
-
   @Override
   public void start (Stage primaryStage) throws Exception
   {
