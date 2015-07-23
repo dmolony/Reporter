@@ -11,14 +11,18 @@ public class LfRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected List<Record> split (byte[] buffer, int offset, int length)
+  //  protected List<Record> split (byte[] buffer, int offset, int length)
+  protected List<Record> split (int length)
   {
     List<Record> records = new ArrayList<Record> ();
-    int start = offset;
+    //    int start = offset;
+    int start = 0;
     int recordNumber = 0;
 
-    int max = Math.min (offset + length, buffer.length);
-    for (int ptr = offset; ptr < max; ptr++)
+    //    int max = Math.min (offset + length, buffer.length);
+    int max = Math.min (length, buffer.length);
+    //    for (int ptr = offset; ptr < max; ptr++)
+    for (int ptr = 0; ptr < max; ptr++)
     {
       if (buffer[ptr] == 0x0A)
       {

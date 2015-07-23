@@ -19,13 +19,16 @@ public class FbRecordMaker extends DefaultRecordMaker
   }
 
   @Override
-  protected List<Record> split (byte[] buffer, int offset, int length)
+  //  protected List<Record> split (byte[] buffer, int offset, int length)
+  protected List<Record> split (int length)
   {
     List<Record> records = new ArrayList<Record> ();
     int recordNumber = 0;
 
-    int max = Math.min (offset + length, buffer.length);
-    for (int ptr = offset; ptr < max; ptr += recordLength)
+    //    int max = Math.min (offset + length, buffer.length);
+    int max = Math.min (length, buffer.length);
+    //    for (int ptr = offset; ptr < max; ptr += recordLength)
+    for (int ptr = 0; ptr < max; ptr += recordLength)
     {
       int reclen = Math.min (recordLength, buffer.length - ptr);
       if (reclen == recordLength)

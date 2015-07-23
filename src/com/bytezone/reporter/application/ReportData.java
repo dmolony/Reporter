@@ -77,10 +77,12 @@ public class ReportData
       {
         int length = ((FbRecordMaker) recordMaker).getRecordLength ();
         if (recordMaker.getBuffer ().length % length == 0)
-          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
+          //          testers.add (new RecordTester (recordMaker, buffer, 10 * length));
+          testers.add (new RecordTester (recordMaker, 10 * length));
       }
       else
-        testers.add (new RecordTester (recordMaker, buffer, 1024));
+        //        testers.add (new RecordTester (recordMaker, buffer, 1024));
+        testers.add (new RecordTester (recordMaker, 1024));
 
     scores = new ArrayList<> ();
 
