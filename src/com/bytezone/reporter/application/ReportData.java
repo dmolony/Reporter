@@ -1,5 +1,8 @@
 package com.bytezone.reporter.application;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,15 +61,24 @@ public class ReportData
         new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
   }
 
-  void setBuffer (byte[] buffer)
+  void readFile (File file)
   {
-    this.buffer = buffer;
+    try
+    {
+      this.buffer = Files.readAllBytes (file.toPath ());
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+    }
 
     if (recordMakers == null)
       createMakers ();
 
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
+
+    test ();
   }
 
   byte[] getBuffer ()
@@ -83,7 +95,7 @@ public class ReportData
     }
   }
 
-  void test ()
+  private void test ()
   {
     List<RecordTester> testers = new ArrayList<> ();
     for (RecordMaker recordMaker : recordMakers)

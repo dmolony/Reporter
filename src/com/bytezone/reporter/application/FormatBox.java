@@ -1,7 +1,5 @@
 package com.bytezone.reporter.application;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,8 +48,7 @@ class FormatBox implements FileSelectionListener
 
   public FormatBox ()
   {
-    ReportData reportData = new ReportData ();
-    reportData.setBuffer (new byte[0]);// dummy buffer to instantiate the xxxMakers
+    ReportData reportData = new ReportData ();// dummy to get button names
 
     List<RecordMaker> recordMakers = reportData.getRecordMakers ();
     List<TextMaker> textMakers = reportData.getTextMakers ();
@@ -135,19 +132,7 @@ class FormatBox implements FileSelectionListener
     return titledPane;
   }
 
-  void createRecords ()
-  {
-    List<Record> records = getSelectedRecordMaker ().getRecords ();
-    TextMaker textMaker = getSelectedTextMaker ();
-    ReportMaker reportMaker = getSelectedReportMaker ();
-
-    setDataSize (records.size ());
-    reportData.setSelections (records, textMaker);
-
-    notifyPaginationChanged (reportMaker.getPagination ());
-  }
-
-  void adjustButtons ()
+  private void adjustButtons ()
   {
     List<Score> scores = reportData.getScores ();
 
@@ -193,6 +178,20 @@ class FormatBox implements FileSelectionListener
           select (score);
           break loop;
         }
+
+    createRecords ();
+  }
+
+  private void createRecords ()
+  {
+    List<Record> records = getSelectedRecordMaker ().getRecords ();
+    TextMaker textMaker = getSelectedTextMaker ();
+    ReportMaker reportMaker = getSelectedReportMaker ();
+
+    setDataSize (records.size ());
+    reportData.setSelections (records, textMaker);
+
+    notifyPaginationChanged (reportMaker.getPagination ());
   }
 
   void select (Score score)
@@ -267,24 +266,13 @@ class FormatBox implements FileSelectionListener
   @Override
   public void fileSelected (FileNode fileNode)
   {
-    try
-    {
-      reportData = fileNode.reportData;
-      linkButtons ();
+    reportData = fileNode.reportData;
+    linkButtons ();
 
-      if (reportData.getBuffer () == null)
-      {
-        reportData.setBuffer (Files.readAllBytes (fileNode.file.toPath ()));
-        reportData.test ();
-      }
+    if (reportData.getBuffer () == null)
+      reportData.readFile (fileNode.file);
 
-      adjustButtons ();
-      createRecords ();
-
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-    }
+    // should restore the previous selections instead of starting over
+    adjustButtons ();
   }
 }
