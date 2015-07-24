@@ -35,14 +35,14 @@ public class RecordTester
     textTester.testRecords (records);
   }
 
-  public Score testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
+  public ReportScore testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
   {
     ReportTester reportTester = new ReportTester (reportMaker, textMaker);
     reportTesters.add (reportTester);
 
     reportTester.testRecords (records);
 
-    return new Score (recordMaker, textMaker, reportMaker, reportTester.getRatio (),
+    return new ReportScore (recordMaker, textMaker, reportMaker, reportTester.getRatio (),
         records.size ());
   }
 

@@ -11,7 +11,7 @@ import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.tests.Score;
+import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.geometry.Insets;
@@ -135,7 +135,7 @@ class FormatBox implements FileSelectionListener
 
   private void adjustButtons ()
   {
-    List<Score> perfectScores = reportData.getScores ();
+    List<ReportScore> perfectScores = reportData.getScores ();
 
     List<RecordMaker> missingRecordMakers = new ArrayList<> ();
     List<TextMaker> missingTextMakers = new ArrayList<> ();
@@ -151,7 +151,7 @@ class FormatBox implements FileSelectionListener
 
     missingRecordMakers.remove (0);// the 'None' option
 
-    for (Score score : perfectScores)
+    for (ReportScore score : perfectScores)
     {
       missingRecordMakers.remove (score.recordMaker);
       missingTextMakers.remove (score.textMaker);
@@ -170,7 +170,7 @@ class FormatBox implements FileSelectionListener
     reversedReportMakers.addAll (reportMakers);
     Collections.reverse (reversedReportMakers);
     loop: for (ReportMaker reportMaker : reversedReportMakers)
-      for (Score score : perfectScores)
+      for (ReportScore score : perfectScores)
         if (score.reportMaker == reportMaker)
         {
           select (score);
@@ -194,7 +194,7 @@ class FormatBox implements FileSelectionListener
     notifyPaginationChanged (reportMaker.createPagination ());
   }
 
-  void select (Score score)
+  void select (ReportScore score)
   {
     selectButton (recordMakerButtons, score.recordMaker);
     selectButton (textMakerButtons, score.textMaker);
