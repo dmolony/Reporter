@@ -26,12 +26,6 @@ public abstract class DefaultRecordMaker implements RecordMaker
   }
 
   @Override
-  public List<Record> test ()
-  {
-    return test (buffer.length);
-  }
-
-  @Override
   public List<Record> test (int length)
   {
     if (length >= buffer.length)

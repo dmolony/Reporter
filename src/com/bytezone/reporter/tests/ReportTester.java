@@ -1,5 +1,7 @@
 package com.bytezone.reporter.tests;
 
+import java.util.List;
+
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -17,11 +19,14 @@ public class ReportTester
     this.textMaker = textMaker;
   }
 
-  public void testRecord (Record record)
+  public void testRecords (List<Record> records)
   {
-    if (reportMaker.test (record, textMaker))
-      ++validRecords;
-    ++recordsTested;
+    for (Record record : records)
+    {
+      if (reportMaker.test (record, textMaker))
+        ++validRecords;
+      ++recordsTested;
+    }
   }
 
   public double getRatio ()

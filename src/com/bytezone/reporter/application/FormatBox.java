@@ -135,7 +135,7 @@ class FormatBox implements FileSelectionListener
 
   private void adjustButtons ()
   {
-    List<Score> scores = reportData.getScores ();
+    List<Score> perfectScores = reportData.getScores ();
 
     List<RecordMaker> missingRecordMakers = new ArrayList<> ();
     List<TextMaker> missingTextMakers = new ArrayList<> ();
@@ -150,16 +150,13 @@ class FormatBox implements FileSelectionListener
     missingReportMakers.addAll (reportMakers);
 
     missingRecordMakers.remove (0);// the 'None' option
-    List<Score> perfectScores = new ArrayList<> ();
 
-    for (Score score : scores)
-      if (score.score == 100.0)
-      {
-        perfectScores.add (score);
-        missingRecordMakers.remove (score.recordMaker);
-        missingTextMakers.remove (score.textMaker);
-        missingReportMakers.remove (score.reportMaker);
-      }
+    for (Score score : perfectScores)
+    {
+      missingRecordMakers.remove (score.recordMaker);
+      missingTextMakers.remove (score.textMaker);
+      missingReportMakers.remove (score.reportMaker);
+    }
 
     enable (recordMakerButtons);
     enable (textMakerButtons);
@@ -190,9 +187,11 @@ class FormatBox implements FileSelectionListener
     ReportMaker reportMaker = getSelectedReportMaker ();
 
     setDataSize (records.size ());
+
+    // assign records and textMaker to each ReportMaker
     reportData.setSelections (records, textMaker);
 
-    notifyPaginationChanged (reportMaker.getPagination ());
+    notifyPaginationChanged (reportMaker.createPagination ());
   }
 
   void select (Score score)
@@ -267,6 +266,10 @@ class FormatBox implements FileSelectionListener
   @Override
   public void fileSelected (FileNode fileNode)
   {
+    // save current buttons and pagination
+    if (reportData != null)
+      saveSettings ();
+
     reportData = fileNode.reportData;
     linkButtons ();
 
@@ -274,13 +277,27 @@ class FormatBox implements FileSelectionListener
       try
       {
         reportData.readFile (fileNode.file);
+        adjustButtons ();
       }
       catch (IOException e)
       {
         e.printStackTrace ();
       }
+    else
+      restoreSettings ();
+  }
 
-    // should restore the previous selections instead of starting over
-    adjustButtons ();
+  private void saveSettings ()
+  {
+    // save all button settings - enables/disabled/selected
+    // save the pagination
+  }
+
+  private void restoreSettings ()
+  {
+    adjustButtons ();// temporary - replace this with a proper restore function
+
+    // restore all button settings - enables/disabled/selected
+    // restore the pagination
   }
 }

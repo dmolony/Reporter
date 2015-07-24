@@ -1,28 +1,38 @@
 package com.bytezone.reporter.tests;
 
+import java.util.List;
+
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
 public class TextTester
 {
-  TextMaker textMaker;
-  int alphanumericBytes;
-  int bytesTested;
+  private final TextMaker textMaker;
+  private int alphanumericBytes;
+  private int bytesTested;
 
   public TextTester (TextMaker textMaker)
   {
     this.textMaker = textMaker;
   }
 
-  public void testRecord (Record record)
+  public void testRecords (List<Record> records)
   {
-    alphanumericBytes += textMaker.countAlphanumericBytes (record);
-    bytesTested += record.length;
+    for (Record record : records)
+    {
+      alphanumericBytes += textMaker.countAlphanumericBytes (record);
+      bytesTested += record.length;
+    }
   }
 
   public double getAlphanumericRatio ()
   {
     return (double) alphanumericBytes / bytesTested * 100;
+  }
+
+  public TextMaker getTextMaker ()
+  {
+    return textMaker;
   }
 
   @Override

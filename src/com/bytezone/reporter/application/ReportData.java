@@ -85,7 +85,7 @@ public class ReportData
     scores = new ArrayList<> ();
 
     for (RecordTester tester : testers)
-      if (tester.getTotalRecords () > 1)
+      if (tester.getTotalRecords () > 2)
       {
         for (TextMaker textMaker : textMakers)
           tester.testTextMaker (textMaker);
@@ -93,7 +93,11 @@ public class ReportData
         TextMaker textMaker = tester.getPreferredTextMaker ();
 
         for (ReportMaker reportMaker : reportMakers)
-          scores.add (tester.testReportMaker (reportMaker, textMaker));
+        {
+          Score score = tester.testReportMaker (reportMaker, textMaker);
+          if (score.score == 100.0)
+            scores.add (score);
+        }
       }
   }
 

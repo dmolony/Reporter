@@ -32,8 +32,7 @@ public class RecordTester
     TextTester textTester = new TextTester (textMaker);
     textTesters.add (textTester);
 
-    for (Record record : records)
-      textTester.testRecord (record);
+    textTester.testRecords (records);
   }
 
   public Score testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
@@ -41,8 +40,7 @@ public class RecordTester
     ReportTester reportTester = new ReportTester (reportMaker, textMaker);
     reportTesters.add (reportTester);
 
-    for (Record record : records)
-      reportTester.testRecord (record);
+    reportTester.testRecords (records);
 
     return new Score (recordMaker, textMaker, reportMaker, reportTester.getRatio (),
         records.size ());
@@ -51,54 +49,54 @@ public class RecordTester
   public TextMaker getPreferredTextMaker ()
   {
     double max = Double.MIN_VALUE;
-    TextMaker preferredTextMaker = null;
+    TextTester bestTextTester = null;
 
     for (TextTester textTester : textTesters)
       if (textTester.getAlphanumericRatio () > max)
       {
         max = textTester.getAlphanumericRatio ();
-        preferredTextMaker = textTester.textMaker;
+        bestTextTester = textTester;
       }
 
-    return preferredTextMaker;
+    return bestTextTester.getTextMaker ();
   }
-
-  public ReportMaker getPreferredReportMaker ()
-  {
-    double max = Double.MIN_VALUE;
-    ReportMaker preferredReportMaker = null;
-
-    for (ReportTester reportTester : reportTesters)
-      if (reportTester.getRatio () >= max)
-      {
-        max = reportTester.getRatio ();
-        preferredReportMaker = reportTester.reportMaker;
-      }
-
-    return preferredReportMaker;
-  }
-
-  @Override
-  public String toString ()
-  {
-    StringBuilder text = new StringBuilder ();
-    text.append (String.format ("%-8s %,5d", recordMaker, records.size ()));
-
-    for (TextTester textTester : textTesters)
-      text.append (String.format ("  %s", textTester));
-
-    TextMaker preferredTextMaker = getPreferredTextMaker ();
-    String textMaker = preferredTextMaker == null ? "" : preferredTextMaker.toString ();
-    text.append ("  " + textMaker);
-
-    for (ReportTester reportTester : reportTesters)
-      text.append (String.format (" %s", reportTester));
-
-    ReportMaker preferredReportMaker = getPreferredReportMaker ();
-    String reportMaker =
-        preferredReportMaker == null ? "" : preferredReportMaker.toString ();
-    text.append ("  " + reportMaker);
-
-    return text.toString ();
-  }
+  //
+  //  public ReportMaker getPreferredReportMaker ()
+  //  {
+  //    double max = Double.MIN_VALUE;
+  //    ReportTester bestReportTester = null;
+  //
+  //    for (ReportTester reportTester : reportTesters)
+  //      if (reportTester.getRatio () >= max)
+  //      {
+  //        max = reportTester.getRatio ();
+  //        bestReportTester = reportTester;
+  //      }
+  //
+  //    return bestReportTester.reportMaker;
+  //  }
+  //
+  //  @Override
+  //  public String toString ()
+  //  {
+  //    StringBuilder text = new StringBuilder ();
+  //    text.append (String.format ("%-8s %,5d", recordMaker, records.size ()));
+  //
+  //    for (TextTester textTester : textTesters)
+  //      text.append (String.format ("  %s", textTester));
+  //
+  //    TextMaker preferredTextMaker = getPreferredTextMaker ();
+  //    String textMaker = preferredTextMaker == null ? "" : preferredTextMaker.toString ();
+  //    text.append ("  " + textMaker);
+  //
+  //    for (ReportTester reportTester : reportTesters)
+  //      text.append (String.format (" %s", reportTester));
+  //
+  //    ReportMaker preferredReportMaker = getPreferredReportMaker ();
+  //    String reportMaker =
+  //        preferredReportMaker == null ? "" : preferredReportMaker.toString ();
+  //    text.append ("  " + reportMaker);
+  //
+  //    return text.toString ();
+  //  }
 }
