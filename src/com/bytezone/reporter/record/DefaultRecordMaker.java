@@ -34,8 +34,10 @@ public abstract class DefaultRecordMaker implements RecordMaker
   @Override
   public List<Record> test (int length)
   {
-    List<Record> tempRecords = split (length);
-    return tempRecords;
+    if (length >= buffer.length)
+      return getRecords ();
+
+    return split (length);
   }
 
   @Override

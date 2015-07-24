@@ -5,12 +5,12 @@ import java.util.List;
 
 public class RavelRecordMaker extends DefaultRecordMaker
 {
+  byte[] temp = new byte[2048];
+
   public RavelRecordMaker ()
   {
     super ("Ravel");
   }
-
-  byte[] temp = new byte[2048];
 
   @Override
   protected List<Record> split (int length)
