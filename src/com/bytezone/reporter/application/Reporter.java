@@ -172,8 +172,6 @@ public class Reporter extends Application
     reportData = fileNode.reportData;
     borderPane.setRight (formatBox.getFormattingBox ());
 
-    //    formatBox.linkButtons ();
-
     if (!reportData.hasData ())
       try
       {

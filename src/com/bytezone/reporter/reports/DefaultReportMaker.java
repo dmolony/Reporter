@@ -78,10 +78,13 @@ public abstract class DefaultReportMaker implements ReportMaker
   @Override
   public Pagination createPagination ()
   {
-    pagination = new Pagination ();
-    pagination.setPageFactory ( (Integer pageIndex) -> getFormattedPage (pageIndex));
-    paginate ();
-    pagination.setPageCount (pages.size ());
+    if (pagination == null)
+    {
+      pagination = new Pagination ();
+      pagination.setPageFactory (i -> getFormattedPage (i));
+      paginate ();
+      pagination.setPageCount (pages.size ());
+    }
     return pagination;
   }
 
