@@ -30,7 +30,8 @@ public class HexReport extends DefaultReportMaker
         hexLine.append (String.format ("%02X ", record.buffer[linePtr] & 0xFF));
 
       text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
-                                  textMaker.getText (record.buffer, ptr, lineMax - ptr)));
+                                  currentPaginationData.textMaker
+                                      .getText (record.buffer, ptr, lineMax - ptr)));
     }
 
     if (text.length () > 0)
@@ -47,15 +48,16 @@ public class HexReport extends DefaultReportMaker
     int firstRecord = 0;
     int lineCount = 0;
 
-    for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
+    for (int recordNumber = 0; recordNumber < currentPaginationData.records
+        .size (); recordNumber++)
     {
-      int recordLength = records.get (recordNumber).length;
+      int recordLength = currentPaginationData.records.get (recordNumber).length;
       int lines = recordLength == 0 ? 1 : (recordLength - 1) / 16 + 1;
 
       if (lineCount + lines > pageSize)
       {
         int linesLeft = pageSize - lineCount;
-        if (allowSplitRecords && linesLeft > 0)
+        if (currentPaginationData.allowSplitRecords && linesLeft > 0)
         {
           Page page = addPage (firstRecord, recordNumber);
           page.setLastRecordOffset (linesLeft * 74);
@@ -71,11 +73,11 @@ public class HexReport extends DefaultReportMaker
       else
         lineCount += lines;
 
-      if (newlineBetweenRecords)
+      if (currentPaginationData.newlineBetweenRecords)
         lineCount++;
     }
 
-    addPage (firstRecord, records.size () - 1);
+    addPage (firstRecord, currentPaginationData.records.size () - 1);
   }
 
   @Override

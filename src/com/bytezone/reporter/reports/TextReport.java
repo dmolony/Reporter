@@ -15,15 +15,15 @@ public class TextReport extends DefaultReportMaker
   {
     currentPaginationData.pages.clear ();
 
-    for (int i = 0; i < records.size (); i += pageSize)
-      currentPaginationData.pages
-          .add (new Page (records, i, Math.min (i + pageSize - 1, records.size () - 1)));
+    for (int i = 0; i < currentPaginationData.records.size (); i += pageSize)
+      currentPaginationData.pages.add (new Page (currentPaginationData.records, i,
+          Math.min (i + pageSize - 1, currentPaginationData.records.size () - 1)));
   }
 
   @Override
   public String getFormattedRecord (Record record)
   {
-    return textMaker.getText (record);
+    return currentPaginationData.textMaker.getText (record);
   }
 
   @Override

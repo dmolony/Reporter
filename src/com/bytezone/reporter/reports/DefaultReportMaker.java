@@ -26,12 +26,11 @@ public abstract class DefaultReportMaker implements ReportMaker
   protected final String name;
   protected final TextArea textArea;
 
-  protected List<Record> records;
-
-  protected TextMaker textMaker;
-  protected RecordMaker recordMaker;
-  protected boolean newlineBetweenRecords;
-  protected boolean allowSplitRecords;
+  private TextMaker textMaker;
+  private RecordMaker recordMaker;
+  private boolean newlineBetweenRecords;
+  private boolean allowSplitRecords;
+  private List<Record> records;
 
   protected int pageSize = 66;
 
@@ -42,6 +41,7 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   public DefaultReportMaker (String name)
   {
+    // it would help if the constructor had the 4 components of PaginationData
     this.name = name;
     textArea = new TextArea ();
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
@@ -104,17 +104,18 @@ public abstract class DefaultReportMaker implements ReportMaker
     {
       currentPaginationData = new PaginationData ();
       paginationDataList.add (currentPaginationData);
+
       currentPaginationData.recordMaker = recordMaker;
       currentPaginationData.textMaker = textMaker;
       currentPaginationData.newlineBetweenRecords = newlineBetweenRecords;
       currentPaginationData.allowSplitRecords = allowSplitRecords;
+      currentPaginationData.records = records;
     }
   }
 
   @Override
   public Pagination getPagination ()
   {
-    // this will be different for each combination of RecordMaker/TextMaker
     if (currentPaginationData.pagination == null)
     {
       currentPaginationData.pagination = new Pagination ();
@@ -137,7 +138,7 @@ public abstract class DefaultReportMaker implements ReportMaker
     Page page = currentPaginationData.pages.get (pageNumber);
     for (int i = page.firstRecordIndex; i <= page.lastRecordIndex; i++)
     {
-      Record record = records.get (i);
+      Record record = currentPaginationData.records.get (i);
       String formattedRecord = getFormattedRecord (record);
       if (formattedRecord == null)
         continue;
@@ -165,7 +166,7 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   protected Page addPage (int firstRecord, int lastRecord)
   {
-    Page page = new Page (records, firstRecord, lastRecord);
+    Page page = new Page (currentPaginationData.records, firstRecord, lastRecord);
     currentPaginationData.pages.add (page);
 
     if (currentPaginationData.pages.size () > 1)
@@ -243,12 +244,13 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   class PaginationData
   {
-    private RecordMaker recordMaker;
-    private TextMaker textMaker;
-    private boolean newlineBetweenRecords;
-    private boolean allowSplitRecords;
+    protected RecordMaker recordMaker;
+    protected TextMaker textMaker;
+    protected boolean newlineBetweenRecords;
+    protected boolean allowSplitRecords;
 
     protected final List<Page> pages = new ArrayList<> ();
-    private Pagination pagination;
+    protected Pagination pagination;
+    protected List<Record> records;
   }
 }

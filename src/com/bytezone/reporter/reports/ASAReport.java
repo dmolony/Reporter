@@ -26,11 +26,13 @@ public class AsaReport extends DefaultReportMaker
     int firstRecord = 0;
     int lineCount = 0;
 
-    for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
+    for (int recordNumber = 0; recordNumber < currentPaginationData.records
+        .size (); recordNumber++)
     {
-      Record record = records.get (recordNumber);
+      Record record = currentPaginationData.records.get (recordNumber);
 
-      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+      char c =
+          currentPaginationData.textMaker.getChar (record.buffer[record.offset] & 0xFF);
       int lines = 0;
       if (c == ' ')
         lines = 1;
@@ -48,7 +50,7 @@ public class AsaReport extends DefaultReportMaker
       else if (lineCount + lines > pageSize)
       {
         int linesLeft = pageSize - lineCount;
-        if (allowSplitRecords && linesLeft > 0)
+        if (currentPaginationData.allowSplitRecords && linesLeft > 0)
         {
           Page page = addPage (firstRecord, recordNumber);
           page.setLastRecordOffset (linesLeft);
@@ -65,16 +67,17 @@ public class AsaReport extends DefaultReportMaker
         lineCount += lines;
     }
 
-    addPage (firstRecord, records.size () - 1);
+    addPage (firstRecord, currentPaginationData.records.size () - 1);
   }
 
   @Override
   protected String getFormattedRecord (Record record)
   {
-    char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+    char c =
+        currentPaginationData.textMaker.getChar (record.buffer[record.offset] & 0xFF);
     String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
-    return prefix
-        + textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
+    return prefix + currentPaginationData.textMaker
+        .getText (record.buffer, record.offset + 1, record.length - 1);
   }
 
   @Override
