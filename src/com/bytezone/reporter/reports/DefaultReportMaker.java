@@ -34,7 +34,7 @@ public abstract class DefaultReportMaker implements ReportMaker
   private LineMetrics lineMetrics;
   private int lineHeight;
 
-  private final java.awt.Font plainFont, boldFont, headerFont;
+  private final java.awt.Font plainFont;
 
   public DefaultReportMaker (String name)
   {
@@ -46,38 +46,43 @@ public abstract class DefaultReportMaker implements ReportMaker
     pages = new ArrayList<> ();
 
     plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
-    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
-        plainFont.getSize ());
-    headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
+    //    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
+    //        plainFont.getSize ());
+    //    headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
   }
 
   @Override
   public void setRecords (List<Record> records)
   {
     this.records = records;
+    // change pagination
   }
 
   @Override
   public void setTextMaker (TextMaker textMaker)
   {
     this.textMaker = textMaker;
+    // change pagination
   }
 
   @Override
   public void setNewlineBetweenRecords (boolean value)
   {
     newlineBetweenRecords = value;
+    // change pagination
   }
 
   @Override
   public void setAllowSplitRecords (boolean value)
   {
     allowSplitRecords = value;
+    // change pagination
   }
 
   @Override
-  public Pagination createPagination ()
+  public Pagination getPagination ()
   {
+    // this will be different for each combination of RecordMaker/TextMaker
     if (pagination == null)
     {
       pagination = new Pagination ();

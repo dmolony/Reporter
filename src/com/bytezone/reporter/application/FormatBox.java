@@ -44,8 +44,6 @@ class FormatBox
   private final VBox reportsBox;
 
   private final ReportData reportData;
-  private ReportScore currentReportScore;
-
   private VBox formattingBox;
 
   public FormatBox (ReportData reportData)
@@ -60,14 +58,36 @@ class FormatBox
     encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
     reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
 
-    linkButtons ();
+    //    linkButtons (recordMakerButtons, recordMakers);
+    //    linkButtons (textMakerButtons, textMakers);
+    //    linkButtons (reportMakerButtons, reportMakers);
   }
 
-  private void linkButtons ()
+  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
+      ToggleGroup group)
   {
-    linkButtons (recordMakerButtons, reportData.getRecordMakers ());
-    linkButtons (textMakerButtons, reportData.getTextMakers ());
-    linkButtons (reportMakerButtons, reportData.getReportMakers ());
+    VBox vbox = new VBox (10);
+    vbox.setPadding (new Insets (10));
+
+    // List of RecordMaker/TextMaker/ReportMaker
+    for (Object userData : objects)
+    {
+      RadioButton button = new RadioButton (userData.toString ());
+      button.setToggleGroup (group);
+      button.setOnAction (e -> buttonSelection ());
+
+      buttons.add (button);
+      vbox.getChildren ().add (button);
+    }
+
+    linkButtons (buttons, objects);
+
+    return vbox;
+  }
+
+  ReportData getReportData ()
+  {
+    return reportData;
   }
 
   private void linkButtons (List<RadioButton> buttons, List<? extends Object> objects)
@@ -111,25 +131,6 @@ class FormatBox
     Label label = new Label (text);
     label.setPrefWidth (width);
     return label;
-  }
-
-  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
-      ToggleGroup group)
-  {
-    VBox vbox = new VBox (10);
-    vbox.setPadding (new Insets (10));
-
-    // List of RecordMaker/TextMaker/ReportMaker
-    for (Object userData : objects)
-    {
-      RadioButton button = new RadioButton (userData.toString ());
-      button.setToggleGroup (group);
-      button.setOnAction (e -> buttonSelection ());
-
-      buttons.add (button);
-      vbox.getChildren ().add (button);
-    }
-    return vbox;
   }
 
   private TitledPane addTitledPane (String text, Node contents, VBox parent)
@@ -209,17 +210,13 @@ class FormatBox
     TextMaker textMaker = getSelectedTextMaker ();
     ReportMaker reportMaker = getSelectedReportMaker ();
 
-    ReportScore reportScore =
-        reportData.getReportScore (recordMaker, textMaker, reportMaker);
-    System.out.println (reportScore);
-
     List<Record> records = recordMaker.getRecords ();
     setDataSize (records.size ());
 
     // assign records and textMaker to each ReportMaker
-    reportData.setSelections (records, textMaker);
+    reportData.setSelections (records, textMaker);// will alter the pagination
 
-    notifyPaginationChanged (reportMaker.createPagination ());
+    notifyPaginationChanged (reportMaker.getPagination ());
   }
 
   void selectButtons (ReportScore reportScore)
@@ -227,7 +224,6 @@ class FormatBox
     selectButton (recordMakerButtons, reportScore.recordMaker);
     selectButton (textMakerButtons, reportScore.textMaker);
     selectButton (reportMakerButtons, reportScore.reportMaker);
-    currentReportScore = reportScore;
   }
 
   private void selectButton (List<RadioButton> buttons, Object userData)
@@ -290,25 +286,5 @@ class FormatBox
   public void removePaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.remove (listener);
-  }
-
-  void saveSettings ()
-  {
-    // save all button settings - enabled/disabled/selected
-    // save the pagination
-    reportData.setReportScore (currentReportScore);
-    System.out.println ("Saving:");
-    System.out.println (currentReportScore);
-  }
-
-  void restoreSettings ()
-  {
-    adjustButtons ();// temporary - replace this with a proper restore function
-
-    // restore all button settings - enables/disabled/selected
-    // restore the pagination
-    currentReportScore = reportData.getReportScore ();
-    System.out.println ("Restoring:");
-    System.out.println (currentReportScore);
   }
 }

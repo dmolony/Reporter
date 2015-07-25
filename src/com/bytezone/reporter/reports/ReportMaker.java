@@ -20,5 +20,5 @@ public interface ReportMaker extends Printable
 
   public void setAllowSplitRecords (boolean value);
 
-  public Pagination createPagination ();
+  public Pagination getPagination ();
 }

@@ -49,17 +49,13 @@ public class Reporter extends Application
 
     TreePanel treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
-    //    formatBox.addPaginationChangeListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (180);
 
     TreeView<FileNode> tree = treePanel.getTree (home);
     stackPane.getChildren ().add (tree);
 
-    //    VBox formatVBox = formatBox.getFormattingBox ();
-
     borderPane.setLeft (stackPane);
-    //    borderPane.setRight (formatBox.getFormattingBox ());
     borderPane.setTop (menuBar);
 
     menuBar.getMenus ().addAll (getFileMenu ());
@@ -119,7 +115,6 @@ public class Reporter extends Application
       public void run ()
       {
         PrinterJob printerJob = PrinterJob.getPrinterJob ();// AWT
-
         PageFormat pageFormat = printerJob.defaultPage ();
         printerJob.pageDialog (pageFormat);
       }
@@ -169,7 +164,7 @@ public class Reporter extends Application
   public void fileSelected (FileNode fileNode)
   {
     formatBox = fileNode.formatBox;
-    reportData = fileNode.reportData;
+    reportData = formatBox.getReportData ();
     borderPane.setRight (formatBox.getFormattingBox ());
 
     if (!reportData.hasData ())
@@ -184,10 +179,7 @@ public class Reporter extends Application
         e.printStackTrace ();
       }
     else
-    {
-      // force a pagination change
-      formatBox.buttonSelection ();
-    }
+      formatBox.buttonSelection ();// force a pagination change
   }
 
   @Override

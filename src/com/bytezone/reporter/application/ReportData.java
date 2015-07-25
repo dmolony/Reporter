@@ -36,9 +36,7 @@ public class ReportData
   private List<RecordMaker> recordMakers;
   private List<TextMaker> textMakers;
   private List<ReportMaker> reportMakers;
-
   private List<ReportScore> scores;
-  private ReportScore selectedReportScore;
 
   private void createMakers ()
   {
@@ -97,7 +95,6 @@ public class ReportData
         for (ReportMaker reportMaker : reportMakers)
         {
           ReportScore score = tester.testReportMaker (reportMaker, textMaker);
-          //          if (score.score == 100.0)
           scores.add (score);
         }
       }
@@ -117,29 +114,9 @@ public class ReportData
     }
   }
 
-  public List<ReportScore> getScores ()
+  List<ReportScore> getScores ()
   {
     return scores;
-  }
-
-  public ReportScore getReportScore (RecordMaker recordMaker, TextMaker textMaker,
-      ReportMaker reportMaker)
-  {
-    for (ReportScore reportScore : scores)
-      if (reportScore.recordMaker == recordMaker && reportScore.textMaker == textMaker
-          && reportScore.reportMaker == reportMaker)
-        return reportScore;
-    return null;
-  }
-
-  public void setReportScore (ReportScore reportScore)
-  {
-    selectedReportScore = reportScore;
-  }
-
-  public ReportScore getReportScore ()
-  {
-    return selectedReportScore;
   }
 
   List<RecordMaker> getRecordMakers ()

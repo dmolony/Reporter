@@ -133,14 +133,14 @@ public class TreePanel
   class FileNode
   {
     File file;
-    ReportData reportData;
+    //    ReportData reportData;
     FormatBox formatBox;
     String datasetName;
 
     public FileNode (File file)
     {
       this.file = file;
-      reportData = new ReportData ();
+      ReportData reportData = new ReportData ();
       formatBox = new FormatBox (reportData);
     }
 
