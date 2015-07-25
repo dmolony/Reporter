@@ -13,10 +13,11 @@ public class TextReport extends DefaultReportMaker
   @Override
   protected void paginate ()
   {
-    pages.clear ();
+    currentPaginationData.pages.clear ();
 
     for (int i = 0; i < records.size (); i += pageSize)
-      pages.add (new Page (records, i, Math.min (i + pageSize - 1, records.size () - 1)));
+      currentPaginationData.pages
+          .add (new Page (records, i, Math.min (i + pageSize - 1, records.size () - 1)));
   }
 
   @Override

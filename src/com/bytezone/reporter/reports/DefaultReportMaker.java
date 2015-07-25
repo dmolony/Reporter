@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.scene.control.Pagination;
@@ -19,17 +20,20 @@ import javafx.scene.text.FontWeight;
 
 public abstract class DefaultReportMaker implements ReportMaker
 {
+  protected List<PaginationData> paginationDataList = new ArrayList<> ();
+  protected PaginationData currentPaginationData;
+
   protected final String name;
-  protected final List<Page> pages;
-  protected Pagination pagination;
   protected final TextArea textArea;
 
   protected List<Record> records;
-  protected TextMaker textMaker;
 
-  protected int pageSize = 66;
+  protected TextMaker textMaker;
+  protected RecordMaker recordMaker;
   protected boolean newlineBetweenRecords;
   protected boolean allowSplitRecords;
+
+  protected int pageSize = 66;
 
   private LineMetrics lineMetrics;
   private int lineHeight;
@@ -43,8 +47,6 @@ public abstract class DefaultReportMaker implements ReportMaker
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
-    pages = new ArrayList<> ();
-
     plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
     //    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
     //        plainFont.getSize ());
@@ -52,57 +54,87 @@ public abstract class DefaultReportMaker implements ReportMaker
   }
 
   @Override
-  public void setRecords (List<Record> records)
+  public void setRecordMaker (RecordMaker recordMaker)
   {
-    this.records = records;
-    // change pagination
+    this.recordMaker = recordMaker;
+    records = recordMaker.getRecords ();
+    setCurrentPaginationData ();
   }
 
   @Override
   public void setTextMaker (TextMaker textMaker)
   {
     this.textMaker = textMaker;
-    // change pagination
+    setCurrentPaginationData ();
   }
 
   @Override
   public void setNewlineBetweenRecords (boolean value)
   {
     newlineBetweenRecords = value;
-    // change pagination
+    setCurrentPaginationData ();
   }
 
   @Override
   public void setAllowSplitRecords (boolean value)
   {
     allowSplitRecords = value;
-    // change pagination
+    setCurrentPaginationData ();
+  }
+
+  private void setCurrentPaginationData ()
+  {
+    currentPaginationData = null;
+    if (recordMaker == null || textMaker == null)
+      return;
+
+    for (PaginationData paginationData : paginationDataList)
+    {
+      if (recordMaker == paginationData.recordMaker
+          && textMaker == paginationData.textMaker
+          && newlineBetweenRecords == paginationData.newlineBetweenRecords
+          && allowSplitRecords == paginationData.allowSplitRecords)
+      {
+        currentPaginationData = paginationData;
+        break;
+      }
+    }
+
+    if (currentPaginationData == null)
+    {
+      currentPaginationData = new PaginationData ();
+      paginationDataList.add (currentPaginationData);
+      currentPaginationData.recordMaker = recordMaker;
+      currentPaginationData.textMaker = textMaker;
+      currentPaginationData.newlineBetweenRecords = newlineBetweenRecords;
+      currentPaginationData.allowSplitRecords = allowSplitRecords;
+    }
   }
 
   @Override
   public Pagination getPagination ()
   {
     // this will be different for each combination of RecordMaker/TextMaker
-    if (pagination == null)
+    if (currentPaginationData.pagination == null)
     {
-      pagination = new Pagination ();
-      pagination.setPageFactory (i -> getFormattedPage (i));
+      currentPaginationData.pagination = new Pagination ();
+      currentPaginationData.pagination.setPageFactory (i -> getFormattedPage (i));
       paginate ();
-      pagination.setPageCount (pages.size ());
+      currentPaginationData.pagination.setPageCount (currentPaginationData.pages.size ());
     }
-    return pagination;
+    return currentPaginationData.pagination;
   }
 
   public TextArea getFormattedPage (int pageNumber)
   {
     StringBuilder text = new StringBuilder ();
-    if (pageNumber < 0 || pageNumber >= pages.size ())
+    if (pageNumber < 0 || pageNumber >= currentPaginationData.pages.size ())
     {
       textArea.clear ();
       return textArea;
     }
 
-    Page page = pages.get (pageNumber);
+    Page page = currentPaginationData.pages.get (pageNumber);
     for (int i = page.firstRecordIndex; i <= page.lastRecordIndex; i++)
     {
       Record record = records.get (i);
@@ -134,11 +166,12 @@ public abstract class DefaultReportMaker implements ReportMaker
   protected Page addPage (int firstRecord, int lastRecord)
   {
     Page page = new Page (records, firstRecord, lastRecord);
-    pages.add (page);
+    currentPaginationData.pages.add (page);
 
-    if (pages.size () > 1)
+    if (currentPaginationData.pages.size () > 1)
     {
-      Page previousPage = pages.get (pages.size () - 2);
+      Page previousPage =
+          currentPaginationData.pages.get (currentPaginationData.pages.size () - 2);
       page.setFirstRecordOffset (previousPage.lastRecordOffset);
     }
 
@@ -149,7 +182,7 @@ public abstract class DefaultReportMaker implements ReportMaker
   public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
       throws PrinterException
   {
-    if (pageIndex >= pages.size ())
+    if (pageIndex >= currentPaginationData.pages.size ())
     {
       lineMetrics = null;
       return Printable.NO_SUCH_PAGE;
@@ -206,5 +239,16 @@ public abstract class DefaultReportMaker implements ReportMaker
   public String toString ()
   {
     return name;
+  }
+
+  class PaginationData
+  {
+    private RecordMaker recordMaker;
+    private TextMaker textMaker;
+    private boolean newlineBetweenRecords;
+    private boolean allowSplitRecords;
+
+    protected final List<Page> pages = new ArrayList<> ();
+    private Pagination pagination;
   }
 }

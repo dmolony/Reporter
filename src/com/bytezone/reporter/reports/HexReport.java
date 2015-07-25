@@ -42,7 +42,7 @@ public class HexReport extends DefaultReportMaker
   @Override
   protected void paginate ()
   {
-    pages.clear ();
+    currentPaginationData.pages.clear ();
 
     int firstRecord = 0;
     int lineCount = 0;

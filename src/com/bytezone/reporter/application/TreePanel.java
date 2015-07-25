@@ -133,7 +133,6 @@ public class TreePanel
   class FileNode
   {
     File file;
-    //    ReportData reportData;
     FormatBox formatBox;
     String datasetName;
 

@@ -13,7 +13,7 @@ public class NatloadReport extends DefaultReportMaker
   @Override
   protected void paginate ()
   {
-    pages.clear ();
+    currentPaginationData.pages.clear ();
 
     int firstRecord = 0;
     int lineCount = 0;
@@ -38,7 +38,7 @@ public class NatloadReport extends DefaultReportMaker
           continue;
         if (lineCount > 0)
         {
-          pages.add (new Page (records, firstRecord, i - 1));
+          currentPaginationData.pages.add (new Page (records, firstRecord, i - 1));
           firstRecord = i;
           lineCount = 0;
         }
@@ -46,14 +46,15 @@ public class NatloadReport extends DefaultReportMaker
       ++lineCount;
       if (lineCount > pageSize)
       {
-        pages.add (new Page (records, firstRecord, i - 1));
+        currentPaginationData.pages.add (new Page (records, firstRecord, i - 1));
         firstRecord = i;
         lineCount = 0;
       }
     }
 
     if (firstRecord < records.size () - 1)
-      pages.add (new Page (records, firstRecord, records.size () - 1));
+      currentPaginationData.pages
+          .add (new Page (records, firstRecord, records.size () - 1));
   }
 
   @Override

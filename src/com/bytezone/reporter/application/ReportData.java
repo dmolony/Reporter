@@ -15,7 +15,6 @@ import com.bytezone.reporter.record.NoRecordMaker;
 import com.bytezone.reporter.record.NvbRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
-import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
 import com.bytezone.reporter.reports.AsaReport;
@@ -105,11 +104,11 @@ public class ReportData
     return buffer != null;
   }
 
-  void setSelections (List<Record> records, TextMaker textMaker)
+  void setSelections (RecordMaker recordMaker, TextMaker textMaker)
   {
     for (ReportMaker reportMaker : reportMakers)
     {
-      reportMaker.setRecords (records);
+      reportMaker.setRecordMaker (recordMaker);
       reportMaker.setTextMaker (textMaker);
     }
   }

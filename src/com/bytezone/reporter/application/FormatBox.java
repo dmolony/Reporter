@@ -210,7 +210,7 @@ class FormatBox
     setDataSize (records.size ());
 
     // assign records and textMaker to each ReportMaker
-    reportData.setSelections (records, textMaker);// will alter the pagination
+    reportData.setSelections (recordMaker, textMaker);// will alter the pagination
 
     notifyPaginationChanged (reportMaker.getPagination ());
   }
