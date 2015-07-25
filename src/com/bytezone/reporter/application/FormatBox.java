@@ -57,10 +57,6 @@ class FormatBox
     recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup);
     encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
     reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
-
-    //    linkButtons (recordMakerButtons, recordMakers);
-    //    linkButtons (textMakerButtons, textMakers);
-    //    linkButtons (reportMakerButtons, reportMakers);
   }
 
   private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
