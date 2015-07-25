@@ -1,13 +1,11 @@
 package com.bytezone.reporter.application;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
@@ -25,7 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-class FormatBox implements FileSelectionListener
+class FormatBox
 {
   private final Set<PaginationChangeListener> paginationChangeListeners =
       new HashSet<> ();
@@ -45,11 +43,14 @@ class FormatBox implements FileSelectionListener
   private final VBox encodingsBox;
   private final VBox reportsBox;
 
-  private ReportData reportData;
+  private final ReportData reportData;
+  private ReportScore currentReportScore;
 
-  public FormatBox ()
+  private VBox formattingBox;
+
+  public FormatBox (ReportData reportData)
   {
-    ReportData reportData = new ReportData ();// dummy to get button names
+    this.reportData = reportData;
 
     List<RecordMaker> recordMakers = reportData.getRecordMakers ();
     List<TextMaker> textMakers = reportData.getTextMakers ();
@@ -58,6 +59,8 @@ class FormatBox implements FileSelectionListener
     recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup);
     encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
     reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
+
+    linkButtons ();
   }
 
   private void linkButtons ()
@@ -75,26 +78,30 @@ class FormatBox implements FileSelectionListener
 
   public VBox getFormattingBox ()
   {
-    Label lblSize = setLabel ("Bytes", 60);
-    Label lblRecords = setLabel ("Records", 60);
-    lblSizeText.setFont (Font.font ("monospaced", 14));
-    lblRecordsText.setFont (Font.font ("monospaced", 14));
+    if (formattingBox == null)
+    {
+      Label lblSize = setLabel ("Bytes", 60);
+      Label lblRecords = setLabel ("Records", 60);
+      lblSizeText.setFont (Font.font ("monospaced", 14));
+      lblRecordsText.setFont (Font.font ("monospaced", 14));
 
-    HBox hbox1 = new HBox (10);
-    hbox1.getChildren ().addAll (lblSize, lblSizeText);
+      HBox hbox1 = new HBox (10);
+      hbox1.getChildren ().addAll (lblSize, lblSizeText);
 
-    HBox hbox2 = new HBox (10);
-    hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
+      HBox hbox2 = new HBox (10);
+      hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
 
-    VBox vbox = new VBox (10);
-    vbox.setPadding (new Insets (10));
-    vbox.getChildren ().addAll (hbox1, hbox2);
+      VBox vbox = new VBox (10);
+      vbox.setPadding (new Insets (10));
+      vbox.getChildren ().addAll (hbox1, hbox2);
+      vbox.setPrefWidth (180);
 
-    VBox formattingBox = new VBox ();
-    addTitledPane ("Data size", vbox, formattingBox);
-    addTitledPane ("Structure", recordsBox, formattingBox);
-    addTitledPane ("Encoding", encodingsBox, formattingBox);
-    addTitledPane ("Formatting", reportsBox, formattingBox);
+      formattingBox = new VBox ();
+      addTitledPane ("Data size", vbox, formattingBox);
+      addTitledPane ("Structure", recordsBox, formattingBox);
+      addTitledPane ("Encoding", encodingsBox, formattingBox);
+      addTitledPane ("Formatting", reportsBox, formattingBox);
+    }
 
     return formattingBox;
   }
@@ -117,7 +124,7 @@ class FormatBox implements FileSelectionListener
     {
       RadioButton button = new RadioButton (userData.toString ());
       button.setToggleGroup (group);
-      button.setOnAction (e -> createRecords ());
+      button.setOnAction (e -> buttonSelection ());
 
       buttons.add (button);
       vbox.getChildren ().add (button);
@@ -133,59 +140,80 @@ class FormatBox implements FileSelectionListener
     return titledPane;
   }
 
-  private void adjustButtons ()
+  void adjustButtons ()
   {
-    List<ReportScore> perfectScores = reportData.getScores ();
+    // Create lists of buttons to disable
+    List<RecordMaker> imperfectRecordMakers = new ArrayList<> ();
+    List<TextMaker> imperfectTextMakers = new ArrayList<> ();
+    List<ReportMaker> imperfectReportMakers = new ArrayList<> ();
 
-    List<RecordMaker> missingRecordMakers = new ArrayList<> ();
-    List<TextMaker> missingTextMakers = new ArrayList<> ();
-    List<ReportMaker> missingReportMakers = new ArrayList<> ();
+    // Add every button to the list
+    imperfectRecordMakers.addAll (reportData.getRecordMakers ());
+    imperfectTextMakers.addAll (reportData.getTextMakers ());
+    imperfectReportMakers.addAll (reportData.getReportMakers ());
 
-    List<RecordMaker> recordMakers = reportData.getRecordMakers ();
-    List<TextMaker> textMakers = reportData.getTextMakers ();
-    List<ReportMaker> reportMakers = reportData.getReportMakers ();
+    // Remove buttons that should always be valid
+    imperfectRecordMakers.remove (0);// the 'None' option
+    imperfectReportMakers.remove (0);// the Hex option
 
-    missingRecordMakers.addAll (recordMakers);
-    missingTextMakers.addAll (textMakers);
-    missingReportMakers.addAll (reportMakers);
+    // Remove buttons that have been used in a perfect report
+    List<ReportScore> perfectScores = new ArrayList<> ();
+    for (ReportScore score : reportData.getScores ())
+      if (score.score == 100.0)
+      {
+        imperfectRecordMakers.remove (score.recordMaker);
+        imperfectTextMakers.remove (score.textMaker);
+        imperfectReportMakers.remove (score.reportMaker);
+        perfectScores.add (score);
+      }
 
-    missingRecordMakers.remove (0);// the 'None' option
-
-    for (ReportScore score : perfectScores)
-    {
-      missingRecordMakers.remove (score.recordMaker);
-      missingTextMakers.remove (score.textMaker);
-      missingReportMakers.remove (score.reportMaker);
-    }
-
+    // Enable all buttons
     enable (recordMakerButtons);
     enable (textMakerButtons);
     enable (reportMakerButtons);
 
-    disable (missingRecordMakers, recordMakerButtons);
-    disable (missingTextMakers, textMakerButtons);
-    disable (missingReportMakers, reportMakerButtons);
+    // Disable the buttons that don't have perfect scores
+    disable (imperfectRecordMakers, recordMakerButtons);
+    disable (imperfectTextMakers, textMakerButtons);
+    disable (imperfectReportMakers, reportMakerButtons);
 
-    List<ReportMaker> reversedReportMakers = new ArrayList<> ();
-    reversedReportMakers.addAll (reportMakers);
-    Collections.reverse (reversedReportMakers);
-    loop: for (ReportMaker reportMaker : reversedReportMakers)
-      for (ReportScore score : perfectScores)
-        if (score.reportMaker == reportMaker)
-        {
-          select (score);
-          break loop;
-        }
-
-    createRecords ();
+    // Find the best report possible and select its buttons
+    ReportScore bestReportScore = getBestReportScore (perfectScores);
+    if (bestReportScore != null)
+    {
+      selectButtons (bestReportScore);
+      // Manually trigger the button selection function
+      buttonSelection ();
+    }
+    else
+      System.out.println ("Imperfect ReportScore selected");
   }
 
-  private void createRecords ()
+  private ReportScore getBestReportScore (List<ReportScore> perfectScores)
   {
-    List<Record> records = getSelectedRecordMaker ().getRecords ();
+    List<ReportMaker> reversedReportMakers = new ArrayList<> ();
+    reversedReportMakers.addAll (reportData.getReportMakers ());
+    Collections.reverse (reversedReportMakers);
+
+    for (ReportMaker reportMaker : reversedReportMakers)
+      for (ReportScore score : perfectScores)
+        if (score.reportMaker == reportMaker)
+          return score;
+
+    return null;
+  }
+
+  void buttonSelection ()
+  {
+    RecordMaker recordMaker = getSelectedRecordMaker ();
     TextMaker textMaker = getSelectedTextMaker ();
     ReportMaker reportMaker = getSelectedReportMaker ();
 
+    ReportScore reportScore =
+        reportData.getReportScore (recordMaker, textMaker, reportMaker);
+    System.out.println (reportScore);
+
+    List<Record> records = recordMaker.getRecords ();
     setDataSize (records.size ());
 
     // assign records and textMaker to each ReportMaker
@@ -194,11 +222,12 @@ class FormatBox implements FileSelectionListener
     notifyPaginationChanged (reportMaker.createPagination ());
   }
 
-  void select (ReportScore score)
+  void selectButtons (ReportScore reportScore)
   {
-    selectButton (recordMakerButtons, score.recordMaker);
-    selectButton (textMakerButtons, score.textMaker);
-    selectButton (reportMakerButtons, score.reportMaker);
+    selectButton (recordMakerButtons, reportScore.recordMaker);
+    selectButton (textMakerButtons, reportScore.textMaker);
+    selectButton (reportMakerButtons, reportScore.reportMaker);
+    currentReportScore = reportScore;
   }
 
   private void selectButton (List<RadioButton> buttons, Object userData)
@@ -263,41 +292,23 @@ class FormatBox implements FileSelectionListener
     paginationChangeListeners.remove (listener);
   }
 
-  @Override
-  public void fileSelected (FileNode fileNode)
+  void saveSettings ()
   {
-    // save current buttons and pagination
-    if (reportData != null)
-      saveSettings ();
-
-    reportData = fileNode.reportData;
-    linkButtons ();
-
-    if (!reportData.hasData ())
-      try
-      {
-        reportData.readFile (fileNode.file);
-        adjustButtons ();
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace ();
-      }
-    else
-      restoreSettings ();
-  }
-
-  private void saveSettings ()
-  {
-    // save all button settings - enables/disabled/selected
+    // save all button settings - enabled/disabled/selected
     // save the pagination
+    reportData.setReportScore (currentReportScore);
+    System.out.println ("Saving:");
+    System.out.println (currentReportScore);
   }
 
-  private void restoreSettings ()
+  void restoreSettings ()
   {
     adjustButtons ();// temporary - replace this with a proper restore function
 
     // restore all button settings - enables/disabled/selected
     // restore the pagination
+    currentReportScore = reportData.getReportScore ();
+    System.out.println ("Restoring:");
+    System.out.println (currentReportScore);
   }
 }

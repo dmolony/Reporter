@@ -31,12 +31,14 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class ReportData
 {
+  private byte[] buffer;
+
   private List<RecordMaker> recordMakers;
   private List<TextMaker> textMakers;
   private List<ReportMaker> reportMakers;
 
   private List<ReportScore> scores;
-  private byte[] buffer;
+  private ReportScore selectedReportScore;
 
   private void createMakers ()
   {
@@ -95,8 +97,8 @@ public class ReportData
         for (ReportMaker reportMaker : reportMakers)
         {
           ReportScore score = tester.testReportMaker (reportMaker, textMaker);
-          if (score.score == 100.0)
-            scores.add (score);
+          //          if (score.score == 100.0)
+          scores.add (score);
         }
       }
   }
@@ -120,14 +122,24 @@ public class ReportData
     return scores;
   }
 
-  public ReportScore getScore (RecordMaker recordMaker, TextMaker textMaker,
+  public ReportScore getReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
   {
-    for (ReportScore score : scores)
-      if (score.recordMaker == recordMaker && score.textMaker == textMaker
-          && score.reportMaker == reportMaker)
-        return score;
+    for (ReportScore reportScore : scores)
+      if (reportScore.recordMaker == recordMaker && reportScore.textMaker == textMaker
+          && reportScore.reportMaker == reportMaker)
+        return reportScore;
     return null;
+  }
+
+  public void setReportScore (ReportScore reportScore)
+  {
+    selectedReportScore = reportScore;
+  }
+
+  public ReportScore getReportScore ()
+  {
+    return selectedReportScore;
   }
 
   List<RecordMaker> getRecordMakers ()

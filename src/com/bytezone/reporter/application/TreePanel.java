@@ -134,12 +134,14 @@ public class TreePanel
   {
     File file;
     ReportData reportData;
+    FormatBox formatBox;
     String datasetName;
 
     public FileNode (File file)
     {
       this.file = file;
       reportData = new ReportData ();
+      formatBox = new FormatBox (reportData);
     }
 
     @Override

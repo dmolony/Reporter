@@ -3,6 +3,7 @@ package com.bytezone.reporter.application;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
@@ -23,15 +24,17 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Reporter extends Application implements PaginationChangeListener
+public class Reporter extends Application
+    implements PaginationChangeListener, FileSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
-  private final FormatBox formatBox = new FormatBox ();
+  private FormatBox formatBox;
+  private ReportData reportData;
+
   private final BorderPane borderPane = new BorderPane ();
   private final MenuBar menuBar = new MenuBar ();
 
@@ -45,19 +48,18 @@ public class Reporter extends Application implements PaginationChangeListener
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     TreePanel treePanel = new TreePanel (prefs);
-    treePanel.addFileSelectionListener (formatBox);
-    formatBox.addPaginationChangeListener (this);
+    treePanel.addFileSelectionListener (this);
+    //    formatBox.addPaginationChangeListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (180);
 
     TreeView<FileNode> tree = treePanel.getTree (home);
     stackPane.getChildren ().add (tree);
 
-    VBox formatVBox = formatBox.getFormattingBox ();
-    formatVBox.setPrefWidth (180);
+    //    VBox formatVBox = formatBox.getFormattingBox ();
 
     borderPane.setLeft (stackPane);
-    borderPane.setRight (formatVBox);
+    //    borderPane.setRight (formatBox.getFormattingBox ());
     borderPane.setTop (menuBar);
 
     menuBar.getMenus ().addAll (getFileMenu ());
@@ -161,6 +163,33 @@ public class Reporter extends Application implements PaginationChangeListener
   public static void main (String[] args)
   {
     launch (args);
+  }
+
+  @Override
+  public void fileSelected (FileNode fileNode)
+  {
+    formatBox = fileNode.formatBox;
+    reportData = fileNode.reportData;
+    borderPane.setRight (formatBox.getFormattingBox ());
+
+    //    formatBox.linkButtons ();
+
+    if (!reportData.hasData ())
+      try
+      {
+        reportData.readFile (fileNode.file);
+        formatBox.addPaginationChangeListener (this);
+        formatBox.adjustButtons ();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
+    else
+    {
+      // force a pagination change
+      formatBox.buttonSelection ();
+    }
   }
 
   @Override
