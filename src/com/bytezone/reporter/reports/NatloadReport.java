@@ -11,16 +11,16 @@ public class NatloadReport extends DefaultReportMaker
   }
 
   @Override
-  protected void paginate ()
+  protected void createPages ()
   {
-    currentPaginationData.pages.clear ();
+    pages.clear ();
 
     int firstRecord = 0;
     int lineCount = 0;
 
-    for (int i = 0; i < currentPaginationData.records.size (); i++)
+    for (int i = 0; i < records.size (); i++)
     {
-      Record record = currentPaginationData.records.get (i);
+      Record record = records.get (i);
       if (record.buffer[record.offset] == (byte) 0xFF
           || record.buffer[record.offset + 1] == (byte) 0xFF)
         continue;
@@ -38,8 +38,7 @@ public class NatloadReport extends DefaultReportMaker
           continue;
         if (lineCount > 0)
         {
-          currentPaginationData.pages
-              .add (new Page (currentPaginationData.records, firstRecord, i - 1));
+          pages.add (new Page (records, firstRecord, i - 1));
           firstRecord = i;
           lineCount = 0;
         }
@@ -47,16 +46,14 @@ public class NatloadReport extends DefaultReportMaker
       ++lineCount;
       if (lineCount > pageSize)
       {
-        currentPaginationData.pages
-            .add (new Page (currentPaginationData.records, firstRecord, i - 1));
+        pages.add (new Page (records, firstRecord, i - 1));
         firstRecord = i;
         lineCount = 0;
       }
     }
 
-    if (firstRecord < currentPaginationData.records.size () - 1)
-      currentPaginationData.pages.add (new Page (currentPaginationData.records,
-          firstRecord, currentPaginationData.records.size () - 1));
+    if (firstRecord < records.size () - 1)
+      pages.add (new Page (records, firstRecord, records.size () - 1));
   }
 
   @Override
@@ -73,24 +70,20 @@ public class NatloadReport extends DefaultReportMaker
     if ((record.buffer[record.offset] & 0xFF) > 0x95
         || (record.buffer[record.offset + 1] & 0xFF) > 0x95)
     {
-      String library =
-          currentPaginationData.textMaker.getText (record.buffer, record.offset, 8);
-      String program =
-          currentPaginationData.textMaker.getText (record.buffer, record.offset + 8, 8);
+      String library = textMaker.getText (record.buffer, record.offset, 8);
+      String program = textMaker.getText (record.buffer, record.offset + 8, 8);
       int sequence = (record.buffer[record.offset + 16] & 0xFF) << 8;
       sequence |= record.buffer[record.offset + 17] & 0xFF;
       if (sequence != 1)
         return null;
-      String lines =
-          currentPaginationData.textMaker.getText (record.buffer, record.offset + 18, 3);
+      String lines = textMaker.getText (record.buffer, record.offset + 18, 3);
       return String.format ("Library: %-8s  Program: %-8s  Seq: %2d  Lines: %s", library,
                             program, sequence, lines);
     }
 
     int length = record.length - record.countTrailingNulls ();
     return String.format ("%02X%02X %s", record.buffer[record.offset] & 0xFF,
-                          record.buffer[record.offset + 1] & 0xFF,
-                          currentPaginationData.textMaker
+                          record.buffer[record.offset + 1] & 0xFF, textMaker
                               .getText (record.buffer, record.offset + 2, length - 2))
         .trim ();
   }

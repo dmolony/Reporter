@@ -31,9 +31,37 @@ public class ReportScore implements Comparable<ReportScore>
     this.sampleSize = sampleSize;
 
     if (score == 100.0)
+    {
       pages = new ArrayList<> ();
+    }
     else
+    {
       pages = null;
+    }
+  }
+
+  public boolean matches (RecordMaker recordMaker, TextMaker textMaker,
+      ReportMaker reportMaker)
+  {
+    if (this.recordMaker == recordMaker && this.textMaker == textMaker
+        && this.reportMaker == reportMaker)
+      return true;
+    return false;
+  }
+
+  public List<Page> getPages ()
+  {
+    return pages;
+  }
+
+  public void setPagination (Pagination pagination)
+  {
+    this.pagination = pagination;
+  }
+
+  public Pagination getPagination ()
+  {
+    return pagination;
   }
 
   @Override

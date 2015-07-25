@@ -209,10 +209,12 @@ class FormatBox
     List<Record> records = recordMaker.getRecords ();
     setDataSize (records.size ());
 
-    // assign records and textMaker to each ReportMaker
-    reportData.setSelections (recordMaker, textMaker);// will alter the pagination
+    ReportScore currentReportScore =
+        findReportScore (recordMaker, textMaker, reportMaker);
+    assert currentReportScore != null;
 
-    notifyPaginationChanged (reportMaker.getPagination ());
+    reportMaker.getPagination (currentReportScore);
+    notifyPaginationChanged (currentReportScore.getPagination ());
   }
 
   void selectButtons (ReportScore reportScore)
@@ -230,6 +232,15 @@ class FormatBox
         button.setSelected (true);
         return;
       }
+  }
+
+  private ReportScore findReportScore (RecordMaker recordMaker, TextMaker textMaker,
+      ReportMaker reportMaker)
+  {
+    for (ReportScore score : reportData.getScores ())
+      if (score.matches (recordMaker, textMaker, reportMaker))
+        return score;
+    return null;
   }
 
   void setDataSize (int records)

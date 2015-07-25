@@ -11,19 +11,18 @@ public class TextReport extends DefaultReportMaker
   }
 
   @Override
-  protected void paginate ()
+  protected void createPages ()
   {
-    currentPaginationData.pages.clear ();
+    pages.clear ();
 
-    for (int i = 0; i < currentPaginationData.records.size (); i += pageSize)
-      currentPaginationData.pages.add (new Page (currentPaginationData.records, i,
-          Math.min (i + pageSize - 1, currentPaginationData.records.size () - 1)));
+    for (int i = 0; i < records.size (); i += pageSize)
+      pages.add (new Page (records, i, Math.min (i + pageSize - 1, records.size () - 1)));
   }
 
   @Override
   public String getFormattedRecord (Record record)
   {
-    return currentPaginationData.textMaker.getText (record);
+    return textMaker.getText (record);
   }
 
   @Override

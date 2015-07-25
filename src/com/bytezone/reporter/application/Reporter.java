@@ -30,7 +30,7 @@ public class Reporter extends Application
     implements PaginationChangeListener, FileSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
-  private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
+  private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private FormatBox formatBox;
   private ReportData reportData;
@@ -60,7 +60,7 @@ public class Reporter extends Application
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
-    if (SYSTEM_MENUBAR)
+    if (MAC_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);
 
     Scene scene = new Scene (borderPane, 800, 592);
@@ -170,8 +170,10 @@ public class Reporter extends Application
     if (!reportData.hasData ())
       try
       {
-        reportData.readFile (fileNode.file);
+        reportData.readFile (fileNode.file);// creates scores
         formatBox.addPaginationChangeListener (this);
+
+        // uses scores to enable/disable and calls buttonSelection()
         formatBox.adjustButtons ();
       }
       catch (IOException e)

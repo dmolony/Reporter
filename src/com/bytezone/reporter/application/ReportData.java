@@ -104,14 +104,11 @@ public class ReportData
     return buffer != null;
   }
 
-  void setSelections (RecordMaker recordMaker, TextMaker textMaker)
-  {
-    for (ReportMaker reportMaker : reportMakers)
-    {
-      reportMaker.setRecordMaker (recordMaker);
-      reportMaker.setTextMaker (textMaker);
-    }
-  }
+  //  void setSelections (RecordMaker recordMaker, TextMaker textMaker)
+      //  {
+      //    for (ReportMaker reportMaker : reportMakers)
+      //      reportMaker.setMakers (recordMaker, textMaker);
+      //  }
 
   List<ReportScore> getScores ()
   {
