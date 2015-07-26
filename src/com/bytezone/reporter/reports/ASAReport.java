@@ -1,5 +1,7 @@
 package com.bytezone.reporter.reports;
 
+import java.util.List;
+
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -21,6 +23,9 @@ public class AsaReport extends DefaultReportMaker
   @Override
   protected void createPages ()
   {
+    List<Page> pages = currentReportScore.getPages ();
+    List<Record> records = currentReportScore.recordMaker.getRecords ();
+
     pages.clear ();
 
     int firstRecord = 0;
@@ -30,7 +35,7 @@ public class AsaReport extends DefaultReportMaker
     {
       Record record = records.get (recordNumber);
 
-      char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+      char c = currentReportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
       int lines = 0;
       if (c == ' ')
         lines = 1;
@@ -71,10 +76,10 @@ public class AsaReport extends DefaultReportMaker
   @Override
   protected String getFormattedRecord (Record record)
   {
-    char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
+    char c = currentReportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
     String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
-    return prefix
-        + textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
+    return prefix + currentReportScore.textMaker
+        .getText (record.buffer, record.offset + 1, record.length - 1);
   }
 
   @Override

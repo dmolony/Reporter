@@ -3,7 +3,6 @@ package com.bytezone.reporter.application;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
@@ -74,6 +73,14 @@ public class Reporter extends Application
 
     tree.requestFocus ();
     primaryStage.show ();
+  }
+
+  @Override
+  public void fileSelected (FileNode fileNode)
+  {
+    formatBox = fileNode.formatBox;
+    borderPane.setRight (formatBox.getFormattingBox ());
+    formatBox.setFileNode (fileNode, this);
   }
 
   private Menu getFileMenu ()
@@ -161,32 +168,9 @@ public class Reporter extends Application
   }
 
   @Override
-  public void fileSelected (FileNode fileNode)
-  {
-    formatBox = fileNode.formatBox;
-    reportData = formatBox.getReportData ();
-    borderPane.setRight (formatBox.getFormattingBox ());
-
-    if (!reportData.hasData ())
-      try
-      {
-        reportData.readFile (fileNode.file);// creates scores
-        formatBox.addPaginationChangeListener (this);
-
-        // uses scores to enable/disable and calls buttonSelection()
-        formatBox.adjustButtons ();
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace ();
-      }
-    else
-      formatBox.buttonSelection ();// force a pagination change
-  }
-
-  @Override
   public void paginationChanged (Pagination pagination)
   {
+    //    System.out.println (pagination);
     borderPane.setCenter (pagination);
   }
 }

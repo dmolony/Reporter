@@ -1,5 +1,7 @@
 package com.bytezone.reporter.reports;
 
+import java.util.List;
+
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -13,6 +15,9 @@ public class TextReport extends DefaultReportMaker
   @Override
   protected void createPages ()
   {
+    List<Page> pages = currentReportScore.getPages ();
+    List<Record> records = currentReportScore.recordMaker.getRecords ();
+
     pages.clear ();
 
     for (int i = 0; i < records.size (); i += pageSize)
@@ -22,7 +27,7 @@ public class TextReport extends DefaultReportMaker
   @Override
   public String getFormattedRecord (Record record)
   {
-    return textMaker.getText (record);
+    return currentReportScore.textMaker.getText (record);
   }
 
   @Override

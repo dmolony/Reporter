@@ -24,20 +24,12 @@ public class ReportScore implements Comparable<ReportScore>
   public ReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker, double score, int sampleSize)
   {
-    this.reportMaker = reportMaker;
-    this.textMaker = textMaker;
     this.recordMaker = recordMaker;
+    this.textMaker = textMaker;
+    this.reportMaker = reportMaker;
     this.score = score;
     this.sampleSize = sampleSize;
-
-    if (score == 100.0)
-    {
-      pages = new ArrayList<> ();
-    }
-    else
-    {
-      pages = null;
-    }
+    pages = new ArrayList<> ();
   }
 
   public boolean matches (RecordMaker recordMaker, TextMaker textMaker,
@@ -73,7 +65,7 @@ public class ReportScore implements Comparable<ReportScore>
   @Override
   public String toString ()
   {
-    return String.format ("%-10s %-10s %-10s %6.2f %3d", recordMaker, textMaker,
-                          reportMaker, score, sampleSize);
+    return String.format ("%-10s %-10s %-10s %6.2f %3d  %s", recordMaker, textMaker,
+                          reportMaker, score, sampleSize, pagination);
   }
 }

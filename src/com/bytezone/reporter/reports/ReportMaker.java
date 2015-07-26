@@ -6,11 +6,9 @@ import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
-import javafx.scene.control.Pagination;
-
 public interface ReportMaker extends Printable
 {
   public boolean test (Record record, TextMaker textMaker);
 
-  public Pagination getPagination (ReportScore reportScore);
+  public void setPagination (ReportScore reportScore);
 }

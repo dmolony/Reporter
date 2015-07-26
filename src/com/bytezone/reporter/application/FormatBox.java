@@ -1,11 +1,13 @@
 package com.bytezone.reporter.application;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
@@ -43,7 +45,7 @@ class FormatBox
   private final VBox encodingsBox;
   private final VBox reportsBox;
 
-  private final ReportData reportData;
+  private ReportData reportData;
   private VBox formattingBox;
 
   public FormatBox (ReportData reportData)
@@ -137,7 +139,7 @@ class FormatBox
     return titledPane;
   }
 
-  void adjustButtons ()
+  private void adjustButtons ()
   {
     // Create lists of buttons to disable
     List<RecordMaker> imperfectRecordMakers = new ArrayList<> ();
@@ -177,13 +179,15 @@ class FormatBox
     // Find the best report possible and select its buttons
     ReportScore bestReportScore = getBestReportScore (perfectScores);
     if (bestReportScore != null)
-    {
       selectButtons (bestReportScore);
-      // Manually trigger the button selection function
-      buttonSelection ();
-    }
     else
       System.out.println ("Imperfect ReportScore selected");
+  }
+
+  private void enable (List<RadioButton> buttons)
+  {
+    for (RadioButton button : buttons)
+      button.setDisable (false);
   }
 
   private ReportScore getBestReportScore (List<ReportScore> perfectScores)
@@ -200,7 +204,7 @@ class FormatBox
     return null;
   }
 
-  void buttonSelection ()
+  private void buttonSelection ()
   {
     RecordMaker recordMaker = getSelectedRecordMaker ();
     TextMaker textMaker = getSelectedTextMaker ();
@@ -213,7 +217,9 @@ class FormatBox
         findReportScore (recordMaker, textMaker, reportMaker);
     assert currentReportScore != null;
 
-    reportMaker.getPagination (currentReportScore);
+    reportMaker.setPagination (currentReportScore);
+
+    System.out.println (currentReportScore);
     notifyPaginationChanged (currentReportScore.getPagination ());
   }
 
@@ -258,10 +264,23 @@ class FormatBox
           button.setDisable (true);
   }
 
-  private void enable (List<RadioButton> buttons)
+  public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
   {
-    for (RadioButton button : buttons)
-      button.setDisable (false);
+    reportData = getReportData ();
+
+    if (!reportData.hasData ())
+      try
+      {
+        reportData.readFile (fileNode.file);// creates scores
+        addPaginationChangeListener (listener);
+        adjustButtons ();// uses scores to enable/disable buttons
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
+
+    buttonSelection ();// force a pagination change
   }
 
   private RecordMaker getSelectedRecordMaker ()
@@ -288,6 +307,7 @@ class FormatBox
   public void addPaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.add (listener);
+    System.out.println (paginationChangeListeners.size ());
   }
 
   public void removePaginationChangeListener (PaginationChangeListener listener)

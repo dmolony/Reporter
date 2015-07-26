@@ -9,7 +9,6 @@ import java.awt.print.PrinterException;
 import java.util.List;
 
 import com.bytezone.reporter.record.Record;
-import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -20,29 +19,24 @@ import javafx.scene.text.FontWeight;
 
 public abstract class DefaultReportMaker implements ReportMaker
 {
-  //  protected List<PaginationData> paginationDataList = new ArrayList<> ();
-  //  protected PaginationData currentPaginationData;
-
   protected final String name;
   protected final TextArea textArea;
-
-  protected TextMaker textMaker;
-  protected RecordMaker recordMaker;
   protected final boolean newlineBetweenRecords;
   protected final boolean allowSplitRecords;
-  protected List<Record> records;
-  protected List<Page> pages;
+
+  protected ReportScore currentReportScore;
 
   protected int pageSize = 66;
 
   private LineMetrics lineMetrics;
   private int lineHeight;
 
-  private final java.awt.Font plainFont;
+  private java.awt.Font plainFont;
+  private java.awt.Font boldFont;
+  private java.awt.Font headerFont;
 
   public DefaultReportMaker (String name, boolean newLine, boolean split)
   {
-    // it would help if the constructor had the 2 booleans
     this.name = name;
     this.newlineBetweenRecords = newLine;
     this.allowSplitRecords = split;
@@ -51,33 +45,36 @@ public abstract class DefaultReportMaker implements ReportMaker
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
     textArea.setEditable (false);
 
-    plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
-    //    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
-    //        plainFont.getSize ());
-    //    headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
+    if (false)
+    {
+      plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
+      boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
+          plainFont.getSize ());
+      headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
+    }
   }
 
   @Override
-  public Pagination getPagination (ReportScore reportScore)
+  public void setPagination (ReportScore reportScore)
   {
+    currentReportScore = reportScore;
     Pagination pagination = reportScore.getPagination ();
     if (pagination == null)
     {
       pagination = new Pagination ();
       pagination.setPageFactory (i -> getFormattedPage (i));
-      recordMaker = reportScore.recordMaker;
-      textMaker = reportScore.textMaker;
-      records = recordMaker.getRecords ();
-      pages = reportScore.getPages ();
-      createPages ();
-      pagination.setPageCount (pages.size ());
       reportScore.setPagination (pagination);
+
+      createPages ();
+      pagination.setPageCount (reportScore.getPages ().size ());
     }
-    return pagination;
   }
 
   public TextArea getFormattedPage (int pageNumber)
   {
+    List<Page> pages = currentReportScore.getPages ();
+    List<Record> records = currentReportScore.recordMaker.getRecords ();
+
     StringBuilder text = new StringBuilder ();
     if (pageNumber < 0 || pageNumber >= pages.size ())
     {
@@ -116,6 +113,9 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   protected Page addPage (int firstRecord, int lastRecord)
   {
+    List<Page> pages = currentReportScore.getPages ();
+    List<Record> records = currentReportScore.recordMaker.getRecords ();
+
     Page page = new Page (records, firstRecord, lastRecord);
     pages.add (page);
 
@@ -132,6 +132,9 @@ public abstract class DefaultReportMaker implements ReportMaker
   public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
       throws PrinterException
   {
+    List<Page> pages = currentReportScore.getPages ();
+    //    List<Record> records = currentReportScore.recordMaker.getRecords ();
+
     if (pageIndex >= pages.size ())
     {
       lineMetrics = null;
@@ -151,16 +154,16 @@ public abstract class DefaultReportMaker implements ReportMaker
 
     g2.translate (pageFormat.getImageableX (), pageFormat.getImageableY ());
 
-    //    if (fileStructure.lineSize > 80)
-    //      pageFormat.setOrientation (PageFormat.LANDSCAPE);
+    if (false)
+      pageFormat.setOrientation (PageFormat.LANDSCAPE);
 
-    //    if (pageFormat.getOrientation () == PageFormat.PORTRAIT)
-    //    {
-    //      g2.setFont (headerFont);
-    //      g2.drawString (name, x, y);
-    //      g2.drawLine (x, y + 3, g2.getClipBounds ().width - x, y + 3);
-    //      y += 30;
-    //    }
+    if (pageFormat.getOrientation () == PageFormat.PORTRAIT)
+    {
+      g2.setFont (headerFont);
+      g2.drawString (name, x, y);
+      g2.drawLine (x, y + 3, g2.getClipBounds ().width - x, y + 3);
+      y += 30;
+    }
 
     g2.setFont (plainFont);
 
@@ -171,6 +174,9 @@ public abstract class DefaultReportMaker implements ReportMaker
       y += lineHeight;
     }
 
+    // page number
+    g2.setFont (boldFont);
+
     return (Printable.PAGE_EXISTS);
   }
 
@@ -180,7 +186,7 @@ public abstract class DefaultReportMaker implements ReportMaker
     return false;
   }
 
-  // fill pages with records
+  // fill List<Page> with Page records
   protected abstract void createPages ();
 
   protected abstract String getFormattedRecord (Record record);
@@ -190,24 +196,4 @@ public abstract class DefaultReportMaker implements ReportMaker
   {
     return name;
   }
-
-  //  class PaginationData
-  //  {
-  //    protected RecordMaker recordMaker;
-  //    protected TextMaker textMaker;
-  //    protected boolean newlineBetweenRecords;
-  //    protected boolean allowSplitRecords;
-  //
-  //    protected final List<Page> pages = new ArrayList<> ();
-  //    protected Pagination pagination;
-  //    protected List<Record> records;
-  //
-  //    @Override
-  //    public String toString ()
-  //    {
-  //      return String.format ("%-12s %-6s %s %s", recordMaker, textMaker,
-  //                            newlineBetweenRecords ? "NEWLINE" : "newline",
-  //                            allowSplitRecords ? "SPLIT" : "split");
-  //    }
-  //  }
 }

@@ -1,5 +1,7 @@
 package com.bytezone.reporter.reports;
 
+import java.util.List;
+
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
@@ -13,6 +15,9 @@ public class NatloadReport extends DefaultReportMaker
   @Override
   protected void createPages ()
   {
+    List<Page> pages = currentReportScore.getPages ();
+    List<Record> records = currentReportScore.recordMaker.getRecords ();
+
     pages.clear ();
 
     int firstRecord = 0;
@@ -59,6 +64,8 @@ public class NatloadReport extends DefaultReportMaker
   @Override
   public String getFormattedRecord (Record record)
   {
+    TextMaker textMaker = currentReportScore.textMaker;
+
     if (record.buffer[record.offset] == (byte) 0xFF
         || record.buffer[record.offset + 1] == (byte) 0xFF)
       return null;
