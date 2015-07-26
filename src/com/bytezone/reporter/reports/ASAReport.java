@@ -13,9 +13,9 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class AsaReport extends DefaultReportMaker
 {
-  public AsaReport ()
+  public AsaReport (boolean newLine, boolean split)
   {
-    super ("ASA");
+    super ("ASA", newLine, split);
   }
 
   @Override

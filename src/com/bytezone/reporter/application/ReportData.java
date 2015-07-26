@@ -39,14 +39,10 @@ public class ReportData
 
   private void createMakers ()
   {
-    ReportMaker hexReport = new HexReport ();
-    ReportMaker textReport = new TextReport ();
-    ReportMaker natloadReport = new NatloadReport ();
-    ReportMaker asaReport = new AsaReport ();
-
-    hexReport.setNewlineBetweenRecords (true);
-    hexReport.setAllowSplitRecords (true);
-    asaReport.setAllowSplitRecords (true);
+    ReportMaker hexReport = new HexReport (true, true);
+    ReportMaker textReport = new TextReport (false, false);
+    ReportMaker natloadReport = new NatloadReport (false, false);
+    ReportMaker asaReport = new AsaReport (false, true);
 
     recordMakers = new ArrayList<> (
         Arrays.asList (new NoRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),

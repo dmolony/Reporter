@@ -28,8 +28,8 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   protected TextMaker textMaker;
   protected RecordMaker recordMaker;
-  protected boolean newlineBetweenRecords;
-  protected boolean allowSplitRecords;
+  protected final boolean newlineBetweenRecords;
+  protected final boolean allowSplitRecords;
   protected List<Record> records;
   protected List<Page> pages;
 
@@ -40,10 +40,13 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   private final java.awt.Font plainFont;
 
-  public DefaultReportMaker (String name)
+  public DefaultReportMaker (String name, boolean newLine, boolean split)
   {
     // it would help if the constructor had the 2 booleans
     this.name = name;
+    this.newlineBetweenRecords = newLine;
+    this.allowSplitRecords = split;
+
     textArea = new TextArea ();
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
     textArea.setEditable (false);
@@ -52,18 +55,6 @@ public abstract class DefaultReportMaker implements ReportMaker
     //    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
     //        plainFont.getSize ());
     //    headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
-  }
-
-  @Override
-  public void setNewlineBetweenRecords (boolean value)
-  {
-    newlineBetweenRecords = value;// should only be set in the constructor
-  }
-
-  @Override
-  public void setAllowSplitRecords (boolean value)
-  {
-    allowSplitRecords = value;// should only be set in the constructor
   }
 
   @Override

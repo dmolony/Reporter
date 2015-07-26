@@ -5,9 +5,9 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class HexReport extends DefaultReportMaker
 {
-  public HexReport ()
+  public HexReport (boolean newLine, boolean split)
   {
-    super ("HEX");
+    super ("HEX", newLine, split);
   }
 
   static final int HEX_LINE_SIZE = 16;

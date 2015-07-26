@@ -5,9 +5,9 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class TextReport extends DefaultReportMaker
 {
-  public TextReport ()
+  public TextReport (boolean newLine, boolean split)
   {
-    super ("Text");
+    super ("Text", newLine, split);
   }
 
   @Override

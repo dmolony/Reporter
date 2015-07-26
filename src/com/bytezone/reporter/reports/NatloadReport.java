@@ -5,9 +5,9 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class NatloadReport extends DefaultReportMaker
 {
-  public NatloadReport ()
+  public NatloadReport (boolean newLine, boolean split)
   {
-    super ("Natload");
+    super ("Natload", newLine, split);
   }
 
   @Override
