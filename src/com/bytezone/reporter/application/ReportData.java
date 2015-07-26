@@ -30,20 +30,15 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class ReportData
 {
+  private final List<RecordMaker> recordMakers;
+  private final List<TextMaker> textMakers;
+  private final List<ReportMaker> reportMakers;
+  private final List<ReportScore> scores;
+
   private byte[] buffer;
 
-  private List<RecordMaker> recordMakers;
-  private List<TextMaker> textMakers;
-  private List<ReportMaker> reportMakers;
-  private List<ReportScore> scores;
-
-  private void createMakers ()
+  public ReportData ()
   {
-    ReportMaker hexReport = new HexReport (true, true);
-    ReportMaker textReport = new TextReport (false, false);
-    ReportMaker natloadReport = new NatloadReport (false, false);
-    ReportMaker asaReport = new AsaReport (false, true);
-
     recordMakers = new ArrayList<> (
         Arrays.asList (new NoRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
                        new LfRecordMaker (), new VbRecordMaker (), new RdwRecordMaker (),
@@ -52,16 +47,16 @@ public class ReportData
                        new FbRecordMaker (132), new FbRecordMaker (252)));
     textMakers =
         new ArrayList<> (Arrays.asList (new AsciiTextMaker (), new EbcdicTextMaker ()));
-    reportMakers =
-        new ArrayList<> (Arrays.asList (hexReport, textReport, asaReport, natloadReport));
+    reportMakers = new ArrayList<> (
+        Arrays.asList (new HexReport (true, true), new TextReport (false, false),
+                       new AsaReport (false, true), new NatloadReport (false, false)));
+    scores = new ArrayList<> ();
   }
 
   void readFile (File file) throws IOException
   {
+    assert buffer == null;
     this.buffer = Files.readAllBytes (file.toPath ());
-
-    if (recordMakers == null)
-      createMakers ();
 
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
@@ -76,8 +71,6 @@ public class ReportData
       }
       else
         testers.add (new RecordTester (recordMaker, 1024));
-
-    scores = new ArrayList<> ();
 
     for (RecordTester tester : testers)
       if (tester.getTotalRecords () > 2)
@@ -100,12 +93,6 @@ public class ReportData
     return buffer != null;
   }
 
-  //  void setSelections (RecordMaker recordMaker, TextMaker textMaker)
-      //  {
-      //    for (ReportMaker reportMaker : reportMakers)
-      //      reportMaker.setMakers (recordMaker, textMaker);
-      //  }
-
   List<ReportScore> getScores ()
   {
     return scores;
@@ -113,22 +100,16 @@ public class ReportData
 
   List<RecordMaker> getRecordMakers ()
   {
-    if (recordMakers == null)
-      createMakers ();
     return recordMakers;
   }
 
   List<TextMaker> getTextMakers ()
   {
-    if (textMakers == null)
-      createMakers ();
     return textMakers;
   }
 
   List<ReportMaker> getReportMakers ()
   {
-    if (reportMakers == null)
-      createMakers ();
     return reportMakers;
   }
 }
