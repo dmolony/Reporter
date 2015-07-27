@@ -3,6 +3,7 @@ package com.bytezone.reporter.reports;
 import java.util.List;
 
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 /*
@@ -21,10 +22,10 @@ public class AsaReport extends DefaultReportMaker
   }
 
   @Override
-  protected void createPages ()
+  protected void createPages (ReportScore reportScore)
   {
-    List<Page> pages = currentReportScore.getPages ();
-    List<Record> records = currentReportScore.recordMaker.getRecords ();
+    List<Page> pages = reportScore.getPages ();
+    List<Record> records = reportScore.recordMaker.getRecords ();
 
     pages.clear ();
 
@@ -35,7 +36,7 @@ public class AsaReport extends DefaultReportMaker
     {
       Record record = records.get (recordNumber);
 
-      char c = currentReportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
+      char c = reportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
       int lines = 0;
       if (c == ' ')
         lines = 1;
@@ -46,7 +47,7 @@ public class AsaReport extends DefaultReportMaker
 
       if (c == '1' && lineCount > 0)
       {
-        addPage (firstRecord, recordNumber - 1);
+        addPage (reportScore, firstRecord, recordNumber - 1);
         lineCount = 0;
         firstRecord = recordNumber;
       }
@@ -55,13 +56,13 @@ public class AsaReport extends DefaultReportMaker
         int linesLeft = pageSize - lineCount;
         if (allowSplitRecords && linesLeft > 0)
         {
-          Page page = addPage (firstRecord, recordNumber);
+          Page page = addPage (reportScore, firstRecord, recordNumber);
           page.setLastRecordOffset (linesLeft);
           lineCount = lines - linesLeft;
         }
         else
         {
-          addPage (firstRecord, recordNumber - 1);
+          addPage (reportScore, firstRecord, recordNumber - 1);
           lineCount = lines;
         }
         firstRecord = recordNumber;
@@ -70,16 +71,16 @@ public class AsaReport extends DefaultReportMaker
         lineCount += lines;
     }
 
-    addPage (firstRecord, records.size () - 1);
+    addPage (reportScore, firstRecord, records.size () - 1);
   }
 
   @Override
-  public String getFormattedRecord (Record record)
+  public String getFormattedRecord (ReportScore reportScore, Record record)
   {
-    char c = currentReportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
+    char c = reportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
     String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
-    return prefix + currentReportScore.textMaker
-        .getText (record.buffer, record.offset + 1, record.length - 1);
+    return prefix + reportScore.textMaker.getText (record.buffer, record.offset + 1,
+                                                   record.length - 1);
   }
 
   @Override

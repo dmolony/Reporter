@@ -12,7 +12,7 @@ public interface ReportMaker extends Printable
 
   public void setPagination (ReportScore reportScore);
 
-  public String getFormattedRecord (Record record);
+  public String getFormattedRecord (ReportScore reportScore, Record record);
 
   public boolean newlineBetweenRecords ();
 

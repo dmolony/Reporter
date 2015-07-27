@@ -86,7 +86,7 @@ public class ReportScore implements Comparable<ReportScore>
     for (int i = page.getFirstRecordIndex (); i <= page.getLastRecordIndex (); i++)
     {
       Record record = records.get (i);
-      String formattedRecord = reportMaker.getFormattedRecord (record);
+      String formattedRecord = reportMaker.getFormattedRecord (this, record);
       if (formattedRecord == null)
         continue;
 

@@ -21,7 +21,7 @@ public abstract class DefaultReportMaker implements ReportMaker
   protected final boolean newlineBetweenRecords;
   protected final boolean allowSplitRecords;
 
-  protected ReportScore currentReportScore;
+  //  protected ReportScore currentReportScore;
 
   protected int pageSize = 66;
 
@@ -54,7 +54,7 @@ public abstract class DefaultReportMaker implements ReportMaker
   @Override
   public void setPagination (ReportScore reportScore)
   {
-    currentReportScore = reportScore;
+    //    currentReportScore = reportScore;
     Pagination pagination = reportScore.getPagination ();
     if (pagination == null)
     {
@@ -62,7 +62,7 @@ public abstract class DefaultReportMaker implements ReportMaker
       pagination.setPageFactory (i -> reportScore.getFormattedPage (i));
       reportScore.setPagination (pagination);
 
-      createPages ();
+      createPages (reportScore);
       pagination.setPageCount (reportScore.getPages ().size ());
     }
   }
@@ -108,10 +108,10 @@ public abstract class DefaultReportMaker implements ReportMaker
   //    return textArea;
   //  }
 
-  protected Page addPage (int firstRecord, int lastRecord)
+  protected Page addPage (ReportScore reportScore, int firstRecord, int lastRecord)
   {
-    List<Page> pages = currentReportScore.getPages ();
-    List<Record> records = currentReportScore.recordMaker.getRecords ();
+    List<Page> pages = reportScore.getPages ();
+    List<Record> records = reportScore.recordMaker.getRecords ();
 
     Page page = new Page (records, firstRecord, lastRecord);
     pages.add (page);
@@ -129,14 +129,14 @@ public abstract class DefaultReportMaker implements ReportMaker
   public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
       throws PrinterException
   {
-    List<Page> pages = currentReportScore.getPages ();
+    //    List<Page> pages = currentReportScore.getPages ();
     //    List<Record> records = currentReportScore.recordMaker.getRecords ();
 
-    if (pageIndex >= pages.size ())
-    {
-      lineMetrics = null;
-      return Printable.NO_SUCH_PAGE;
-    }
+    //    if (pageIndex >= pages.size ())
+    //    {
+    //      lineMetrics = null;
+    //      return Printable.NO_SUCH_PAGE;
+    //    }
 
     Graphics2D g2 = (Graphics2D) graphics;
 
@@ -196,10 +196,10 @@ public abstract class DefaultReportMaker implements ReportMaker
   }
 
   // fill List<Page> with Page records
-  protected abstract void createPages ();
+  protected abstract void createPages (ReportScore reportScore);
 
-  @Override
-  public abstract String getFormattedRecord (Record record);
+  //  @Override
+  //  public abstract String getFormattedRecord (Record record);
 
   @Override
   public String toString ()
