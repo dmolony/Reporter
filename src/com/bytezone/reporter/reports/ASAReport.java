@@ -77,10 +77,12 @@ public class AsaReport extends DefaultReportMaker
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
   {
-    char c = reportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
+    TextMaker textMaker = reportScore.textMaker;
+
+    char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
     String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
-    return prefix + reportScore.textMaker.getText (record.buffer, record.offset + 1,
-                                                   record.length - 1);
+    return prefix
+        + textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
   }
 
   @Override

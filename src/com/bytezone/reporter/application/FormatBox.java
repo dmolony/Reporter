@@ -218,8 +218,6 @@ class FormatBox
     assert currentReportScore != null;
 
     reportMaker.setPagination (currentReportScore);
-
-    System.out.println (currentReportScore);
     notifyPaginationChanged (currentReportScore.getPagination ());
   }
 
@@ -307,7 +305,6 @@ class FormatBox
   public void addPaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.add (listener);
-    System.out.println (paginationChangeListeners.size ());
   }
 
   public void removePaginationChangeListener (PaginationChangeListener listener)

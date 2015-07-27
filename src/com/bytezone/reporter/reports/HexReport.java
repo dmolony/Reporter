@@ -60,6 +60,8 @@ public class HexReport extends DefaultReportMaker
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
   {
+    TextMaker textMaker = reportScore.textMaker;
+
     if (record.length == 0)
       return String.format ("%06X", record.offset);
 
@@ -74,9 +76,8 @@ public class HexReport extends DefaultReportMaker
       for (int linePtr = ptr; linePtr < lineMax; linePtr++)
         hexLine.append (String.format ("%02X ", record.buffer[linePtr] & 0xFF));
 
-      text.append (String
-          .format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
-                   reportScore.textMaker.getText (record.buffer, ptr, lineMax - ptr)));
+      text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
+                                  textMaker.getText (record.buffer, ptr, lineMax - ptr)));
     }
 
     if (text.length () > 0)
