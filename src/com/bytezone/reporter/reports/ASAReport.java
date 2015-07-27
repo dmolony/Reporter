@@ -74,7 +74,7 @@ public class AsaReport extends DefaultReportMaker
   }
 
   @Override
-  protected String getFormattedRecord (Record record)
+  public String getFormattedRecord (Record record)
   {
     char c = currentReportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
     String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";

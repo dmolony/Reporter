@@ -11,4 +11,10 @@ public interface ReportMaker extends Printable
   public boolean test (Record record, TextMaker textMaker);
 
   public void setPagination (ReportScore reportScore);
+
+  public String getFormattedRecord (Record record);
+
+  public boolean newlineBetweenRecords ();
+
+  public boolean allowSplitRecords ();
 }

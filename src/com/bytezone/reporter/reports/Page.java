@@ -20,14 +20,34 @@ public class Page
     lastRecordIndex = last;
   }
 
+  public int getFirstRecordIndex ()
+  {
+    return firstRecordIndex;
+  }
+
+  public int getLastRecordIndex ()
+  {
+    return lastRecordIndex;
+  }
+
   public void setFirstRecordOffset (int offset)
   {
     firstRecordOffset = offset;
   }
 
+  public int getFirstRecordOffset ()
+  {
+    return firstRecordOffset;
+  }
+
   public void setLastRecordOffset (int offset)
   {
     lastRecordOffset = offset;
+  }
+
+  public int getLastRecordOffset ()
+  {
+    return lastRecordOffset;
   }
 
   @Override
