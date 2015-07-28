@@ -16,7 +16,7 @@ public class HexReport extends DefaultReportMaker
   }
 
   @Override
-  protected void createPages (ReportScore reportScore)
+  public void createPages (ReportScore reportScore)
   {
     List<Page> pages = reportScore.getPages ();
     List<Record> records = reportScore.recordMaker.getRecords ();

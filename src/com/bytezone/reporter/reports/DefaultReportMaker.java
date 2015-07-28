@@ -12,16 +12,11 @@ import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
-import javafx.scene.control.Pagination;
-
 public abstract class DefaultReportMaker implements ReportMaker
 {
   protected final String name;
-  //  protected final TextArea textArea;
   protected final boolean newlineBetweenRecords;
   protected final boolean allowSplitRecords;
-
-  //  protected ReportScore currentReportScore;
 
   protected int pageSize = 66;
 
@@ -38,10 +33,6 @@ public abstract class DefaultReportMaker implements ReportMaker
     this.newlineBetweenRecords = newLine;
     this.allowSplitRecords = split;
 
-    //    textArea = new TextArea ();
-    //    textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
-    //    textArea.setEditable (false);
-
     if (false)
     {
       plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
@@ -51,61 +42,19 @@ public abstract class DefaultReportMaker implements ReportMaker
     }
   }
 
-  @Override
-  public void setPagination (ReportScore reportScore)
-  {
-    //    currentReportScore = reportScore;
-    Pagination pagination = reportScore.getPagination ();
-    if (pagination == null)
-    {
-      pagination = new Pagination ();
-      pagination.setPageFactory (i -> reportScore.getFormattedPage (i));
-      reportScore.setPagination (pagination);
-
-      createPages (reportScore);
-      pagination.setPageCount (reportScore.getPages ().size ());
-    }
-  }
-
-  //  public TextArea getFormattedPage (int pageNumber)
+  //  @Override
+  //  public void setPagination (ReportScore reportScore)
   //  {
-  //    List<Page> pages = currentReportScore.getPages ();
-  //    List<Record> records = currentReportScore.recordMaker.getRecords ();
-  //
-  //    StringBuilder text = new StringBuilder ();
-  //    if (pageNumber < 0 || pageNumber >= pages.size ())
+  //    Pagination pagination = reportScore.getPagination ();
+  //    if (pagination == null)
   //    {
-  //      textArea.clear ();
-  //      return textArea;
+  //      pagination = new Pagination ();
+  //      pagination.setPageFactory (i -> reportScore.getFormattedPage (i));
+  //      reportScore.setPagination (pagination);
+  //
+  //      createPages (reportScore);
+  //      pagination.setPageCount (reportScore.getPages ().size ());
   //    }
-  //
-  //    Page page = pages.get (pageNumber);
-  //    for (int i = page.firstRecordIndex; i <= page.lastRecordIndex; i++)
-  //    {
-  //      Record record = records.get (i);
-  //      String formattedRecord = getFormattedRecord (record);
-  //      if (formattedRecord == null)
-  //        continue;
-  //
-  //      if (page.firstRecordOffset > 0 && i == page.firstRecordIndex)
-  //        formattedRecord = formattedRecord.substring (page.firstRecordOffset);
-  //      else if (page.lastRecordOffset > 0 && i == page.lastRecordIndex)
-  //        formattedRecord = formattedRecord.substring (0, page.lastRecordOffset);
-  //
-  //      text.append (formattedRecord);
-  //      text.append ('\n');
-  //
-  //      if (newlineBetweenRecords)
-  //        text.append ('\n');
-  //    }
-  //
-  //    // remove trailing newlines
-  //    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
-  //      text.deleteCharAt (text.length () - 1);
-  //
-  //    textArea.setText (text.toString ());
-  //
-  //    return textArea;
   //  }
 
   protected Page addPage (ReportScore reportScore, int firstRecord, int lastRecord)
@@ -196,10 +145,7 @@ public abstract class DefaultReportMaker implements ReportMaker
   }
 
   // fill List<Page> with Page records
-  protected abstract void createPages (ReportScore reportScore);
-
-  //  @Override
-  //  public abstract String getFormattedRecord (Record record);
+  //  protected abstract void createPages (ReportScore reportScore);
 
   @Override
   public String toString ()

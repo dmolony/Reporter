@@ -215,10 +215,13 @@ class FormatBox
 
     ReportScore currentReportScore =
         findReportScore (recordMaker, textMaker, reportMaker);
-    assert currentReportScore != null;
 
-    reportMaker.setPagination (currentReportScore);
-    notifyPaginationChanged (currentReportScore.getPagination ());
+    if (currentReportScore != null)
+    {
+      currentReportScore.paginate ();
+      //      reportMaker.setPagination (currentReportScore);
+      notifyPaginationChanged (currentReportScore.getPagination ());
+    }
   }
 
   void selectButtons (ReportScore reportScore)

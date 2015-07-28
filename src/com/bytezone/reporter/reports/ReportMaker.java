@@ -10,7 +10,7 @@ public interface ReportMaker extends Printable
 {
   public boolean test (Record record, TextMaker textMaker);
 
-  public void setPagination (ReportScore reportScore);
+  public void createPages (ReportScore reportScore);
 
   public String getFormattedRecord (ReportScore reportScore, Record record);
 

@@ -34,6 +34,7 @@ public class ReportScore implements Comparable<ReportScore>
     this.reportMaker = reportMaker;
     this.score = score;
     this.sampleSize = sampleSize;
+
     pages = new ArrayList<> ();
     textArea = new TextArea ();
     textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
@@ -64,6 +65,18 @@ public class ReportScore implements Comparable<ReportScore>
     return pagination;
   }
 
+  public void paginate ()
+  {
+    if (pagination == null)
+    {
+      pagination = new Pagination ();
+      pagination.setPageFactory (i -> getFormattedPage (i));
+
+      reportMaker.createPages (this);
+      pagination.setPageCount (pages.size ());
+    }
+  }
+
   @Override
   public int compareTo (ReportScore o)
   {
@@ -72,7 +85,6 @@ public class ReportScore implements Comparable<ReportScore>
 
   public TextArea getFormattedPage (int pageNumber)
   {
-    //    List<Page> pages = currentReportScore.getPages ();
     List<Record> records = recordMaker.getRecords ();
 
     StringBuilder text = new StringBuilder ();
