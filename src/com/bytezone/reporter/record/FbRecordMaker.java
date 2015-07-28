@@ -6,6 +6,7 @@ import java.util.List;
 public class FbRecordMaker extends DefaultRecordMaker
 {
   private final int recordLength;
+  private boolean trimNulls;
 
   public FbRecordMaker (int recordLength)
   {
@@ -31,12 +32,15 @@ public class FbRecordMaker extends DefaultRecordMaker
       if (reclen == recordLength)
       {
         // trim trailing nulls
-        int ptr2 = ptr + reclen - 1;
-        while (reclen > 0)
+        if (trimNulls)
         {
-          if (buffer[ptr2--] != 0)
-            break;
-          --reclen;
+          int ptr2 = ptr + reclen - 1;
+          while (reclen > 0)
+          {
+            if (buffer[ptr2--] != 0)
+              break;
+            --reclen;
+          }
         }
 
         records.add (new Record (buffer, ptr, reclen, recordNumber++));

@@ -99,6 +99,8 @@ public class NatloadReport extends DefaultReportMaker
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
+    if (record.length == 63 || record.length == 0)
+      return true;
     if (record.length == 0 || record.length > 252)
       return false;
 
@@ -136,6 +138,13 @@ public class NatloadReport extends DefaultReportMaker
       }
       else
       {
+        if (length == 63)
+        {
+          boolean result = textMaker.test (buffer, offset + 2, length - 2);
+          String text = textMaker.getText (buffer, offset + 2, length - 2);
+          System.out.printf ("%02X%02X %s %s%n", b1, b2, text, result);
+          return true;
+        }
         return textMaker.test (buffer, offset + 2, length - 2);
       }
     }
