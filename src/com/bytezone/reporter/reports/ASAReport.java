@@ -47,7 +47,7 @@ public class AsaReport extends DefaultReportMaker
 
       if (c == '1' && lineCount > 0)
       {
-        addPage (reportScore, firstRecord, recordNumber - 1);
+        reportScore.addPage (firstRecord, recordNumber - 1);
         lineCount = 0;
         firstRecord = recordNumber;
       }
@@ -56,13 +56,13 @@ public class AsaReport extends DefaultReportMaker
         int linesLeft = pageSize - lineCount;
         if (allowSplitRecords && linesLeft > 0)
         {
-          Page page = addPage (reportScore, firstRecord, recordNumber);
+          Page page = reportScore.addPage (firstRecord, recordNumber);
           page.setLastRecordOffset (linesLeft);
           lineCount = lines - linesLeft;
         }
         else
         {
-          addPage (reportScore, firstRecord, recordNumber - 1);
+          reportScore.addPage (firstRecord, recordNumber - 1);
           lineCount = lines;
         }
         firstRecord = recordNumber;
@@ -71,7 +71,7 @@ public class AsaReport extends DefaultReportMaker
         lineCount += lines;
     }
 
-    addPage (reportScore, firstRecord, records.size () - 1);
+    reportScore.addPage (firstRecord, records.size () - 1);
   }
 
   @Override

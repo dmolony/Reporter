@@ -112,6 +112,23 @@ public class ReportScore implements Comparable<ReportScore>
     return textArea;
   }
 
+  public Page addPage (int firstRecord, int lastRecord)
+  {
+    //    List<Page> pages = reportScore.getPages ();
+    List<Record> records = recordMaker.getRecords ();
+
+    Page page = new Page (records, firstRecord, lastRecord);
+    pages.add (page);
+
+    if (pages.size () > 1)
+    {
+      Page previousPage = pages.get (pages.size () - 2);
+      page.setFirstRecordOffset (previousPage.getLastRecordOffset ());
+    }
+
+    return page;
+  }
+
   @Override
   public int compareTo (ReportScore o)
   {

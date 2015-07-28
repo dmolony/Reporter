@@ -6,10 +6,8 @@ import java.awt.font.LineMetrics;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
-import java.util.List;
 
 import com.bytezone.reporter.record.Record;
-import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 public abstract class DefaultReportMaker implements ReportMaker
@@ -40,38 +38,6 @@ public abstract class DefaultReportMaker implements ReportMaker
           plainFont.getSize ());
       headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
     }
-  }
-
-  //  @Override
-  //  public void setPagination (ReportScore reportScore)
-  //  {
-  //    Pagination pagination = reportScore.getPagination ();
-  //    if (pagination == null)
-  //    {
-  //      pagination = new Pagination ();
-  //      pagination.setPageFactory (i -> reportScore.getFormattedPage (i));
-  //      reportScore.setPagination (pagination);
-  //
-  //      createPages (reportScore);
-  //      pagination.setPageCount (reportScore.getPages ().size ());
-  //    }
-  //  }
-
-  protected Page addPage (ReportScore reportScore, int firstRecord, int lastRecord)
-  {
-    List<Page> pages = reportScore.getPages ();
-    List<Record> records = reportScore.recordMaker.getRecords ();
-
-    Page page = new Page (records, firstRecord, lastRecord);
-    pages.add (page);
-
-    if (pages.size () > 1)
-    {
-      Page previousPage = pages.get (pages.size () - 2);
-      page.setFirstRecordOffset (previousPage.lastRecordOffset);
-    }
-
-    return page;
   }
 
   @Override
@@ -143,9 +109,6 @@ public abstract class DefaultReportMaker implements ReportMaker
   {
     return allowSplitRecords;
   }
-
-  // fill List<Page> with Page records
-  //  protected abstract void createPages (ReportScore reportScore);
 
   @Override
   public String toString ()

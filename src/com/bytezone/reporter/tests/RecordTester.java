@@ -60,43 +60,4 @@ public class RecordTester
 
     return bestTextTester.getTextMaker ();
   }
-  //
-  //  public ReportMaker getPreferredReportMaker ()
-  //  {
-  //    double max = Double.MIN_VALUE;
-  //    ReportTester bestReportTester = null;
-  //
-  //    for (ReportTester reportTester : reportTesters)
-  //      if (reportTester.getRatio () >= max)
-  //      {
-  //        max = reportTester.getRatio ();
-  //        bestReportTester = reportTester;
-  //      }
-  //
-  //    return bestReportTester.reportMaker;
-  //  }
-  //
-  //  @Override
-  //  public String toString ()
-  //  {
-  //    StringBuilder text = new StringBuilder ();
-  //    text.append (String.format ("%-8s %,5d", recordMaker, records.size ()));
-  //
-  //    for (TextTester textTester : textTesters)
-  //      text.append (String.format ("  %s", textTester));
-  //
-  //    TextMaker preferredTextMaker = getPreferredTextMaker ();
-  //    String textMaker = preferredTextMaker == null ? "" : preferredTextMaker.toString ();
-  //    text.append ("  " + textMaker);
-  //
-  //    for (ReportTester reportTester : reportTesters)
-  //      text.append (String.format (" %s", reportTester));
-  //
-  //    ReportMaker preferredReportMaker = getPreferredReportMaker ();
-  //    String reportMaker =
-  //        preferredReportMaker == null ? "" : preferredReportMaker.toString ();
-  //    text.append ("  " + reportMaker);
-  //
-  //    return text.toString ();
-  //  }
 }

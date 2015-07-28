@@ -36,13 +36,13 @@ public class HexReport extends DefaultReportMaker
         int linesLeft = pageSize - lineCount;
         if (allowSplitRecords && linesLeft > 0)
         {
-          Page page = addPage (reportScore, firstRecord, recordNumber);
+          Page page = reportScore.addPage (firstRecord, recordNumber);
           page.setLastRecordOffset (linesLeft * 74);
           lineCount = lines - linesLeft;
         }
         else
         {
-          addPage (reportScore, firstRecord, recordNumber - 1);
+          reportScore.addPage (firstRecord, recordNumber - 1);
           lineCount = lines;
         }
         firstRecord = recordNumber;
@@ -54,7 +54,7 @@ public class HexReport extends DefaultReportMaker
         lineCount++;
     }
 
-    addPage (reportScore, firstRecord, records.size () - 1);
+    reportScore.addPage (firstRecord, records.size () - 1);
   }
 
   @Override
