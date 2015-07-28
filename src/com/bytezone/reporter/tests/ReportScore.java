@@ -16,15 +16,18 @@ import javafx.scene.text.FontWeight;
 
 public class ReportScore implements Comparable<ReportScore>
 {
+  private static Font font = Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14);
+
   public final RecordMaker recordMaker;
   public final TextMaker textMaker;
   public final ReportMaker reportMaker;
+
   public final double score;
   public final int sampleSize;
 
-  private final List<Page> pages;
+  private final List<Page> pages = new ArrayList<> ();
   private Pagination pagination;
-  protected final TextArea textArea;
+  private final TextArea textArea = new TextArea ();
 
   public ReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker, double score, int sampleSize)
@@ -32,22 +35,19 @@ public class ReportScore implements Comparable<ReportScore>
     this.recordMaker = recordMaker;
     this.textMaker = textMaker;
     this.reportMaker = reportMaker;
+
     this.score = score;
     this.sampleSize = sampleSize;
 
-    pages = new ArrayList<> ();
-    textArea = new TextArea ();
-    textArea.setFont (Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14));
+    textArea.setFont (font);
     textArea.setEditable (false);
   }
 
   public boolean matches (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
   {
-    if (this.recordMaker == recordMaker && this.textMaker == textMaker
-        && this.reportMaker == reportMaker)
-      return true;
-    return false;
+    return this.recordMaker == recordMaker && this.textMaker == textMaker
+        && this.reportMaker == reportMaker;
   }
 
   public List<Page> getPages ()
@@ -114,10 +114,7 @@ public class ReportScore implements Comparable<ReportScore>
 
   public Page addPage (int firstRecord, int lastRecord)
   {
-    //    List<Page> pages = reportScore.getPages ();
-    List<Record> records = recordMaker.getRecords ();
-
-    Page page = new Page (records, firstRecord, lastRecord);
+    Page page = new Page (recordMaker.getRecords (), firstRecord, lastRecord);
     pages.add (page);
 
     if (pages.size () > 1)

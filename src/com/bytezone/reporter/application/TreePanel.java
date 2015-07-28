@@ -57,19 +57,20 @@ public class TreePanel
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
 
     for (File file : directory.file.listFiles ())
-      if (file.isDirectory ())
-      {
-        TreeItem<FileNode> newItem = findFiles (new FileNode (file));
-        if (!newItem.isLeaf ())
+      if (!file.isHidden ())
+        if (file.isDirectory ())
+        {
+          TreeItem<FileNode> newItem = findFiles (new FileNode (file));
+          if (!newItem.isLeaf ())
+            treeItem.getChildren ().add (newItem);
+        }
+        else
+        {
+          TreeItem<FileNode> newItem = new TreeItem<> (new FileNode (file));
           treeItem.getChildren ().add (newItem);
-      }
-      else
-      {
-        TreeItem<FileNode> newItem = new TreeItem<> (new FileNode (file));
-        treeItem.getChildren ().add (newItem);
-        if (file.equals (selectedFile))
-          selectedTreeItem = newItem;
-      }
+          if (file.equals (selectedFile))
+            selectedTreeItem = newItem;
+        }
 
     return treeItem;
   }
