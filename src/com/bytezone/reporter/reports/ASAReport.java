@@ -90,6 +90,8 @@ public class AsaReport extends DefaultReportMaker
   {
     if (record.length == 0)
       return true;
+    if (record.length > 200)
+      return false;
     char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
     if (c != ' ' && c != '0' && c != '1' && c != '-')
       return false;

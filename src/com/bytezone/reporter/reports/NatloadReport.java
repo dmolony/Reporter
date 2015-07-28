@@ -99,7 +99,7 @@ public class NatloadReport extends DefaultReportMaker
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
-    if (record.length == 0)
+    if (record.length == 0 || record.length > 252)
       return false;
 
     byte[] buffer = record.buffer;

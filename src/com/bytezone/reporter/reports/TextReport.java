@@ -34,6 +34,8 @@ public class TextReport extends DefaultReportMaker
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
+    if (record.length > 500)
+      return false;
     return textMaker.test (record);
   }
 }

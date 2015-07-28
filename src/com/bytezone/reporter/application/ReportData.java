@@ -53,6 +53,11 @@ public class ReportData
     scores = new ArrayList<> ();
   }
 
+  public boolean hasData ()
+  {
+    return buffer != null;
+  }
+
   void readFile (File file) throws IOException
   {
     assert buffer == null;
@@ -70,27 +75,25 @@ public class ReportData
           testers.add (new RecordTester (recordMaker, 10 * length));
       }
       else
-        testers.add (new RecordTester (recordMaker, 1024));
+      {
+        RecordTester recordTester = new RecordTester (recordMaker, 1024);
+        if (recordTester.getSampleSize () > 2 || recordMaker instanceof NoRecordMaker)
+          testers.add (recordTester);
+      }
 
     for (RecordTester tester : testers)
-      if (tester.getTotalRecords () > 2)
+    {
+      for (TextMaker textMaker : textMakers)
+        tester.testTextMaker (textMaker);
+
+      TextMaker textMaker = tester.getPreferredTextMaker ();
+
+      for (ReportMaker reportMaker : reportMakers)
       {
-        for (TextMaker textMaker : textMakers)
-          tester.testTextMaker (textMaker);
-
-        TextMaker textMaker = tester.getPreferredTextMaker ();
-
-        for (ReportMaker reportMaker : reportMakers)
-        {
-          ReportScore score = tester.testReportMaker (reportMaker, textMaker);
-          scores.add (score);
-        }
+        ReportScore score = tester.testReportMaker (reportMaker, textMaker);
+        scores.add (score);
       }
-  }
-
-  public boolean hasData ()
-  {
-    return buffer != null;
+    }
   }
 
   List<ReportScore> getScores ()

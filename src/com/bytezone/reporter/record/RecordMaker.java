@@ -14,5 +14,5 @@ public interface RecordMaker
 
   //  public List<Record> test ();
 
-  public List<Record> test (int length);
+  public List<Record> createSampleRecords (int length);
 }

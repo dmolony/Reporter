@@ -11,7 +11,7 @@ import com.bytezone.reporter.text.TextMaker;
 public class RecordTester
 {
   private final RecordMaker recordMaker;
-  private final List<Record> records;
+  private final List<Record> sampleRecords;
 
   private final List<TextTester> textTesters = new ArrayList<> ();
   private final List<ReportTester> reportTesters = new ArrayList<> ();
@@ -19,12 +19,12 @@ public class RecordTester
   public RecordTester (RecordMaker recordMaker, int testSize)
   {
     this.recordMaker = recordMaker;
-    records = recordMaker.test (testSize);
+    sampleRecords = recordMaker.createSampleRecords (testSize);
   }
 
-  public int getTotalRecords ()
+  public int getSampleSize ()
   {
-    return records.size ();
+    return sampleRecords.size ();
   }
 
   public void testTextMaker (TextMaker textMaker)
@@ -32,18 +32,7 @@ public class RecordTester
     TextTester textTester = new TextTester (textMaker);
     textTesters.add (textTester);
 
-    textTester.testRecords (records);
-  }
-
-  public ReportScore testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
-  {
-    ReportTester reportTester = new ReportTester (reportMaker, textMaker);
-    reportTesters.add (reportTester);
-
-    reportTester.testRecords (records);
-
-    return new ReportScore (recordMaker, textMaker, reportMaker, reportTester.getRatio (),
-        records.size ());
+    textTester.testRecords (sampleRecords);
   }
 
   public TextMaker getPreferredTextMaker ()
@@ -59,5 +48,16 @@ public class RecordTester
       }
 
     return bestTextTester.getTextMaker ();
+  }
+
+  public ReportScore testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
+  {
+    ReportTester reportTester = new ReportTester (reportMaker, textMaker);
+    reportTesters.add (reportTester);
+
+    reportTester.testRecords (sampleRecords);
+
+    return new ReportScore (recordMaker, textMaker, reportMaker, reportTester.getRatio (),
+        sampleRecords.size ());
   }
 }

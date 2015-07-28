@@ -139,6 +139,25 @@ class FormatBox
     return titledPane;
   }
 
+  public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
+  {
+    reportData = getReportData ();
+
+    if (!reportData.hasData ())
+      try
+      {
+        reportData.readFile (fileNode.file);// creates scores
+        addPaginationChangeListener (listener);
+        adjustButtons ();// uses scores to enable/disable buttons
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
+
+    buttonSelection ();// force a pagination change
+  }
+
   private void adjustButtons ()
   {
     // Create lists of buttons to disable
@@ -263,25 +282,6 @@ class FormatBox
       for (RadioButton button : buttons)
         if (button.getUserData () == userData)
           button.setDisable (true);
-  }
-
-  public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
-  {
-    reportData = getReportData ();
-
-    if (!reportData.hasData ())
-      try
-      {
-        reportData.readFile (fileNode.file);// creates scores
-        addPaginationChangeListener (listener);
-        adjustButtons ();// uses scores to enable/disable buttons
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace ();
-      }
-
-    buttonSelection ();// force a pagination change
   }
 
   private RecordMaker getSelectedRecordMaker ()
