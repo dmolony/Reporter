@@ -55,11 +55,6 @@ public class ReportScore implements Comparable<ReportScore>
     return pages;
   }
 
-  public void setPagination (Pagination pagination)
-  {
-    this.pagination = pagination;
-  }
-
   public Pagination getPagination ()
   {
     return pagination;
@@ -75,12 +70,6 @@ public class ReportScore implements Comparable<ReportScore>
       reportMaker.createPages (this);
       pagination.setPageCount (pages.size ());
     }
-  }
-
-  @Override
-  public int compareTo (ReportScore o)
-  {
-    return Double.compare (this.score, o.score);
   }
 
   public TextArea getFormattedPage (int pageNumber)
@@ -121,6 +110,12 @@ public class ReportScore implements Comparable<ReportScore>
     textArea.setText (text.toString ());
 
     return textArea;
+  }
+
+  @Override
+  public int compareTo (ReportScore o)
+  {
+    return Double.compare (this.score, o.score);
   }
 
   @Override
