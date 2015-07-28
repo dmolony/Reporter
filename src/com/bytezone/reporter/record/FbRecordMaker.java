@@ -6,12 +6,13 @@ import java.util.List;
 public class FbRecordMaker extends DefaultRecordMaker
 {
   private final int recordLength;
-  private boolean trimNulls;
+  private final boolean trimNulls;
 
   public FbRecordMaker (int recordLength)
   {
     super ("FB" + recordLength);
     this.recordLength = recordLength;
+    trimNulls = recordLength != 63;
   }
 
   public int getRecordLength ()

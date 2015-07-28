@@ -70,9 +70,13 @@ public class ReportData
     for (RecordMaker recordMaker : recordMakers)
       if (recordMaker instanceof FbRecordMaker)
       {
-        int length = ((FbRecordMaker) recordMaker).getRecordLength ();
-        if (recordMaker.getBuffer ().length % length == 0)
-          testers.add (new RecordTester (recordMaker, 10 * length));
+        int recordLength = ((FbRecordMaker) recordMaker).getRecordLength ();
+        int fileLength = recordMaker.getBuffer ().length;
+        if (fileLength % recordLength == 0)
+          if (recordLength < 80)
+            testers.add (new RecordTester (recordMaker, 30 * recordLength));
+          else
+            testers.add (new RecordTester (recordMaker, 10 * recordLength));
       }
       else
       {
@@ -92,6 +96,7 @@ public class ReportData
       {
         ReportScore score = tester.testReportMaker (reportMaker, textMaker);
         scores.add (score);
+        //        System.out.println (score);
       }
     }
   }
