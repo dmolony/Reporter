@@ -7,7 +7,7 @@ public class CrlfRecordMaker extends DefaultRecordMaker
 {
   public CrlfRecordMaker ()
   {
-    super ("CRLF");
+    super ("CR/LF");
   }
 
   @Override

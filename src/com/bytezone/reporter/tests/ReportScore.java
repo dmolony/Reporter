@@ -130,7 +130,6 @@ public class ReportScore implements Comparable<ReportScore>
 
   private String getSubrecord (Record record, int from, int to)
   {
-    //    System.out.printf ("Subrecord %d from %d to %d%n", record.recordNumber, from, to);
     int offset = 0;
     int length = 0;
 

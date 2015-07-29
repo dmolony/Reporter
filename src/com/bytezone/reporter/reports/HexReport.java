@@ -16,8 +16,8 @@ public class HexReport extends DefaultReportMaker
     super ("HEX", newLine, split);
   }
 
-  //  @Override
-  public void createPages2 (ReportScore reportScore)
+  @Override
+  public void createPages (ReportScore reportScore)
   {
     List<Page> pages = reportScore.getPages ();
     List<Record> records = reportScore.recordMaker.getRecords ();
@@ -28,12 +28,10 @@ public class HexReport extends DefaultReportMaker
     int firstRecord = 0;
     int ptr = 0;
     int lineNo = 0;
-    int pageNo = 0;
 
     while (recordNumber < records.size ())
     {
       int recordLength = records.get (recordNumber).length;
-      //      System.out.printf ("%4d %4d %4d %4d %n", pageNo, lineNo, recordNumber, ptr);
       int max = Math.min (16, recordLength - ptr);
       lineNo++;
       ptr += max;
@@ -51,80 +49,70 @@ public class HexReport extends DefaultReportMaker
       if (lineNo >= pageSize)
       {
         if (ptr == 0)
-        {
-          Page page = reportScore.addPage (firstRecord, recordNumber - 1);
-        }
+          reportScore.addPage (firstRecord, recordNumber - 1);
         else
         {
           Page page = reportScore.addPage (firstRecord, recordNumber);
           page.setLastRecordOffset (ptr);
         }
-        firstRecord = recordNumber;
 
-        ++pageNo;
+        firstRecord = recordNumber;
         lineNo = 0;
-        //        System.out.println (page);
       }
     }
 
     if (lineNo > 0)
-    {
-      Page page = reportScore.addPage (firstRecord, firstRecord);
-      //      System.out.println (page);
-    }
-
-    //    for (Page page : pages)
-    //      System.out.println (page);
+      reportScore.addPage (firstRecord, firstRecord);
   }
 
-  @Override
-  public void createPages (ReportScore reportScore)
-  {
-    if (trial)
-    {
-      createPages2 (reportScore);
-      return;
-    }
-
-    List<Page> pages = reportScore.getPages ();
-    List<Record> records = reportScore.recordMaker.getRecords ();
-
-    pages.clear ();
-
-    int firstRecord = 0;
-    int lineCount = 0;
-
-    for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
-    {
-      int recordLength = records.get (recordNumber).length;
-      int lines = recordLength == 0 ? 1 : (recordLength - 1) / 16 + 1;
-      //      System.out.printf ("lines: %d%n", lines);
-
-      if (lineCount + lines > pageSize)
-      {
-        int linesLeft = pageSize - lineCount;
-        if (allowSplitRecords && linesLeft > 0)
-        {
-          Page page = reportScore.addPage (firstRecord, recordNumber);
-          page.setLastRecordOffset (linesLeft * 74);
-          lineCount = lines - linesLeft;
-        }
-        else
-        {
-          reportScore.addPage (firstRecord, recordNumber - 1);
-          lineCount = lines;
-        }
-        firstRecord = recordNumber;
-      }
-      else
-        lineCount += lines;
-
-      if (newlineBetweenRecords)
-        lineCount++;
-    }
-
-    reportScore.addPage (firstRecord, records.size () - 1);
-  }
+  //  @Override
+  //  public void createPages (ReportScore reportScore)
+  //  {
+  //    if (trial)
+  //    {
+  //      createPages2 (reportScore);
+  //      return;
+  //    }
+  //
+  //    List<Page> pages = reportScore.getPages ();
+  //    List<Record> records = reportScore.recordMaker.getRecords ();
+  //
+  //    pages.clear ();
+  //
+  //    int firstRecord = 0;
+  //    int lineCount = 0;
+  //
+  //    for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
+  //    {
+  //      int recordLength = records.get (recordNumber).length;
+  //      int lines = recordLength == 0 ? 1 : (recordLength - 1) / 16 + 1;
+  //      //      System.out.printf ("lines: %d%n", lines);
+  //
+  //      if (lineCount + lines > pageSize)
+  //      {
+  //        int linesLeft = pageSize - lineCount;
+  //        if (allowSplitRecords && linesLeft > 0)
+  //        {
+  //          Page page = reportScore.addPage (firstRecord, recordNumber);
+  //          page.setLastRecordOffset (linesLeft * 74);
+  //          lineCount = lines - linesLeft;
+  //        }
+  //        else
+  //        {
+  //          reportScore.addPage (firstRecord, recordNumber - 1);
+  //          lineCount = lines;
+  //        }
+  //        firstRecord = recordNumber;
+  //      }
+  //      else
+  //        lineCount += lines;
+  //
+  //      if (newlineBetweenRecords)
+  //        lineCount++;
+  //    }
+  //
+  //    reportScore.addPage (firstRecord, records.size () - 1);
+  //  }
 
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record, int offset,
@@ -133,9 +121,6 @@ public class HexReport extends DefaultReportMaker
     TextMaker textMaker = reportScore.textMaker;
     StringBuilder text = new StringBuilder ();
     int max = record.offset + offset + length;
-
-    //    System.out.printf ("formatting %d %d%n", offset, length);
-    //    System.out.println (record);
 
     for (int ptr = record.offset + offset; ptr < max; ptr += HEX_LINE_SIZE)
     {

@@ -55,6 +55,12 @@ public abstract class DefaultReportMaker implements ReportMaker
   }
 
   @Override
+  public boolean test (Record record, TextMaker textMaker)
+  {
+    return false;
+  }
+
+  @Override
   public int print (Graphics graphics, PageFormat pageFormat, int pageIndex)
       throws PrinterException
   {
@@ -104,12 +110,6 @@ public abstract class DefaultReportMaker implements ReportMaker
     g2.setFont (boldFont);
 
     return (Printable.PAGE_EXISTS);
-  }
-
-  @Override
-  public boolean test (Record record, TextMaker textMaker)
-  {
-    return false;
   }
 
   @Override
