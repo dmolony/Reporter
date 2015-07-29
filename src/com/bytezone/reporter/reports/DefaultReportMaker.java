@@ -44,14 +44,14 @@ public abstract class DefaultReportMaker implements ReportMaker
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
   {
-    return "Not overridden";
+    return "Not possible";
   }
 
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record, int offset,
       int length)
   {
-    return "Not overridden";
+    return "Not possible";
   }
 
   @Override

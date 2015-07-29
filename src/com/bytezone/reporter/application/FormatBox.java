@@ -237,7 +237,7 @@ class FormatBox
 
     if (currentReportScore != null)
     {
-      currentReportScore.paginate ();
+      //      currentReportScore.paginate ();
       notifyPaginationChanged (currentReportScore.getPagination ());
     }
     else

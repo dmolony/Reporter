@@ -57,19 +57,15 @@ public class ReportScore implements Comparable<ReportScore>
 
   public Pagination getPagination ()
   {
-    return pagination;
-  }
-
-  public void paginate ()
-  {
     if (pagination == null)
     {
-      pagination = new Pagination ();
-      pagination.setPageFactory (i -> getFormattedPage (i));
-
       reportMaker.createPages (this);
+
+      pagination = new Pagination ();
       pagination.setPageCount (pages.size ());
+      pagination.setPageFactory (i -> getFormattedPage (i));
     }
+    return pagination;
   }
 
   public TextArea getFormattedPage (int pageNumber)
@@ -89,7 +85,7 @@ public class ReportScore implements Comparable<ReportScore>
     int lastRecord = page.getLastRecordIndex ();
     int lastRecordOffset = page.getLastRecordOffset ();
 
-    System.out.println (page);
+    //    System.out.println (page);
 
     if (firstRecord == lastRecord)
     {

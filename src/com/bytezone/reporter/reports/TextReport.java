@@ -32,6 +32,13 @@ public class TextReport extends DefaultReportMaker
   }
 
   @Override
+  public String getFormattedRecord (ReportScore reportScore, Record record, int offset,
+      int length)
+  {
+    return reportScore.textMaker.getText (record).substring (offset, offset + length);
+  }
+
+  @Override
   public boolean test (Record record, TextMaker textMaker)
   {
     if (record.length > 500)

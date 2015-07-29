@@ -11,7 +11,7 @@ import com.bytezone.reporter.text.TextMaker;
  * '0' - Two lines
  * '-' - Three lines
  * '+' - No lines
- * '1' : 'C' - Skip to channel 1-12 (channel 1 is top of page)
+ * '1:C' - Skip to channel 1-12 (channel 1 is top of page)
  */
 
 public class AsaReport extends DefaultReportMaker
@@ -27,6 +27,7 @@ public class AsaReport extends DefaultReportMaker
     List<Page> pages = reportScore.getPages ();
     List<Record> records = reportScore.recordMaker.getRecords ();
 
+    assert pages.size () == 0;
     pages.clear ();
 
     int firstRecord = 0;
