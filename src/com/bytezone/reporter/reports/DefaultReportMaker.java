@@ -8,6 +8,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 
 import com.bytezone.reporter.record.Record;
+import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 public abstract class DefaultReportMaker implements ReportMaker
@@ -38,6 +39,19 @@ public abstract class DefaultReportMaker implements ReportMaker
           plainFont.getSize ());
       headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
     }
+  }
+
+  @Override
+  public String getFormattedRecord (ReportScore reportScore, Record record)
+  {
+    return "Not overridden";
+  }
+
+  @Override
+  public String getFormattedRecord (ReportScore reportScore, Record record, int offset,
+      int length)
+  {
+    return "Not overridden";
   }
 
   @Override

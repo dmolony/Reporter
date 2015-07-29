@@ -84,24 +84,58 @@ public class ReportScore implements Comparable<ReportScore>
     }
 
     Page page = pages.get (pageNumber);
-    for (int i = page.getFirstRecordIndex (); i <= page.getLastRecordIndex (); i++)
+    int firstRecord = page.getFirstRecordIndex ();
+    int firstRecordOffset = page.getFirstRecordOffset ();
+    int lastRecord = page.getLastRecordIndex ();
+    int lastRecordOffset = page.getLastRecordOffset ();
+
+    if (firstRecord == lastRecord)
     {
-      Record record = records.get (i);
-      String formattedRecord = reportMaker.getFormattedRecord (this, record);
-      if (formattedRecord == null)
-        continue;
+      Record record = records.get (page.getFirstRecordIndex ());
 
-      if (page.getFirstRecordOffset () > 0 && i == page.getFirstRecordIndex ())
-        formattedRecord = formattedRecord.substring (page.getFirstRecordOffset ());
-      else if (page.getLastRecordOffset () > 0 && i == page.getLastRecordIndex ())
-        formattedRecord = formattedRecord.substring (0, page.getLastRecordOffset ());
+      int length = 0;
+      int offset = 0;
 
+      if (firstRecordOffset > 0 && lastRecordOffset > 0)
+      {
+        offset = firstRecordOffset;
+        length = lastRecordOffset - firstRecordOffset;
+      }
+      else if (firstRecordOffset > 0)
+      {
+        offset = firstRecordOffset;
+        length = record.length - firstRecordOffset;
+      }
+      else
+      {
+        offset = 0;
+        length = lastRecordOffset;
+      }
+
+      String formattedRecord =
+          reportMaker.getFormattedRecord (this, record, offset, length);
       text.append (formattedRecord);
-      text.append ('\n');
-
-      if (reportMaker.newlineBetweenRecords ())
-        text.append ('\n');
     }
+    else
+      for (int i = firstRecord; i <= lastRecord; i++)
+      {
+        Record record = records.get (i);
+
+        String formattedRecord = reportMaker.getFormattedRecord (this, record);
+        if (formattedRecord == null)
+          continue;
+
+        if (firstRecordOffset > 0 && i == firstRecord)
+          formattedRecord = formattedRecord.substring (firstRecordOffset);
+        else if (lastRecordOffset > 0 && i == lastRecord)
+          formattedRecord = formattedRecord.substring (0, lastRecordOffset);
+
+        text.append (formattedRecord);
+        text.append ('\n');
+
+        if (reportMaker.newlineBetweenRecords ())
+          text.append ('\n');
+      }
 
     // remove trailing newlines
     while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')

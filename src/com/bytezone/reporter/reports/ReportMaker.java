@@ -14,6 +14,9 @@ public interface ReportMaker extends Printable
 
   public String getFormattedRecord (ReportScore reportScore, Record record);
 
+  public String getFormattedRecord (ReportScore reportScore, Record record, int offset,
+      int length);
+
   public boolean newlineBetweenRecords ();
 
   public boolean allowSplitRecords ();

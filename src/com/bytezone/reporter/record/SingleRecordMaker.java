@@ -3,11 +3,11 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoRecordMaker extends DefaultRecordMaker
+public class SingleRecordMaker extends DefaultRecordMaker
 {
-  public NoRecordMaker ()
+  public SingleRecordMaker ()
   {
-    super ("No records");
+    super ("One record");
   }
 
   @Override

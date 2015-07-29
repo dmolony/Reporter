@@ -11,7 +11,7 @@ import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
 import com.bytezone.reporter.record.LfRecordMaker;
-import com.bytezone.reporter.record.NoRecordMaker;
+import com.bytezone.reporter.record.SingleRecordMaker;
 import com.bytezone.reporter.record.NvbRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
@@ -40,7 +40,7 @@ public class ReportData
   public ReportData ()
   {
     recordMakers = new ArrayList<> (
-        Arrays.asList (new NoRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
+        Arrays.asList (new SingleRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
                        new LfRecordMaker (), new VbRecordMaker (), new RdwRecordMaker (),
                        new NvbRecordMaker (), new RavelRecordMaker (),
                        new FbRecordMaker (63), new FbRecordMaker (80),
@@ -81,7 +81,7 @@ public class ReportData
       else
       {
         RecordTester recordTester = new RecordTester (recordMaker, 1024);
-        if (recordTester.getSampleSize () > 2 || recordMaker instanceof NoRecordMaker)
+        if (recordTester.getSampleSize () > 2 || recordMaker instanceof SingleRecordMaker)
           testers.add (recordTester);
       }
 

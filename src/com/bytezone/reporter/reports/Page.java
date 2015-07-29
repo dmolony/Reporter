@@ -53,7 +53,7 @@ public class Page
   @Override
   public String toString ()
   {
-    return String.format ("Records: %4d, first: %4d (%4d), last: %4d (%4d)",
+    return String.format ("Records: %4d, first: %4d (%5d), last: %4d (%5d)",
                           records.size (), firstRecordIndex, firstRecordOffset,
                           lastRecordIndex, lastRecordOffset);
   }
