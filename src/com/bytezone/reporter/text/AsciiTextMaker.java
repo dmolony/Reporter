@@ -69,7 +69,7 @@ public class AsciiTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value == 0x20 || (value >= 0x30 && value <= 0x7A))
+      if (value == 0x20 || (value >= 0x41 && value <= 0x5A))
         total++;
     }
     return total;

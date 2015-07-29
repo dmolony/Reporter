@@ -31,6 +31,7 @@ public class HexReport extends DefaultReportMaker
 
     while (recordNumber < records.size ())
     {
+      //      System.out.printf ("%d %d%n", recordNumber, ptr);
       int recordLength = records.get (recordNumber).length;
       int max = Math.min (16, recordLength - ptr);
       lineNo++;
@@ -62,7 +63,7 @@ public class HexReport extends DefaultReportMaker
     }
 
     if (lineNo > 0)
-      reportScore.addPage (firstRecord, firstRecord);
+      reportScore.addPage (firstRecord, recordNumber - 1);
   }
 
   //  @Override

@@ -98,7 +98,7 @@ public class EbcdicTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value == 0x40 || (value >= 0x81 && value <= 0xF9))
+      if (value == 0x40 || (value >= 0xC1 && value <= 0xF9))
         total++;
     }
     return total;

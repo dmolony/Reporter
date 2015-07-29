@@ -41,11 +41,14 @@ public class RecordTester
     TextTester bestTextTester = null;
 
     for (TextTester textTester : textTesters)
+    {
+      System.out.println (textTester);
       if (textTester.getAlphanumericRatio () > max)
       {
         max = textTester.getAlphanumericRatio ();
         bestTextTester = textTester;
       }
+    }
 
     return bestTextTester.getTextMaker ();
   }

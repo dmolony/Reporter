@@ -238,9 +238,10 @@ class FormatBox
     if (currentReportScore != null)
     {
       currentReportScore.paginate ();
-      //      reportMaker.setPagination (currentReportScore);
       notifyPaginationChanged (currentReportScore.getPagination ());
     }
+    else
+      System.out.println ("no reportscore found");
   }
 
   void selectButtons (ReportScore reportScore)

@@ -89,6 +89,8 @@ public class ReportScore implements Comparable<ReportScore>
     int lastRecord = page.getLastRecordIndex ();
     int lastRecordOffset = page.getLastRecordOffset ();
 
+    System.out.println (page);
+
     if (firstRecord == lastRecord)
     {
       Record record = records.get (firstRecord);
@@ -149,7 +151,10 @@ public class ReportScore implements Comparable<ReportScore>
       length = to;
     }
     else
-      System.out.println ("oops");
+    {
+      offset = 0;
+      length = record.length;
+    }
     return reportMaker.getFormattedRecord (this, record, offset, length);
   }
 

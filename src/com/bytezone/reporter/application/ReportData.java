@@ -11,11 +11,11 @@ import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
 import com.bytezone.reporter.record.LfRecordMaker;
-import com.bytezone.reporter.record.SingleRecordMaker;
 import com.bytezone.reporter.record.NvbRecordMaker;
 import com.bytezone.reporter.record.RavelRecordMaker;
 import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.RecordMaker;
+import com.bytezone.reporter.record.SingleRecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
 import com.bytezone.reporter.reports.AsaReport;
 import com.bytezone.reporter.reports.HexReport;
@@ -39,12 +39,12 @@ public class ReportData
 
   public ReportData ()
   {
-    recordMakers = new ArrayList<> (
-        Arrays.asList (new SingleRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
-                       new LfRecordMaker (), new VbRecordMaker (), new RdwRecordMaker (),
-                       new NvbRecordMaker (), new RavelRecordMaker (),
-                       new FbRecordMaker (63), new FbRecordMaker (80),
-                       new FbRecordMaker (132), new FbRecordMaker (252)));
+    recordMakers = new ArrayList<> (Arrays
+        .asList (new SingleRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
+                 new LfRecordMaker (), new VbRecordMaker (), new RdwRecordMaker (),
+                 new NvbRecordMaker (), new RavelRecordMaker (), new FbRecordMaker (63),
+                 new FbRecordMaker (80), new FbRecordMaker (132),
+                 new FbRecordMaker (252)));
     textMakers =
         new ArrayList<> (Arrays.asList (new AsciiTextMaker (), new EbcdicTextMaker ()));
     reportMakers = new ArrayList<> (
@@ -96,7 +96,7 @@ public class ReportData
       {
         ReportScore score = tester.testReportMaker (reportMaker, textMaker);
         scores.add (score);
-        //        System.out.println (score);
+        System.out.println (score);
       }
     }
   }
