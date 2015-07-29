@@ -33,11 +33,12 @@ public class HexReport extends DefaultReportMaker
     while (recordNumber < records.size ())
     {
       int recordLength = records.get (recordNumber).length;
-      System.out.printf ("%4d %4d %4d %4d %n", pageNo, lineNo, recordNumber, ptr);
+      //      System.out.printf ("%4d %4d %4d %4d %n", pageNo, lineNo, recordNumber, ptr);
       int max = Math.min (16, recordLength - ptr);
       lineNo++;
       ptr += max;
 
+      // check for end of record
       if (ptr == recordLength)
       {
         ptr = 0;
@@ -49,30 +50,31 @@ public class HexReport extends DefaultReportMaker
 
       if (lineNo >= pageSize)
       {
-        Page page = reportScore.addPage (firstRecord, recordNumber);
-        if (ptr < recordLength)
+        if (ptr == 0)
         {
-          firstRecord = recordNumber;
-          page.setLastRecordOffset (ptr);
+          Page page = reportScore.addPage (firstRecord, recordNumber - 1);
         }
         else
         {
-          firstRecord = recordNumber + 1;
+          Page page = reportScore.addPage (firstRecord, recordNumber);
+          page.setLastRecordOffset (ptr);
         }
+        firstRecord = recordNumber;
+
         ++pageNo;
         lineNo = 0;
-        System.out.println (page);
+        //        System.out.println (page);
       }
     }
 
     if (lineNo > 0)
     {
       Page page = reportScore.addPage (firstRecord, firstRecord);
-      System.out.println (page);
+      //      System.out.println (page);
     }
 
-    for (Page page : pages)
-      System.out.println (page);
+    //    for (Page page : pages)
+    //      System.out.println (page);
   }
 
   @Override
@@ -131,7 +133,10 @@ public class HexReport extends DefaultReportMaker
     TextMaker textMaker = reportScore.textMaker;
     StringBuilder text = new StringBuilder ();
     int max = record.offset + offset + length;
-    System.out.printf ("formatting %d %d%n", offset, length);
+
+    //    System.out.printf ("formatting %d %d%n", offset, length);
+    //    System.out.println (record);
+
     for (int ptr = record.offset + offset; ptr < max; ptr += HEX_LINE_SIZE)
     {
       StringBuilder hexLine = new StringBuilder ();
@@ -153,30 +158,31 @@ public class HexReport extends DefaultReportMaker
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
   {
-    TextMaker textMaker = reportScore.textMaker;
-
-    if (record.length == 0)
-      return String.format ("%06X", record.offset);
-
-    StringBuilder text = new StringBuilder ();
-
-    int max = record.offset + record.length;
-    for (int ptr = record.offset; ptr < max; ptr += HEX_LINE_SIZE)
-    {
-      StringBuilder hexLine = new StringBuilder ();
-
-      int lineMax = Math.min (ptr + HEX_LINE_SIZE, max);
-      for (int linePtr = ptr; linePtr < lineMax; linePtr++)
-        hexLine.append (String.format ("%02X ", record.buffer[linePtr] & 0xFF));
-
-      text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
-                                  textMaker.getText (record.buffer, ptr, lineMax - ptr)));
-    }
-
-    if (text.length () > 0)
-      text.deleteCharAt (text.length () - 1);
-
-    return text.toString ();
+    return getFormattedRecord (reportScore, record, 0, record.length);
+    //    TextMaker textMaker = reportScore.textMaker;
+    //
+    //    if (record.length == 0)
+    //      return String.format ("%06X", record.offset);
+    //
+    //    StringBuilder text = new StringBuilder ();
+    //
+    //    int max = record.offset + record.length;
+    //    for (int ptr = record.offset; ptr < max; ptr += HEX_LINE_SIZE)
+    //    {
+    //      StringBuilder hexLine = new StringBuilder ();
+    //
+    //      int lineMax = Math.min (ptr + HEX_LINE_SIZE, max);
+    //      for (int linePtr = ptr; linePtr < lineMax; linePtr++)
+    //        hexLine.append (String.format ("%02X ", record.buffer[linePtr] & 0xFF));
+    //
+    //      text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
+    //                                  textMaker.getText (record.buffer, ptr, lineMax - ptr)));
+    //    }
+    //
+    //    if (text.length () > 0)
+    //      text.deleteCharAt (text.length () - 1);
+    //
+    //    return text.toString ();
   }
 
   @Override

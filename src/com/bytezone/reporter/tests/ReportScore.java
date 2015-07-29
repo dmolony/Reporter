@@ -91,44 +91,25 @@ public class ReportScore implements Comparable<ReportScore>
 
     if (firstRecord == lastRecord)
     {
-      Record record = records.get (page.getFirstRecordIndex ());
-
-      int length = 0;
-      int offset = 0;
-
-      if (firstRecordOffset > 0 && lastRecordOffset > 0)
-      {
-        offset = firstRecordOffset;
-        length = lastRecordOffset - firstRecordOffset;
-      }
-      else if (firstRecordOffset > 0)
-      {
-        offset = firstRecordOffset;
-        length = record.length - firstRecordOffset;
-      }
-      else
-      {
-        offset = 0;
-        length = lastRecordOffset;
-      }
-
-      String formattedRecord =
-          reportMaker.getFormattedRecord (this, record, offset, length);
-      text.append (formattedRecord);
+      Record record = records.get (firstRecord);
+      text.append (getSubrecord (record, firstRecordOffset, lastRecordOffset));
     }
     else
+    {
       for (int i = firstRecord; i <= lastRecord; i++)
       {
         Record record = records.get (i);
-
-        String formattedRecord = reportMaker.getFormattedRecord (this, record);
-        if (formattedRecord == null)
-          continue;
+        String formattedRecord = null;
 
         if (firstRecordOffset > 0 && i == firstRecord)
-          formattedRecord = formattedRecord.substring (firstRecordOffset);
+          formattedRecord = getSubrecord (record, firstRecordOffset, 0);
         else if (lastRecordOffset > 0 && i == lastRecord)
-          formattedRecord = formattedRecord.substring (0, lastRecordOffset);
+          formattedRecord = getSubrecord (record, 0, lastRecordOffset);
+        else
+          formattedRecord = (reportMaker.getFormattedRecord (this, record));
+
+        if (formattedRecord == null)
+          continue;
 
         text.append (formattedRecord);
         text.append ('\n');
@@ -136,6 +117,7 @@ public class ReportScore implements Comparable<ReportScore>
         if (reportMaker.newlineBetweenRecords ())
           text.append ('\n');
       }
+    }
 
     // remove trailing newlines
     while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
@@ -144,6 +126,32 @@ public class ReportScore implements Comparable<ReportScore>
     textArea.setText (text.toString ());
 
     return textArea;
+  }
+
+  private String getSubrecord (Record record, int from, int to)
+  {
+    //    System.out.printf ("Subrecord %d from %d to %d%n", record.recordNumber, from, to);
+    int offset = 0;
+    int length = 0;
+
+    if (from > 0 && to > 0)
+    {
+      offset = from;
+      length = to - from;
+    }
+    else if (from > 0)
+    {
+      offset = from;
+      length = record.length - from;
+    }
+    else if (to > 0)
+    {
+      offset = 0;
+      length = to;
+    }
+    else
+      System.out.println ("oops");
+    return reportMaker.getFormattedRecord (this, record, offset, length);
   }
 
   public Page addPage (int firstRecord, int lastRecord)
