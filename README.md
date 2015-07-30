@@ -1,5 +1,5 @@
 # Reporter
-Display mainframe files in any format. This is intended to be used with the dm3270 terminal emulator, but for the moment it is being built as a standalone application.
+Display mainframe files in various formats. This is intended to be used with the dm3270 terminal emulator, but it is also being built as a standalone application.
 
 ### Documentation
 * [Project layout](resources/structure.md)
