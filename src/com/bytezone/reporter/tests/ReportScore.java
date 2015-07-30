@@ -22,8 +22,8 @@ public class ReportScore implements Comparable<ReportScore>
   public final TextMaker textMaker;
   public final ReportMaker reportMaker;
 
-  public final double score;
-  public final int sampleSize;
+  private final double score;
+  private final int sampleSize;
 
   private final List<Page> pages = new ArrayList<> ();
   private Pagination pagination;
@@ -50,6 +50,11 @@ public class ReportScore implements Comparable<ReportScore>
         && this.reportMaker == reportMaker;
   }
 
+  public boolean isPerfectScore ()
+  {
+    return score == 100.0;
+  }
+
   public List<Page> getPages ()
   {
     return pages;
@@ -70,14 +75,15 @@ public class ReportScore implements Comparable<ReportScore>
 
   public TextArea getFormattedPage (int pageNumber)
   {
-    List<Record> records = recordMaker.getRecords ();
-
-    StringBuilder text = new StringBuilder ();
     if (pageNumber < 0 || pageNumber >= pages.size ())
     {
+      System.out.println ("impossible");
       textArea.clear ();
       return textArea;
     }
+
+    List<Record> records = recordMaker.getRecords ();
+    StringBuilder text = new StringBuilder ();
 
     Page page = pages.get (pageNumber);
     int firstRecord = page.getFirstRecordIndex ();
@@ -142,15 +148,10 @@ public class ReportScore implements Comparable<ReportScore>
       length = record.length - from;
     }
     else if (to > 0)
-    {
-      offset = 0;
       length = to;
-    }
     else
-    {
-      offset = 0;
       length = record.length;
-    }
+
     return reportMaker.getFormattedRecord (this, record, offset, length);
   }
 
@@ -164,6 +165,7 @@ public class ReportScore implements Comparable<ReportScore>
       Page previousPage = pages.get (pages.size () - 2);
       page.setFirstRecordOffset (previousPage.getLastRecordOffset ());
     }
+    //    System.out.println (page);
 
     return page;
   }

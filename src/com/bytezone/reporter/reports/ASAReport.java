@@ -36,10 +36,11 @@ public class AsaReport extends DefaultReportMaker
     for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
     {
       Record record = records.get (recordNumber);
+      //      System.out.println (record);
 
       char c = reportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
       int lines = 0;
-      if (c == ' ')
+      if (c == ' ' || c == 'V')
         lines = 1;
       else if (c == '0')
         lines = 2;
@@ -81,9 +82,9 @@ public class AsaReport extends DefaultReportMaker
     TextMaker textMaker = reportScore.textMaker;
 
     char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-    String prefix = c == ' ' ? "" : c == '0' ? "\n" : c == '-' ? "\n\n" : "";
-    return prefix
-        + textMaker.getText (record.buffer, record.offset + 1, record.length - 1);
+    String prefix = c == '0' ? "\n" : c == '-' ? "\n\n" : "";
+    return prefix + textMaker.getTextRightTrim (record.buffer, record.offset + 1,
+                                                record.length - 1);
   }
 
   @Override
@@ -94,7 +95,7 @@ public class AsaReport extends DefaultReportMaker
     if (record.length > 200)
       return false;
     char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
-    if (c != ' ' && c != '0' && c != '1' && c != '-')
+    if (c != ' ' && c != '0' && c != '1' && c != '-' && c != 'V')
       return false;
 
     // check for program listing

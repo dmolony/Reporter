@@ -177,7 +177,7 @@ class FormatBox
     // Remove buttons that have been used in a perfect report
     List<ReportScore> perfectScores = new ArrayList<> ();
     for (ReportScore score : reportData.getScores ())
-      if (score.score == 100.0)
+      if (score.isPerfectScore ())
       {
         imperfectRecordMakers.remove (score.recordMaker);
         imperfectTextMakers.remove (score.textMaker);
