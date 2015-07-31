@@ -2,7 +2,7 @@ package com.bytezone.reporter.application;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
 
-public interface FileSelectionListener
+public interface NodeSelectionListener
 {
-  public abstract void fileSelected (FileNode fileNode);
+  public abstract void nodeSelected (FileNode fileNode);
 }

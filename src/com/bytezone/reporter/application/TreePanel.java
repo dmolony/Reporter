@@ -14,7 +14,7 @@ import javafx.scene.control.TreeView;
 
 public class TreePanel
 {
-  private final Set<FileSelectionListener> fileSelectionListeners = new HashSet<> ();
+  private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private final TreeView<FileNode> fileTree = new TreeView<> ();
   private final Preferences prefs;
 
@@ -112,7 +112,7 @@ public class TreePanel
       {
         selectedFile = null;
         selectedTreeItem = treeItem;
-        notifyFileSelected (fileNode);
+        notifyNodeSelected (fileNode);
       }
     }
     else if (fileNode.file.isDirectory ())
@@ -123,25 +123,25 @@ public class TreePanel
     {
       selectedFile = fileNode.file;
       selectedTreeItem = treeItem;
-      notifyFileSelected (fileNode);
+      notifyNodeSelected (fileNode);
       saveLastFile ();
     }
   }
 
-  private void notifyFileSelected (FileNode fileNode)
+  private void notifyNodeSelected (FileNode fileNode)
   {
-    for (FileSelectionListener listener : fileSelectionListeners)
-      listener.fileSelected (fileNode);
+    for (NodeSelectionListener listener : nodeSelectionListeners)
+      listener.nodeSelected (fileNode);
   }
 
-  public void addFileSelectionListener (FileSelectionListener listener)
+  public void addNodeSelectionListener (NodeSelectionListener listener)
   {
-    fileSelectionListeners.add (listener);
+    nodeSelectionListeners.add (listener);
   }
 
-  public void removeFileSelectionListener (FileSelectionListener listener)
+  public void removeFileSelectionListener (NodeSelectionListener listener)
   {
-    fileSelectionListeners.remove (listener);
+    nodeSelectionListeners.remove (listener);
   }
 
   private void getLastFile ()

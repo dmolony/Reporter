@@ -3,6 +3,9 @@ package com.bytezone.reporter.application;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
@@ -22,9 +25,10 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 
 public class ReporterScene extends Scene
-    implements PaginationChangeListener, FileSelectionListener
+    implements PaginationChangeListener, NodeSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
@@ -36,6 +40,7 @@ public class ReporterScene extends Scene
   private final MenuBar menuBar = new MenuBar ();
 
   private final Preferences prefs;
+  private FileNode currentFileNode;
 
   public ReporterScene (Preferences prefs, BorderPane root)
   {
@@ -47,7 +52,7 @@ public class ReporterScene extends Scene
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     treePanel = new TreePanel (prefs);
-    treePanel.addFileSelectionListener (this);
+    treePanel.addNodeSelectionListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (180);
 
@@ -71,11 +76,12 @@ public class ReporterScene extends Scene
   }
 
   @Override
-  public void fileSelected (FileNode fileNode)
+  public void nodeSelected (FileNode fileNode)
   {
     formatBox = fileNode.formatBox;
     borderPane.setRight (formatBox.getFormattingBox ());
     formatBox.setFileNode (fileNode, this);
+    currentFileNode = fileNode;
   }
 
   private Menu getFileMenu ()
@@ -150,7 +156,27 @@ public class ReporterScene extends Scene
 
   private void saveFile ()
   {
-    System.out.println ("Save");
+    System.out.println ("Save " + currentFileNode);
+
+    FileChooser fileChooser = new FileChooser ();
+
+    //Set extension filter
+    //    FileChooser.ExtensionFilter extFilter =
+    //        new FileChooser.ExtensionFilter ("TXT files (*.txt)", "*.txt");
+    //    fileChooser.getExtensionFilters ().add (extFilter);
+
+    //Show save file dialog
+    File file = fileChooser.showSaveDialog (null);
+
+    if (file != null)
+      try
+      {
+        Files.write (file.toPath (), currentFileNode.buffer);
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
   }
 
   private void closeWindow ()
