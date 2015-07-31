@@ -156,16 +156,14 @@ public class ReporterScene extends Scene
 
   private void saveFile ()
   {
-    System.out.println ("Save " + currentFileNode);
-
     FileChooser fileChooser = new FileChooser ();
 
+    fileChooser.setInitialFileName (currentFileNode.datasetName + ".txt");
     //Set extension filter
     //    FileChooser.ExtensionFilter extFilter =
     //        new FileChooser.ExtensionFilter ("TXT files (*.txt)", "*.txt");
     //    fileChooser.getExtensionFilters ().add (extFilter);
 
-    //Show save file dialog
     File file = fileChooser.showSaveDialog (null);
 
     if (file != null)
