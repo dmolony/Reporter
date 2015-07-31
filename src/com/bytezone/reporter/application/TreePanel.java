@@ -55,11 +55,11 @@ public class TreePanel
 
   public void addBuffer (String name, byte[] buffer)
   {
-    System.out.printf ("Received %s (%,d bytes)%n", name, buffer.length);
+    //    System.out.printf ("Received %s (%,d bytes)%n", name, buffer.length);
 
     if (unsavedFilesItem == null)
     {
-      unsavedFilesItem = new TreeItem<> (new FileNode ("Unsaved files", null));
+      unsavedFilesItem = new TreeItem<> (new FileNode ("downloads", null));
       fileTree.getRoot ().getChildren ().add (unsavedFilesItem);
     }
 
@@ -108,9 +108,12 @@ public class TreePanel
 
     if (fileNode.file == null)
     {
-      selectedFile = null;
-      selectedTreeItem = treeItem;
-      notifyFileSelected (fileNode);
+      if (fileNode.buffer != null)
+      {
+        selectedFile = null;
+        selectedTreeItem = treeItem;
+        notifyFileSelected (fileNode);
+      }
     }
     else if (fileNode.file.isDirectory ())
     {
@@ -156,29 +159,26 @@ public class TreePanel
   class FileNode
   {
     File file;
-    FormatBox formatBox;
-    String datasetName;
+    FormatBox formatBox = new FormatBox (new ReportData ());
+    final String datasetName;
     byte[] buffer;
 
     public FileNode (File file)
     {
       this.file = file;
-      ReportData reportData = new ReportData ();
-      formatBox = new FormatBox (reportData);
+      datasetName = file.getName ();
     }
 
     public FileNode (String name, byte[] buffer)
     {
       datasetName = name;
       this.buffer = buffer;
-      ReportData reportData = new ReportData ();
-      formatBox = new FormatBox (reportData);
     }
 
     @Override
     public String toString ()
     {
-      return datasetName == null ? file.getName () : datasetName;
+      return datasetName;
     }
   }
 
