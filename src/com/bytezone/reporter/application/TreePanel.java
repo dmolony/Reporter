@@ -20,6 +20,7 @@ public class TreePanel
 
   private File selectedFile;
   private TreeItem<FileNode> selectedTreeItem;
+  private TreeItem<FileNode> unsavedFilesItem;
 
   public TreePanel (Preferences prefs)
   {
@@ -50,6 +51,20 @@ public class TreePanel
       fileTree.getSelectionModel ().select (selectedTreeItem);
 
     return fileTree;
+  }
+
+  public void addBuffer (String name, byte[] buffer)
+  {
+    System.out.printf ("Received %s (%,d bytes)%n", name, buffer.length);
+
+    if (unsavedFilesItem == null)
+    {
+      unsavedFilesItem = new TreeItem<> (new FileNode ("Unsaved files", null));
+      fileTree.getRoot ().getChildren ().add (unsavedFilesItem);
+    }
+
+    FileNode fileNode = new FileNode (name, buffer);
+    unsavedFilesItem.getChildren ().add (new TreeItem<> (fileNode));
   }
 
   private TreeItem<FileNode> findFiles (FileNode directory)
@@ -90,7 +105,14 @@ public class TreePanel
     }
 
     FileNode fileNode = treeItem.getValue ();
-    if (fileNode.file.isDirectory ())
+
+    if (fileNode.file == null)
+    {
+      selectedFile = null;
+      selectedTreeItem = treeItem;
+      notifyFileSelected (fileNode);
+    }
+    else if (fileNode.file.isDirectory ())
     {
       //      System.out.println (treeItem.getChildren ().size ());
     }
@@ -136,10 +158,19 @@ public class TreePanel
     File file;
     FormatBox formatBox;
     String datasetName;
+    byte[] buffer;
 
     public FileNode (File file)
     {
       this.file = file;
+      ReportData reportData = new ReportData ();
+      formatBox = new FormatBox (reportData);
+    }
+
+    public FileNode (String name, byte[] buffer)
+    {
+      datasetName = name;
+      this.buffer = buffer;
       ReportData reportData = new ReportData ();
       formatBox = new FormatBox (reportData);
     }

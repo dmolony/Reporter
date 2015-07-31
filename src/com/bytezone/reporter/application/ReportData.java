@@ -61,7 +61,12 @@ public class ReportData
   void readFile (File file) throws IOException
   {
     assert buffer == null;
-    this.buffer = Files.readAllBytes (file.toPath ());
+    addBuffer (Files.readAllBytes (file.toPath ()));
+  }
+
+  void addBuffer (byte[] buffer)
+  {
+    this.buffer = buffer;
 
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);

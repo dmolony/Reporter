@@ -45,7 +45,7 @@ class FormatBox
   private final VBox encodingsBox;
   private final VBox reportsBox;
 
-  private ReportData reportData;
+  private final ReportData reportData;
   private VBox formattingBox;
 
   public FormatBox (ReportData reportData)
@@ -141,12 +141,14 @@ class FormatBox
 
   public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
   {
-    reportData = getReportData ();
-
     if (!reportData.hasData ())
       try
       {
-        reportData.readFile (fileNode.file);// creates scores
+        if (fileNode.buffer != null)
+          reportData.addBuffer (fileNode.buffer);
+        else
+          reportData.readFile (fileNode.file);// creates scores
+
         addPaginationChangeListener (listener);
         adjustButtons ();// uses scores to enable/disable buttons
       }

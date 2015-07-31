@@ -30,6 +30,7 @@ public class ReporterScene extends Scene
   private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private FormatBox formatBox;
+  private final TreePanel treePanel;
 
   private final BorderPane borderPane;
   private final MenuBar menuBar = new MenuBar ();
@@ -45,7 +46,7 @@ public class ReporterScene extends Scene
 
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
-    TreePanel treePanel = new TreePanel (prefs);
+    treePanel = new TreePanel (prefs);
     treePanel.addFileSelectionListener (this);
     StackPane stackPane = new StackPane ();
     stackPane.setPrefWidth (180);
@@ -62,6 +63,11 @@ public class ReporterScene extends Scene
       menuBar.useSystemMenuBarProperty ().set (true);
 
     tree.requestFocus ();
+  }
+
+  public TreePanel getTreePanel ()
+  {
+    return treePanel;
   }
 
   @Override
