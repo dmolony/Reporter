@@ -55,8 +55,6 @@ public class TreePanel
 
   public void addBuffer (String name, byte[] buffer)
   {
-    //    System.out.printf ("Received %s (%,d bytes)%n", name, buffer.length);
-
     if (unsavedFilesItem == null)
     {
       unsavedFilesItem = new TreeItem<> (new FileNode ("downloads", null));
@@ -64,7 +62,9 @@ public class TreePanel
     }
 
     FileNode fileNode = new FileNode (name, buffer);
-    unsavedFilesItem.getChildren ().add (new TreeItem<> (fileNode));
+    TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
+    unsavedFilesItem.getChildren ().add (treeItem);
+    fileTree.getSelectionModel ().select (treeItem);
   }
 
   private TreeItem<FileNode> findFiles (FileNode directory)

@@ -136,7 +136,7 @@ public class ReporterScene extends Scene
       @Override
       public void run ()
       {
-        PrinterJob printerJob = PrinterJob.getPrinterJob ();// AWT
+        PrinterJob printerJob = PrinterJob.getPrinterJob ();// AWT!!!
 
         if (printerJob.printDialog ())
         {
