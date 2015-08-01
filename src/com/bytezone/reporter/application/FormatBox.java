@@ -47,6 +47,7 @@ class FormatBox
 
   private final ReportData reportData;
   private VBox formattingBox;
+  private final boolean testing = false;
 
   public FormatBox (ReportData reportData)
   {
@@ -217,10 +218,20 @@ class FormatBox
     reversedReportMakers.addAll (reportData.getReportMakers ());
     Collections.reverse (reversedReportMakers);
 
+    if (testing)
+      System.out.println ();
     for (ReportMaker reportMaker : reversedReportMakers)
+    {
+      if (testing)
+        System.out.println (reportMaker);
       for (ReportScore score : perfectScores)
+      {
+        if (testing)
+          System.out.println (score);
         if (score.reportMaker == reportMaker)
           return score;
+      }
+    }
 
     return null;
   }

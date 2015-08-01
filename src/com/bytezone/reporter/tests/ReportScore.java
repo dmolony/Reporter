@@ -9,8 +9,10 @@ import com.bytezone.reporter.reports.Page;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
 
+import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -41,6 +43,7 @@ public class ReportScore implements Comparable<ReportScore>
 
     textArea.setFont (font);
     textArea.setEditable (false);
+    textArea.setMinHeight (50);
   }
 
   public boolean matches (RecordMaker recordMaker, TextMaker textMaker,
@@ -68,18 +71,28 @@ public class ReportScore implements Comparable<ReportScore>
 
       pagination = new Pagination ();
       pagination.setPageCount (pages.size ());
-      pagination.setPageFactory (i -> getFormattedPage (i));
+      pagination.setMinHeight (50);
+      //      pagination.autosize ();
+      //      pagination.setManaged (true);
+      pagination.setPageFactory (this::getFormattedPage);
+
+      //      AnchorPane anchor = new AnchorPane ();
+      //      AnchorPane.setTopAnchor (pagination, 10.0);
+      //      AnchorPane.setRightAnchor (pagination, 10.0);
+      //      AnchorPane.setBottomAnchor (pagination, 10.0);
+      //      AnchorPane.setLeftAnchor (pagination, 10.0);
+      //      anchor.getChildren ().add (pagination);
     }
     return pagination;
   }
 
-  public TextArea getFormattedPage (int pageNumber)
+  public Node getFormattedPage (int pageNumber)
   {
     if (pageNumber < 0 || pageNumber >= pages.size ())
     {
       System.out.println ("impossible");
       textArea.clear ();
-      return textArea;
+      return new BorderPane (textArea);
     }
 
     List<Record> records = recordMaker.getRecords ();
@@ -129,7 +142,7 @@ public class ReportScore implements Comparable<ReportScore>
 
     textArea.setText (text.toString ());
 
-    return textArea;
+    return new BorderPane (textArea);
   }
 
   private String getSubrecord (Record record, int from, int to)
