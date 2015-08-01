@@ -18,9 +18,9 @@ public class Reporter extends Application
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
-    Scene scene = new ReporterScene (prefs, borderPane);
+    ReporterNode reporterNode = new ReporterNode (prefs);
     primaryStage.setTitle ("Reporter");
-    primaryStage.setScene (scene);
+    primaryStage.setScene (new Scene (reporterNode.getRootNode (), 800, 592));
     primaryStage.setOnCloseRequest (e -> closeWindow ());
 
     windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");

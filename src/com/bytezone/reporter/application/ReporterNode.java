@@ -14,7 +14,7 @@ import com.bytezone.reporter.application.TreePanel.FileNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -27,14 +27,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
-public class ReporterScene extends Scene
-    implements PaginationChangeListener, NodeSelectionListener
+public class ReporterNode implements PaginationChangeListener, NodeSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private FormatBox formatBox;
-  private final TreePanel treePanel;
+  private TreePanel treePanel;
 
   private final BorderPane borderPane;
   private final MenuBar menuBar = new MenuBar ();
@@ -42,13 +41,14 @@ public class ReporterScene extends Scene
   private final Preferences prefs;
   private FileNode currentFileNode;
 
-  public ReporterScene (Preferences prefs, BorderPane root)
+  public ReporterNode (Preferences prefs)
   {
-    super (root, 800, 592);
-
-    this.borderPane = root;
+    this.borderPane = new BorderPane ();
     this.prefs = prefs;
+  }
 
+  public Parent getRootNode ()
+  {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     treePanel = new TreePanel (prefs);
@@ -68,6 +68,7 @@ public class ReporterScene extends Scene
       menuBar.useSystemMenuBarProperty ().set (true);
 
     tree.requestFocus ();
+    return borderPane;
   }
 
   public TreePanel getTreePanel ()
