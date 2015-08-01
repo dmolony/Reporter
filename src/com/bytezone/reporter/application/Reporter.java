@@ -26,6 +26,8 @@ public class Reporter extends Application
     windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");
     windowSaver.restoreWindow ();
 
+    reporterNode.getTreePanel ().getTree ().requestFocus ();
+
     primaryStage.show ();
   }
 

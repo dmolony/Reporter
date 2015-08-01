@@ -53,6 +53,11 @@ public class TreePanel
     return fileTree;
   }
 
+  public TreeView<FileNode> getTree ()
+  {
+    return fileTree;
+  }
+
   public void addBuffer (String name, byte[] buffer)
   {
     if (unsavedFilesItem == null)

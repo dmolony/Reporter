@@ -67,7 +67,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     if (MAC_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);
 
-    tree.requestFocus ();
+    //    tree.requestFocus ();
     return borderPane;
   }
 
