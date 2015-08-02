@@ -116,6 +116,7 @@ class FormatBox
       vbox.setPrefWidth (180);
 
       formattingBox = new VBox ();
+      formattingBox.setMinHeight (200);
       addTitledPane ("Data size", vbox, formattingBox);
       addTitledPane ("Structure", recordsBox, formattingBox);
       addTitledPane ("Encoding", encodingsBox, formattingBox);
