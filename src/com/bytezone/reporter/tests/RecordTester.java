@@ -37,20 +37,28 @@ public class RecordTester
 
   public TextMaker getPreferredTextMaker ()
   {
-    double max = Double.MIN_VALUE;
+    double max = -1.0;
+    //    double max = Double.MIN_VALUE;
     TextTester bestTextTester = null;
 
     for (TextTester textTester : textTesters)
     {
-      //      System.out.println (textTester);
-      if (textTester.getAlphanumericRatio () > max)
+      double ratio = textTester.getAlphanumericRatio ();
+      if (ratio > max)
       {
-        max = textTester.getAlphanumericRatio ();
+        max = ratio;
         bestTextTester = textTester;
       }
     }
 
-    return bestTextTester.getTextMaker ();
+    if (bestTextTester == null)
+    {
+      System.out.println ("Bollocks");
+      assert false;
+      return null;
+    }
+    else
+      return bestTextTester.getTextMaker ();
   }
 
   public ReportScore testReportMaker (ReportMaker reportMaker, TextMaker textMaker)
