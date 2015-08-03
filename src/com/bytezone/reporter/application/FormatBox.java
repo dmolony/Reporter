@@ -146,8 +146,8 @@ class FormatBox
     if (!reportData.hasData ())
       try
       {
-        if (fileNode.buffer != null)
-          reportData.addBuffer (fileNode.buffer);
+        if (fileNode.getBuffer() != null)
+          reportData.addBuffer (fileNode.getBuffer());
         else
           reportData.readFile (fileNode.file);// creates scores
 

@@ -53,9 +53,9 @@ public class RecordTester
 
     if (bestTextTester == null)
     {
-      System.out.println ("Bollocks");
-      assert false;
-      return null;
+      System.out.println ("************ Bollocks **************");
+      //      assert false;
+      return textTesters.get (0).getTextMaker ();
     }
     else
       return bestTextTester.getTextMaker ();

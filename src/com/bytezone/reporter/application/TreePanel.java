@@ -1,6 +1,8 @@
 package com.bytezone.reporter.application;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -113,7 +115,7 @@ public class TreePanel
 
     if (fileNode.file == null)
     {
-      if (fileNode.buffer != null)
+      if (fileNode.getBuffer () != null)
       {
         selectedFile = null;
         selectedTreeItem = treeItem;
@@ -161,12 +163,12 @@ public class TreePanel
     prefs.put ("LastFile", fileName);
   }
 
-  class FileNode
+  public class FileNode
   {
     File file;
     FormatBox formatBox = new FormatBox (new ReportData ());
     final String datasetName;
-    byte[] buffer;
+    private byte[] buffer;
 
     public FileNode (File file)
     {
@@ -185,6 +187,30 @@ public class TreePanel
     {
       return datasetName;
     }
+
+    public byte[] getBuffer ()
+    {
+      if (buffer == null)
+      {
+        if (file != null)
+        {
+          try
+          {
+            buffer = Files.readAllBytes (file.toPath ());
+          }
+          catch (IOException e)
+          {
+            e.printStackTrace ();
+          }
+        }
+      }
+      return buffer;
+    }
+
+    //    public void setBuffer (byte[] buffer)
+    //    {
+    //      this.buffer = buffer;
+    //    }
   }
 
   TreeView<File> buildFileSystemBrowser ()
