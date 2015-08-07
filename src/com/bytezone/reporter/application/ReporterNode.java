@@ -14,21 +14,16 @@ import com.bytezone.reporter.application.TreePanel.FileNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
@@ -45,10 +40,6 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
   private final Preferences prefs;
   private FileNode currentFileNode;
-
-  private HBox transferPanel;
-  private TextField txtDatasetName;
-  private boolean isTransferPanelVisible;
 
   public ReporterNode (Preferences prefs)
   {
@@ -80,6 +71,11 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     return borderPane;
   }
 
+  public MenuBar getMenuBar ()
+  {
+    return menuBar;
+  }
+
   public TreePanel getTreePanel ()
   {
     return treePanel;
@@ -92,6 +88,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     borderPane.setRight (formatBox.getFormattingBox ());
     formatBox.setFileNode (fileNode, this);
     currentFileNode = fileNode;
+
     System.out.println ("setting file node " + fileNode);
   }
 
@@ -106,16 +103,12 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
     MenuItem menuItemOpen = getMenuItem ("Open...", e -> openFile (), KeyCode.O);
     MenuItem menuItemSave = getMenuItem ("Save...", e -> saveFile (), KeyCode.S);
-    MenuItem menuItemUpload = getMenuItem ("Upload file", e -> uploadFile (), KeyCode.U);
-    MenuItem menuItemDownload =
-        getMenuItem ("Download file", e -> downloadFile (), KeyCode.D);
     MenuItem menuItemPrint = getMenuItem ("Page setup", e -> pageSetup (), null);
     MenuItem menuItemPageSetup = getMenuItem ("Print", e -> printFile (), KeyCode.P);
     MenuItem menuItemClose = getMenuItem ("Close window", e -> closeWindow (), KeyCode.W);
 
-    menuFile.getItems ().addAll (menuItemOpen, menuItemSave, menuItemUpload,
-                                 menuItemDownload, menuItemPageSetup, menuItemPrint,
-                                 menuItemClose);
+    menuFile.getItems ().addAll (menuItemOpen, menuItemSave, menuItemPageSetup,
+                                 menuItemPrint, menuItemClose);
     return menuFile;
   }
 
@@ -172,37 +165,6 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
         }
       }
     });
-  }
-
-  private void uploadFile ()
-  {
-    if (transferPanel == null)
-    {
-      Label lblTransfer = new Label ("Transfer file");
-      txtDatasetName = new TextField ();
-
-      transferPanel = new HBox (10);
-      transferPanel.setPadding (new Insets (10, 10, 10, 10));// trbl
-      transferPanel.setAlignment (Pos.CENTER_LEFT);
-      transferPanel.getChildren ().addAll (lblTransfer, txtDatasetName);
-
-    }
-
-    if (isTransferPanelVisible)
-    {
-      borderPane.setBottom (null);
-      isTransferPanelVisible = false;
-    }
-    else
-    {
-      borderPane.setBottom (transferPanel);
-      isTransferPanelVisible = true;
-    }
-  }
-
-  private void downloadFile ()
-  {
-
   }
 
   private void saveFile ()
