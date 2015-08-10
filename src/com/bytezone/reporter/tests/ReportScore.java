@@ -12,7 +12,6 @@ import com.bytezone.reporter.text.TextMaker;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -71,7 +70,7 @@ public class ReportScore implements Comparable<ReportScore>
 
       pagination = new Pagination ();
       pagination.setPageCount (pages.size ());
-      pagination.setMinHeight (50);
+      //      pagination.setMinHeight (50);
       //      pagination.autosize ();
       //      pagination.setManaged (true);
       pagination.setPageFactory (this::getFormattedPage);
@@ -92,7 +91,8 @@ public class ReportScore implements Comparable<ReportScore>
     {
       System.out.println ("impossible");
       textArea.clear ();
-      return new BorderPane (textArea);
+      //      return new BorderPane (textArea);
+      return textArea;
     }
 
     List<Record> records = recordMaker.getRecords ();
@@ -141,8 +141,8 @@ public class ReportScore implements Comparable<ReportScore>
       text.deleteCharAt (text.length () - 1);
 
     textArea.setText (text.toString ());
-
-    return new BorderPane (textArea);
+    return textArea;
+    //    return new BorderPane (textArea);
   }
 
   private String getSubrecord (Record record, int from, int to)

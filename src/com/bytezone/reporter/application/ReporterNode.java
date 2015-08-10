@@ -14,7 +14,6 @@ import com.bytezone.reporter.application.TreePanel.FileNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Parent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -24,6 +23,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
@@ -47,14 +47,14 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     this.prefs = prefs;
   }
 
-  public Parent getRootNode ()
+  public HBox getRootNode ()
   {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     treePanel = new TreePanel (prefs);
     treePanel.addNodeSelectionListener (this);
     StackPane stackPane = new StackPane ();
-    stackPane.setPrefWidth (180);
+    //    stackPane.setPrefWidth (180);
     stackPane.setMinHeight (180);
 
     TreeView<FileNode> tree = treePanel.getTree (home);
@@ -68,7 +68,9 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     if (MAC_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);
 
-    return borderPane;
+    HBox hbox = new HBox ();
+    hbox.getChildren ().add (borderPane);
+    return hbox;
   }
 
   public MenuBar getMenuBar ()
@@ -198,6 +200,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   @Override
   public void paginationChanged (Pagination pagination)
   {
+    pagination.setPrefWidth (18000);// need this to make it expand
     borderPane.setCenter (pagination);
   }
 }

@@ -15,7 +15,6 @@ import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.RadioButton;
@@ -116,7 +115,7 @@ class FormatBox
       vbox.setPrefWidth (180);
 
       formattingBox = new VBox ();
-      formattingBox.setMinHeight (200);
+      //      formattingBox.setMinHeight (200);
       addTitledPane ("Data size", vbox, formattingBox);
       addTitledPane ("Structure", recordsBox, formattingBox);
       addTitledPane ("Encoding", encodingsBox, formattingBox);
@@ -133,10 +132,10 @@ class FormatBox
     return label;
   }
 
-  private TitledPane addTitledPane (String text, Node contents, VBox parent)
+  private TitledPane addTitledPane (String text, VBox contents, VBox parent)
   {
     TitledPane titledPane = new TitledPane (text, contents);
-    titledPane.setCollapsible (false);
+    titledPane.setCollapsible (true);
     parent.getChildren ().add (titledPane);
     return titledPane;
   }
@@ -146,8 +145,8 @@ class FormatBox
     if (!reportData.hasData ())
       try
       {
-        if (fileNode.getBuffer() != null)
-          reportData.addBuffer (fileNode.getBuffer());
+        if (fileNode.getBuffer () != null)
+          reportData.addBuffer (fileNode.getBuffer ());
         else
           reportData.readFile (fileNode.file);// creates scores
 
