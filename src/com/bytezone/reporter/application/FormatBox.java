@@ -116,10 +116,10 @@ class FormatBox
 
       formattingBox = new VBox ();
       //      formattingBox.setMinHeight (200);
-      addTitledPane ("Data size", vbox, formattingBox);
-      addTitledPane ("Structure", recordsBox, formattingBox);
-      addTitledPane ("Encoding", encodingsBox, formattingBox);
-      addTitledPane ("Formatting", reportsBox, formattingBox);
+      addTitledPane ("Data size", vbox, formattingBox, true);
+      addTitledPane ("Structure", recordsBox, formattingBox, false);
+      addTitledPane ("Encoding", encodingsBox, formattingBox, false);
+      addTitledPane ("Formatting", reportsBox, formattingBox, true);
     }
 
     return formattingBox;
@@ -132,10 +132,12 @@ class FormatBox
     return label;
   }
 
-  private TitledPane addTitledPane (String text, VBox contents, VBox parent)
+  private TitledPane addTitledPane (String text, VBox contents, VBox parent,
+      boolean expanded)
   {
     TitledPane titledPane = new TitledPane (text, contents);
     titledPane.setCollapsible (true);
+    titledPane.setExpanded (expanded);
     parent.getChildren ().add (titledPane);
     return titledPane;
   }
