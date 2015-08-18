@@ -17,7 +17,6 @@ import javafx.scene.text.FontWeight;
 
 public class ReportScore implements Comparable<ReportScore>
 {
-  //  private static Font font = Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14);
   private static Font font;
 
   public final RecordMaker recordMaker;
@@ -36,18 +35,10 @@ public class ReportScore implements Comparable<ReportScore>
     String[] fontNames = { "Ubuntu Mono", "Menlo", "Courier New", "Monospaced", };
     for (String fontName : fontNames)
     {
-      font = getFont (fontName, 14);
-      if (font != null)
+      font = Font.font (fontName, FontWeight.NORMAL, 14);
+      if (font.getName ().startsWith (fontName))
         break;
     }
-  }
-
-  static Font getFont (String name, int size)
-  {
-    Font font = Font.font (name, FontWeight.NORMAL, size);
-    if (font.getName ().startsWith (name))
-      return font;
-    return null;
   }
 
   ReportScore (RecordMaker recordMaker, TextMaker textMaker, ReportMaker reportMaker,
