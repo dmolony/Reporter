@@ -25,6 +25,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 
 public class ReporterNode implements PaginationChangeListener, NodeSelectionListener
@@ -37,6 +38,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
   private final BorderPane borderPane;
   private final MenuBar menuBar = new MenuBar ();
+  private Font font;
 
   private final Preferences prefs;
   private FileNode currentFileNode;
@@ -73,6 +75,12 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     return hbox;
   }
 
+  public void setFont (Font font)
+  {
+    this.font = font;
+    System.out.println (font);
+  }
+
   public MenuBar getMenuBar ()
   {
     return menuBar;
@@ -90,8 +98,6 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     borderPane.setRight (formatBox.getFormattingBox ());
     formatBox.setFileNode (fileNode, this);
     currentFileNode = fileNode;
-
-    System.out.println ("setting file node " + fileNode);
   }
 
   public FileNode getSelectedNode ()

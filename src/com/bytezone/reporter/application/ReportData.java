@@ -101,8 +101,6 @@ public class ReportData
       {
         ReportScore score = tester.testReportMaker (reportMaker, textMaker);
         scores.add (score);
-
-        //        System.out.println (score);
       }
     }
   }

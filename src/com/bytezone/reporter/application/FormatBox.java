@@ -47,6 +47,7 @@ class FormatBox
   private final ReportData reportData;
   private VBox formattingBox;
   private final boolean testing = false;
+  private Font font;
 
   public FormatBox (ReportData reportData)
   {

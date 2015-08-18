@@ -17,7 +17,8 @@ import javafx.scene.text.FontWeight;
 
 public class ReportScore implements Comparable<ReportScore>
 {
-  private static Font font = Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14);
+  //  private static Font font = Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14);
+  private static Font font;
 
   public final RecordMaker recordMaker;
   public final TextMaker textMaker;
@@ -30,8 +31,27 @@ public class ReportScore implements Comparable<ReportScore>
   private Pagination pagination;
   private final TextArea textArea = new TextArea ();
 
-  public ReportScore (RecordMaker recordMaker, TextMaker textMaker,
-      ReportMaker reportMaker, double score, int sampleSize)
+  static
+  {
+    String[] fontNames = { "Ubuntu Mono", "Menlo", "Courier New", "Monospaced", };
+    for (String fontName : fontNames)
+    {
+      font = getFont (fontName, 14);
+      if (font != null)
+        break;
+    }
+  }
+
+  static Font getFont (String name, int size)
+  {
+    Font font = Font.font (name, FontWeight.NORMAL, size);
+    if (font.getName ().startsWith (name))
+      return font;
+    return null;
+  }
+
+  ReportScore (RecordMaker recordMaker, TextMaker textMaker, ReportMaker reportMaker,
+      double score, int sampleSize)
   {
     this.recordMaker = recordMaker;
     this.textMaker = textMaker;
@@ -91,7 +111,6 @@ public class ReportScore implements Comparable<ReportScore>
     {
       System.out.println ("impossible");
       textArea.clear ();
-      //      return new BorderPane (textArea);
       return textArea;
     }
 
@@ -103,8 +122,6 @@ public class ReportScore implements Comparable<ReportScore>
     int firstRecordOffset = page.getFirstRecordOffset ();
     int lastRecord = page.getLastRecordIndex ();
     int lastRecordOffset = page.getLastRecordOffset ();
-
-    //    System.out.println (page);
 
     if (firstRecord == lastRecord)
     {
@@ -142,7 +159,6 @@ public class ReportScore implements Comparable<ReportScore>
 
     textArea.setText (text.toString ());
     return textArea;
-    //    return new BorderPane (textArea);
   }
 
   private String getSubrecord (Record record, int from, int to)
