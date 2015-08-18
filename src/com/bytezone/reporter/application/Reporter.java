@@ -4,12 +4,12 @@ import java.util.prefs.Preferences;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Reporter extends Application
 {
-  private final BorderPane borderPane = new BorderPane ();
+  //  private static Font font = Font.font ("Ubuntu Mono", FontWeight.NORMAL, 14);
+  //  private final BorderPane borderPane = new BorderPane ();
   private WindowSaver windowSaver;
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
