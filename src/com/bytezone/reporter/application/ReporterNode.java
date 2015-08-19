@@ -94,10 +94,10 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   @Override
   public void nodeSelected (FileNode fileNode)
   {
+    currentFileNode = fileNode;
     formatBox = fileNode.formatBox;
     borderPane.setRight (formatBox.getFormattingBox ());
     formatBox.setFileNode (fileNode, this);
-    currentFileNode = fileNode;
   }
 
   public FileNode getSelectedNode ()
