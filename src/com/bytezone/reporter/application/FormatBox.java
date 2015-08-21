@@ -158,7 +158,7 @@ public class FormatBox
         if (fileNode.getBuffer () != null)
           reportData.addBuffer (fileNode.getBuffer ());
         else
-          reportData.readFile (fileNode.file);// creates scores
+          reportData.readFile (fileNode.getFile ());// creates scores
 
         addPaginationChangeListener (listener);
         adjustButtons ();// uses scores to enable/disable buttons
