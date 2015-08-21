@@ -24,7 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-class FormatBox
+public class FormatBox
 {
   private final Set<PaginationChangeListener> paginationChangeListeners =
       new HashSet<> ();
@@ -47,7 +47,7 @@ class FormatBox
   private final ReportData reportData;
   private VBox formattingBox;
   private final boolean testing = false;
-  private Font font;
+  //  private Font font;
 
   public FormatBox (ReportData reportData)
   {
@@ -141,6 +141,13 @@ class FormatBox
     titledPane.setExpanded (expanded);
     parent.getChildren ().add (titledPane);
     return titledPane;
+  }
+
+  public boolean isAscii ()
+  {
+    RadioButton btnEncoding = (RadioButton) encodingsGroup.getSelectedToggle ();
+    String encoding = btnEncoding.getUserData ().toString ();
+    return "ASCII".equals (encoding);
   }
 
   public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
@@ -330,5 +337,20 @@ class FormatBox
   public void removePaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.remove (listener);
+  }
+
+  @Override
+  public String toString ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    RadioButton btnRecord = (RadioButton) recordsGroup.getSelectedToggle ();
+    text.append (String.format ("Record maker ..... %s%n", btnRecord.getUserData ()));
+    RadioButton btnEncoding = (RadioButton) encodingsGroup.getSelectedToggle ();
+    text.append (String.format ("Encoding ......... %s%n", btnEncoding.getUserData ()));
+    RadioButton btnReport = (RadioButton) reportsGroup.getSelectedToggle ();
+    text.append (String.format ("Report maker ..... %s%n", btnReport.getUserData ()));
+
+    return text.toString ();
   }
 }

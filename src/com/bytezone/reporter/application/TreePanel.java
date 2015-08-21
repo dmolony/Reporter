@@ -131,7 +131,7 @@ public class TreePanel
       selectedFile = fileNode.file;
       selectedTreeItem = treeItem;
       notifyNodeSelected (fileNode);
-      saveLastFile ();
+      savePrefs ();
     }
   }
 
@@ -141,12 +141,12 @@ public class TreePanel
       listener.nodeSelected (fileNode);
   }
 
-  public void addNodeSelectionListener (NodeSelectionListener listener)
+  void addNodeSelectionListener (NodeSelectionListener listener)
   {
     nodeSelectionListeners.add (listener);
   }
 
-  public void removeFileSelectionListener (NodeSelectionListener listener)
+  void removeFileSelectionListener (NodeSelectionListener listener)
   {
     nodeSelectionListeners.remove (listener);
   }
@@ -157,7 +157,7 @@ public class TreePanel
     selectedFile = fileName.isEmpty () ? null : new File (fileName);
   }
 
-  private void saveLastFile ()
+  private void savePrefs ()
   {
     String fileName = selectedFile == null ? "" : selectedFile.getAbsolutePath ();
     prefs.put ("LastFile", fileName);
@@ -181,6 +181,21 @@ public class TreePanel
       datasetName = name;
       this.buffer = buffer;
     }
+
+    public FormatBox getFormatBox ()
+    {
+      return formatBox;
+    }
+
+    public ReportData getReportData ()
+    {
+      return formatBox.getReportData ();
+    }
+
+    //    public boolean isAscii ()
+    //    {
+    //
+    //    }
 
     @Override
     public String toString ()
@@ -206,11 +221,6 @@ public class TreePanel
       }
       return buffer;
     }
-
-    //    public void setBuffer (byte[] buffer)
-    //    {
-    //      this.buffer = buffer;
-    //    }
   }
 
   TreeView<File> buildFileSystemBrowser ()

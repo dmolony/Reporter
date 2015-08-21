@@ -6,6 +6,8 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
@@ -25,7 +27,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 
 public class ReporterNode implements PaginationChangeListener, NodeSelectionListener
@@ -33,12 +34,13 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   private final static String OS = System.getProperty ("os.name");
   private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
 
+  private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private FormatBox formatBox;
   private TreePanel treePanel;
 
   private final BorderPane borderPane;
   private final MenuBar menuBar = new MenuBar ();
-  private Font font;
+  //  private Font font;
 
   private final Preferences prefs;
   private FileNode currentFileNode;
@@ -75,20 +77,30 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     return hbox;
   }
 
-  public void setFont (Font font)
-  {
-    this.font = font;
-    System.out.println (font);
-  }
+  //  public void setFont (Font font)
+  //  {
+  //    this.font = font;
+  //    System.out.println (font);
+  //  }
 
   public MenuBar getMenuBar ()
   {
     return menuBar;
   }
 
-  public TreePanel getTreePanel ()
+  //  public TreePanel getTreePanel ()
+  //  {
+  //    return treePanel;
+  //  }
+
+  public void requestFocus ()
   {
-    return treePanel;
+    treePanel.getTree ().requestFocus ();
+  }
+
+  public void addBuffer (String name, byte[] buffer)
+  {
+    treePanel.addBuffer (name, buffer);
   }
 
   @Override
@@ -98,6 +110,8 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     formatBox = fileNode.formatBox;
     borderPane.setRight (formatBox.getFormattingBox ());
     formatBox.setFileNode (fileNode, this);
+
+    notifyNodeSelected (fileNode);
   }
 
   public FileNode getSelectedNode ()
@@ -208,5 +222,21 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   {
     pagination.setPrefWidth (18000);// need this to make it expand
     borderPane.setCenter (pagination);
+  }
+
+  private void notifyNodeSelected (FileNode fileNode)
+  {
+    for (NodeSelectionListener listener : nodeSelectionListeners)
+      listener.nodeSelected (fileNode);
+  }
+
+  public void addNodeSelectionListener (NodeSelectionListener listener)
+  {
+    nodeSelectionListeners.add (listener);
+  }
+
+  public void removeFileSelectionListener (NodeSelectionListener listener)
+  {
+    nodeSelectionListeners.remove (listener);
   }
 }
