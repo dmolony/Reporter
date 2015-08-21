@@ -182,20 +182,10 @@ public class TreePanel
       this.buffer = buffer;
     }
 
-    public FormatBox getFormatBox ()
+    public boolean isAscii ()
     {
-      return formatBox;
+      return formatBox.isAscii ();
     }
-
-    public ReportData getReportData ()
-    {
-      return formatBox.getReportData ();
-    }
-
-    //    public boolean isAscii ()
-    //    {
-    //
-    //    }
 
     @Override
     public String toString ()
