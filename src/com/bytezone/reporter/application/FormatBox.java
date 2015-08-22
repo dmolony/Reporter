@@ -1,7 +1,6 @@
 package com.bytezone.reporter.application;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -142,7 +141,8 @@ public class FormatBox
     return titledPane;
   }
 
-  public boolean isAscii ()
+  // this should be in MainframeFile
+      boolean isAscii ()
   {
     RadioButton btnEncoding = (RadioButton) encodingsGroup.getSelectedToggle ();
     String encoding = btnEncoding.getUserData ().toString ();
@@ -163,77 +163,30 @@ public class FormatBox
 
   private void adjustButtons ()
   {
-    // Create lists of buttons to disable
-    List<RecordMaker> imperfectRecordMakers = new ArrayList<> ();
-    List<TextMaker> imperfectTextMakers = new ArrayList<> ();
-    List<ReportMaker> imperfectReportMakers = new ArrayList<> ();
+    disableAll (recordMakerButtons);
+    disableAll (textMakerButtons);
+    disableAll (reportMakerButtons);
 
-    // Add every button to the list
-    imperfectRecordMakers.addAll (reportData.getRecordMakers ());
-    imperfectTextMakers.addAll (reportData.getTextMakers ());
-    imperfectReportMakers.addAll (reportData.getReportMakers ());
-
-    // Remove buttons that should always be valid
-    imperfectRecordMakers.remove (0);// the 'None' option
-    imperfectReportMakers.remove (0);// the Hex option
-
-    // Remove buttons that have been used in a perfect report
-    List<ReportScore> perfectScores = new ArrayList<> ();
-    for (ReportScore score : reportData.getScores ())
-      if (score.isPerfectScore ())
-      {
-        imperfectRecordMakers.remove (score.recordMaker);
-        imperfectTextMakers.remove (score.textMaker);
-        imperfectReportMakers.remove (score.reportMaker);
-        perfectScores.add (score);
-      }
-
-    // Enable all buttons
-    enable (recordMakerButtons);
-    enable (textMakerButtons);
-    enable (reportMakerButtons);
-
-    // Disable the buttons that don't have perfect scores
-    disable (imperfectRecordMakers, recordMakerButtons);
-    disable (imperfectTextMakers, textMakerButtons);
-    disable (imperfectReportMakers, reportMakerButtons);
+    // Enable the buttons that have perfect scores
+    for (ReportScore reportScore : reportData.getPerfectScores ())
+    {
+      enableButton (recordMakerButtons, reportScore.recordMaker);
+      enableButton (textMakerButtons, reportScore.textMaker);
+      enableButton (reportMakerButtons, reportScore.reportMaker);
+    }
 
     // Find the best report possible and select its buttons
-    ReportScore bestReportScore = getBestReportScore (perfectScores);
+    ReportScore bestReportScore = reportData.getBestReportScore ();
     if (bestReportScore != null)
       selectButtons (bestReportScore);
     else
       System.out.println ("Imperfect ReportScore selected");
   }
 
-  private void enable (List<RadioButton> buttons)
+  private void disableAll (List<RadioButton> buttons)
   {
     for (RadioButton button : buttons)
-      button.setDisable (false);
-  }
-
-  private ReportScore getBestReportScore (List<ReportScore> perfectScores)
-  {
-    List<ReportMaker> reversedReportMakers = new ArrayList<> ();
-    reversedReportMakers.addAll (reportData.getReportMakers ());
-    Collections.reverse (reversedReportMakers);
-
-    if (testing)
-      System.out.println ();
-    for (ReportMaker reportMaker : reversedReportMakers)
-    {
-      if (testing)
-        System.out.println (reportMaker);
-      for (ReportScore score : perfectScores)
-      {
-        if (testing)
-          System.out.println (score);
-        if (score.reportMaker == reportMaker)
-          return score;
-      }
-    }
-
-    return null;
+      button.setDisable (true);
   }
 
   private void buttonSelection ()
@@ -246,13 +199,10 @@ public class FormatBox
     setDataSize (records.size ());
 
     ReportScore currentReportScore =
-        findReportScore (recordMaker, textMaker, reportMaker);
+        reportData.findReportScore (recordMaker, textMaker, reportMaker);
 
     if (currentReportScore != null)
-    {
-      //      currentReportScore.paginate ();
       notifyPaginationChanged (currentReportScore.getPagination ());
-    }
     else
       System.out.println ("no reportscore found");
   }
@@ -274,13 +224,14 @@ public class FormatBox
       }
   }
 
-  private ReportScore findReportScore (RecordMaker recordMaker, TextMaker textMaker,
-      ReportMaker reportMaker)
+  private void enableButton (List<RadioButton> buttons, Object userData)
   {
-    for (ReportScore score : reportData.getScores ())
-      if (score.matches (recordMaker, textMaker, reportMaker))
-        return score;
-    return null;
+    for (RadioButton button : buttons)
+      if (button.getUserData () == userData)
+      {
+        button.setDisable (false);
+        return;
+      }
   }
 
   void setDataSize (int records)
@@ -288,14 +239,6 @@ public class FormatBox
     RecordMaker recordMaker = getSelectedRecordMaker ();
     lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
     lblRecordsText.setText (String.format ("%,10d", records));
-  }
-
-  private void disable (List<? extends Object> missingObjects, List<RadioButton> buttons)
-  {
-    for (Object userData : missingObjects)
-      for (RadioButton button : buttons)
-        if (button.getUserData () == userData)
-          button.setDisable (true);
   }
 
   private RecordMaker getSelectedRecordMaker ()

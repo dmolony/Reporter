@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
@@ -36,6 +37,7 @@ public class ReportData
   private final List<ReportScore> scores;
 
   private byte[] buffer;
+  boolean testing = false;
 
   public ReportData ()
   {
@@ -126,5 +128,39 @@ public class ReportData
   List<ReportMaker> getReportMakers ()
   {
     return reportMakers;
+  }
+
+  List<ReportScore> getPerfectScores ()
+  {
+    List<ReportScore> perfectScores = new ArrayList<> ();
+    for (ReportScore score : scores)
+      if (score.isPerfectScore ())
+        perfectScores.add (score);
+
+    return perfectScores;
+  }
+
+  ReportScore getBestReportScore ()
+  {
+    List<ReportMaker> reversedReportMakers = new ArrayList<> ();
+    reversedReportMakers.addAll (reportMakers);
+    Collections.reverse (reversedReportMakers);
+
+    for (ReportMaker reportMaker : reversedReportMakers)
+      for (ReportScore score : getPerfectScores ())
+        if (score.reportMaker == reportMaker)
+          return score;
+
+    return null;
+  }
+
+  ReportScore findReportScore (RecordMaker recordMaker, TextMaker textMaker,
+      ReportMaker reportMaker)
+  {
+    for (ReportScore score : scores)
+      if (score.matches (recordMaker, textMaker, reportMaker))
+        return score;
+
+    return null;
   }
 }
