@@ -7,8 +7,8 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 
+import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.Record;
-import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 public abstract class DefaultReportMaker implements ReportMaker

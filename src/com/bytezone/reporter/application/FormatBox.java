@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
+import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.tests.ReportScore;
 import com.bytezone.reporter.text.TextMaker;
 
 import javafx.geometry.Insets;

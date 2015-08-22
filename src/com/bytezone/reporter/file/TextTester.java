@@ -1,4 +1,4 @@
-package com.bytezone.reporter.tests;
+package com.bytezone.reporter.file;
 
 import java.util.List;
 
