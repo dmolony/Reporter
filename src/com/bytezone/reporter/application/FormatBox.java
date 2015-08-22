@@ -71,7 +71,7 @@ public class FormatBox
     {
       RadioButton button = new RadioButton (userData.toString ());
       button.setToggleGroup (group);
-      button.setOnAction (e -> buttonSelection ());
+      button.setOnAction (e -> buttonSelected ());
 
       buttons.add (button);
       vbox.getChildren ().add (button);
@@ -158,7 +158,7 @@ public class FormatBox
       adjustButtons ();// uses scores to enable/disable buttons
     }
 
-    buttonSelection ();// force a pagination change
+    buttonSelected ();// force a pagination change
   }
 
   private void adjustButtons ()
@@ -176,11 +176,7 @@ public class FormatBox
     }
 
     // Find the best report possible and select its buttons
-    ReportScore bestReportScore = reportData.getBestReportScore ();
-    if (bestReportScore != null)
-      selectButtons (bestReportScore);
-    else
-      System.out.println ("Imperfect ReportScore selected");
+    selectButtons (reportData.getBestReportScore ());
   }
 
   private void disableAll (List<RadioButton> buttons)
@@ -189,7 +185,7 @@ public class FormatBox
       button.setDisable (true);
   }
 
-  private void buttonSelection ()
+  private void buttonSelected ()
   {
     RecordMaker recordMaker = getSelectedRecordMaker ();
     TextMaker textMaker = getSelectedTextMaker ();
@@ -198,20 +194,25 @@ public class FormatBox
     List<Record> records = recordMaker.getRecords ();
     setDataSize (records.size ());
 
-    ReportScore currentReportScore =
+    ReportScore reportScore =
         reportData.findReportScore (recordMaker, textMaker, reportMaker);
 
-    if (currentReportScore != null)
-      notifyPaginationChanged (currentReportScore.getPagination ());
+    if (reportScore != null)
+      notifyPaginationChangeListeners (reportScore.getPagination ());
     else
       System.out.println ("no reportscore found");
   }
 
   void selectButtons (ReportScore reportScore)
   {
-    selectButton (recordMakerButtons, reportScore.recordMaker);
-    selectButton (textMakerButtons, reportScore.textMaker);
-    selectButton (reportMakerButtons, reportScore.reportMaker);
+    if (reportScore != null)
+    {
+      selectButton (recordMakerButtons, reportScore.recordMaker);
+      selectButton (textMakerButtons, reportScore.textMaker);
+      selectButton (reportMakerButtons, reportScore.reportMaker);
+    }
+    else
+      System.out.println ("Imperfect ReportScore selected");
   }
 
   private void selectButton (List<RadioButton> buttons, Object userData)
@@ -256,7 +257,7 @@ public class FormatBox
     return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
   }
 
-  private void notifyPaginationChanged (Pagination pagination)
+  private void notifyPaginationChangeListeners (Pagination pagination)
   {
     for (PaginationChangeListener listener : paginationChangeListeners)
       listener.paginationChanged (pagination);
