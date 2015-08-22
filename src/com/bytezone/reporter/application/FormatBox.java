@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
+import com.bytezone.reporter.file.ReportData;
 import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
@@ -44,8 +45,6 @@ public class FormatBox
 
   private final ReportData reportData;
   private VBox formattingBox;
-  private final boolean testing = false;
-  //  private Font font;
 
   public FormatBox (ReportData reportData)
   {

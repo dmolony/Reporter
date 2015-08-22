@@ -1,4 +1,4 @@
-package com.bytezone.reporter.application;
+package com.bytezone.reporter.file;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
-import com.bytezone.reporter.file.RecordTester;
-import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
@@ -60,7 +58,7 @@ public class ReportData
     return buffer != null;
   }
 
-  void addBuffer (FileNode fileNode)
+  public void addBuffer (FileNode fileNode)
   {
     if (fileNode.getBuffer () != null)
       buffer = fileNode.getBuffer ();
@@ -115,22 +113,22 @@ public class ReportData
     return scores;
   }
 
-  List<RecordMaker> getRecordMakers ()
+  public List<RecordMaker> getRecordMakers ()
   {
     return recordMakers;
   }
 
-  List<TextMaker> getTextMakers ()
+  public List<TextMaker> getTextMakers ()
   {
     return textMakers;
   }
 
-  List<ReportMaker> getReportMakers ()
+  public List<ReportMaker> getReportMakers ()
   {
     return reportMakers;
   }
 
-  List<ReportScore> getPerfectScores ()
+  public List<ReportScore> getPerfectScores ()
   {
     List<ReportScore> perfectScores = new ArrayList<> ();
     for (ReportScore score : scores)
@@ -140,7 +138,7 @@ public class ReportData
     return perfectScores;
   }
 
-  ReportScore getBestReportScore ()
+  public ReportScore getBestReportScore ()
   {
     List<ReportMaker> reversedReportMakers = new ArrayList<> ();
     reversedReportMakers.addAll (reportMakers);
@@ -154,7 +152,7 @@ public class ReportData
     return null;
   }
 
-  ReportScore findReportScore (RecordMaker recordMaker, TextMaker textMaker,
+  public ReportScore findReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
   {
     for (ReportScore score : scores)

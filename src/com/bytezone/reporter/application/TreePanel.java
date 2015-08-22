@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import com.bytezone.reporter.file.ReportData;
+
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -192,7 +194,7 @@ public class TreePanel
       return formatBox;
     }
 
-    File getFile ()
+    public File getFile ()
     {
       return file;
     }
