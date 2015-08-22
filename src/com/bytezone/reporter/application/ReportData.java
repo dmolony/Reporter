@@ -1,12 +1,12 @@
 package com.bytezone.reporter.application;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.file.RecordTester;
 import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.CrRecordMaker;
@@ -58,20 +58,26 @@ public class ReportData
     return buffer != null;
   }
 
-  void readFile (File file) throws IOException
+  void addBuffer (FileNode fileNode)
   {
-    assert buffer == null;
-    addBuffer (Files.readAllBytes (file.toPath ()));
-  }
-
-  void addBuffer (byte[] buffer)
-  {
-    this.buffer = buffer;
+    if (fileNode.getBuffer () != null)
+      buffer = fileNode.getBuffer ();
+    else
+      try
+      {
+        buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+        buffer = new byte[0];
+      }
 
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
 
     List<RecordTester> testers = new ArrayList<> ();
+
     for (RecordMaker recordMaker : recordMakers)
       if (recordMaker instanceof FbRecordMaker)
       {
@@ -98,10 +104,7 @@ public class ReportData
       TextMaker textMaker = tester.getPreferredTextMaker ();
 
       for (ReportMaker reportMaker : reportMakers)
-      {
-        ReportScore score = tester.testReportMaker (reportMaker, textMaker);
-        scores.add (score);
-      }
+        scores.add (tester.testReportMaker (reportMaker, textMaker));
     }
   }
 

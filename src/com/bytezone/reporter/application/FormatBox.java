@@ -1,6 +1,5 @@
 package com.bytezone.reporter.application;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -153,20 +152,11 @@ public class FormatBox
   public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
   {
     if (!reportData.hasData ())
-      try
-      {
-        if (fileNode.getBuffer () != null)
-          reportData.addBuffer (fileNode.getBuffer ());
-        else
-          reportData.readFile (fileNode.getFile ());// creates scores
-
-        addPaginationChangeListener (listener);
-        adjustButtons ();// uses scores to enable/disable buttons
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace ();
-      }
+    {
+      reportData.addBuffer (fileNode);// create scores
+      addPaginationChangeListener (listener);
+      adjustButtons ();// uses scores to enable/disable buttons
+    }
 
     buttonSelection ();// force a pagination change
   }
