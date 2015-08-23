@@ -96,21 +96,16 @@ public class ReportData
           testers.add (recordTester);
       }
 
-    for (RecordTester tester : testers)
+    for (RecordTester recordTester : testers)
     {
       for (TextMaker textMaker : textMakers)
-        tester.testTextMaker (textMaker);
+        recordTester.testTextMaker (textMaker);
 
-      TextMaker textMaker = tester.getPreferredTextMaker ();
+      TextMaker textMaker = recordTester.getPreferredTextMaker ();
 
       for (ReportMaker reportMaker : reportMakers)
-        scores.add (tester.testReportMaker (reportMaker, textMaker));
+        scores.add (recordTester.testReportMaker (reportMaker, textMaker));
     }
-  }
-
-  List<ReportScore> getScores ()
-  {
-    return scores;
   }
 
   public List<RecordMaker> getRecordMakers ()
