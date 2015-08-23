@@ -76,13 +76,14 @@ public class FormatBox
       vbox.getChildren ().add (button);
     }
 
-    linkButtons (buttons, objects);
+    setUserData (buttons, objects);
 
     return vbox;
   }
 
-  private void linkButtons (List<RadioButton> buttons, List<? extends Object> objects)
+  private void setUserData (List<RadioButton> buttons, List<? extends Object> objects)
   {
+    assert buttons.size () == objects.size ();
     for (int i = 0; i < buttons.size (); i++)
       buttons.get (i).setUserData (objects.get (i));
   }
