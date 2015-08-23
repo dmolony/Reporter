@@ -8,7 +8,6 @@ import java.util.Set;
 import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.file.ReportData;
 import com.bytezone.reporter.file.ReportScore;
-import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
@@ -45,6 +44,7 @@ public class FormatBox
 
   private final ReportData reportData;
   private VBox formattingBox;
+  private final Font monospacedFont = Font.font ("monospaced", 14);
 
   public FormatBox (ReportData reportData)
   {
@@ -81,11 +81,6 @@ public class FormatBox
     return vbox;
   }
 
-  ReportData getReportData ()
-  {
-    return reportData;
-  }
-
   private void linkButtons (List<RadioButton> buttons, List<? extends Object> objects)
   {
     for (int i = 0; i < buttons.size (); i++)
@@ -98,8 +93,8 @@ public class FormatBox
     {
       Label lblSize = setLabel ("Bytes", 60);
       Label lblRecords = setLabel ("Records", 60);
-      lblSizeText.setFont (Font.font ("monospaced", 14));
-      lblRecordsText.setFont (Font.font ("monospaced", 14));
+      lblSizeText.setFont (monospacedFont);
+      lblRecordsText.setFont (monospacedFont);
 
       HBox hbox1 = new HBox (10);
       hbox1.getChildren ().addAll (lblSize, lblSizeText);
@@ -113,7 +108,6 @@ public class FormatBox
       vbox.setPrefWidth (180);
 
       formattingBox = new VBox ();
-      //      formattingBox.setMinHeight (200);
       addTitledPane ("Data size", vbox, formattingBox, true);
       addTitledPane ("Structure", recordsBox, formattingBox, false);
       addTitledPane ("Encoding", encodingsBox, formattingBox, false);
@@ -148,12 +142,13 @@ public class FormatBox
     return "ASCII".equals (encoding);
   }
 
-  public void setFileNode (FileNode fileNode, PaginationChangeListener listener)
+  // called from ReporterNode.nodeSelected()
+  public void setFileNode (FileNode fileNode, PaginationChangeListener reporterNode)
   {
     if (!reportData.hasData ())
     {
       reportData.addBuffer (fileNode);// create scores
-      addPaginationChangeListener (listener);
+      addPaginationChangeListener (reporterNode);
       adjustButtons ();// uses scores to enable/disable buttons
     }
 
@@ -190,14 +185,14 @@ public class FormatBox
     TextMaker textMaker = getSelectedTextMaker ();
     ReportMaker reportMaker = getSelectedReportMaker ();
 
-    List<Record> records = recordMaker.getRecords ();
-    setDataSize (records.size ());
+    lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
+    lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
     ReportScore reportScore =
         reportData.findReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
-      notifyPaginationChangeListeners (reportScore.getPagination ());
+      firePaginationChange (reportScore.getPagination ());
     else
       System.out.println ("no reportscore found");
   }
@@ -234,13 +229,6 @@ public class FormatBox
       }
   }
 
-  void setDataSize (int records)
-  {
-    RecordMaker recordMaker = getSelectedRecordMaker ();
-    lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
-    lblRecordsText.setText (String.format ("%,10d", records));
-  }
-
   private RecordMaker getSelectedRecordMaker ()
   {
     return (RecordMaker) recordsGroup.getSelectedToggle ().getUserData ();
@@ -256,7 +244,7 @@ public class FormatBox
     return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
   }
 
-  private void notifyPaginationChangeListeners (Pagination pagination)
+  private void firePaginationChange (Pagination pagination)
   {
     for (PaginationChangeListener listener : paginationChangeListeners)
       listener.paginationChanged (pagination);
