@@ -3,6 +3,8 @@ package com.bytezone.reporter.application;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -32,10 +34,27 @@ public class TreePanel
     getLastFile ();
   }
 
-  public TreeView<FileNode> getTree (String directoryName)
+  public TreeView<FileNode> getTree (Path path)
   {
-    FileNode directory = new FileNode (new File (directoryName));
+    //    Path path = Paths.get (directoryName);
+    if (Files.notExists (path) || !Files.isDirectory (path))
+    {
+      System.out.println (path + " not valid");
+      path = Paths.get (System.getProperty ("java.io.tmpdir", null), "dm3270");
+      if (Files.notExists (path))
+        try
+        {
+          System.out.println ("creating");
+          Files.createDirectory (path);
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace ();
+        }
+      System.out.println ("Changing directory to: " + path);
+    }
 
+    FileNode directory = new FileNode (path.toFile ());
     TreeItem<FileNode> root = findFiles (directory);
     root.setExpanded (true);
     fileTree.setRoot (root);

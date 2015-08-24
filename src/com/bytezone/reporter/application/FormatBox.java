@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -115,16 +116,24 @@ public class FormatBox
     TextMaker textMaker = getSelectedTextMaker ();
     ReportMaker reportMaker = getSelectedReportMaker ();
 
-    lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
-    lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
+    if (recordMaker != null)
+    {
+      lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
+      lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
+    }
 
-    ReportScore reportScore =
-        reportData.setReportScore (recordMaker, textMaker, reportMaker);
+    if (recordMaker != null && textMaker != null && reportMaker != null)
+    {
+      ReportScore reportScore =
+          reportData.setReportScore (recordMaker, textMaker, reportMaker);
 
-    if (reportScore != null)
-      firePaginationChange (reportScore.getPagination ());
+      if (reportScore != null)
+        firePaginationChange (reportScore.getPagination ());
+      else
+        System.out.println ("no reportscore found");
+    }
     else
-      System.out.println ("no reportscore found");
+      System.out.println ("no makers found");
   }
 
   private void selectButtons (ReportScore reportScore)
@@ -161,17 +170,22 @@ public class FormatBox
 
   private RecordMaker getSelectedRecordMaker ()
   {
-    return (RecordMaker) recordsGroup.getSelectedToggle ().getUserData ();
+    Toggle toggle = recordsGroup.getSelectedToggle ();
+    return toggle == null ? null : (RecordMaker) toggle.getUserData ();
   }
 
   private TextMaker getSelectedTextMaker ()
   {
-    return (TextMaker) encodingsGroup.getSelectedToggle ().getUserData ();
+    //    return (TextMaker) encodingsGroup.getSelectedToggle ().getUserData ();
+    Toggle toggle = encodingsGroup.getSelectedToggle ();
+    return toggle == null ? null : (TextMaker) toggle.getUserData ();
   }
 
   private ReportMaker getSelectedReportMaker ()
   {
-    return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
+    //    return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
+    Toggle toggle = reportsGroup.getSelectedToggle ();
+    return toggle == null ? null : (ReportMaker) toggle.getUserData ();
   }
 
   private void firePaginationChange (Pagination pagination)

@@ -5,6 +5,8 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -19,7 +21,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -34,39 +35,30 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
-  private final FormatBox formatBox;
+  private final FormatBox formatBox = new FormatBox (this);
   private final TreePanel treePanel;
 
-  private final BorderPane borderPane;
+  private final BorderPane borderPane = new BorderPane ();
   private final MenuBar menuBar = new MenuBar ();
 
-  private final Preferences prefs;
   private FileNode currentFileNode;
 
   public ReporterNode (Preferences prefs)
   {
-    this.borderPane = new BorderPane ();
-    this.prefs = prefs;
-
-    String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
-
-    formatBox = new FormatBox (this);
+    Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "files");
 
     treePanel = new TreePanel (prefs);
     treePanel.addNodeSelectionListener (this);
-    StackPane stackPane = new StackPane ();
-    //    stackPane.setPrefWidth (180);
-    stackPane.setMinHeight (180);
 
-    TreeView<FileNode> tree = treePanel.getTree (home);
-    stackPane.getChildren ().add (tree);
+    StackPane stackPane = new StackPane ();
+    stackPane.setMinHeight (180);
+    stackPane.getChildren ().add (treePanel.getTree (path));
 
     borderPane.setLeft (stackPane);
     borderPane.setTop (menuBar);
     borderPane.setRight (formatBox.getPanel ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
-
     if (MAC_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);
   }
@@ -180,8 +172,8 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   private void saveFile ()
   {
     FileChooser fileChooser = new FileChooser ();
+    fileChooser.setInitialFileName (currentFileNode.datasetName);
 
-    fileChooser.setInitialFileName (currentFileNode.datasetName + ".txt");
     //Set extension filter
     //    FileChooser.ExtensionFilter extFilter =
     //        new FileChooser.ExtensionFilter ("TXT files (*.txt)", "*.txt");
