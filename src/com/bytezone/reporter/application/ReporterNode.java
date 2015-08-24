@@ -32,7 +32,7 @@ import javafx.stage.FileChooser;
 public class ReporterNode implements PaginationChangeListener, NodeSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
-  private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
+  private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private final FormatBox formatBox = new FormatBox (this);
@@ -51,7 +51,6 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     treePanel.addNodeSelectionListener (this);
 
     StackPane stackPane = new StackPane ();
-    stackPane.setMinHeight (180);
     stackPane.getChildren ().add (treePanel.getTree (path));
 
     borderPane.setLeft (stackPane);
@@ -59,8 +58,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     borderPane.setRight (formatBox.getPanel ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
-    if (MAC_MENUBAR)
-      menuBar.useSystemMenuBarProperty ().set (true);
+    menuBar.useSystemMenuBarProperty ().set (SYSTEM_MENUBAR);
   }
 
   public HBox getRootNode ()
