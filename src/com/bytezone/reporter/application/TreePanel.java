@@ -168,7 +168,8 @@ public class TreePanel
   public class FileNode
   {
     private File file;
-    private final FormatBox formatBox = new FormatBox (new ReportData ());
+    //    private final FormatBox formatBox = new FormatBox (new ReportData ());
+    private final ReportData reportData = new ReportData ();
     final String datasetName;
     private byte[] buffer;
 
@@ -186,12 +187,17 @@ public class TreePanel
 
     public boolean isAscii ()
     {
-      return formatBox.isAscii ();
+      return reportData.isAscii ();
     }
 
-    FormatBox getFormatBox ()
+    //    FormatBox getFormatBox ()
+    //    {
+    //      return formatBox;
+    //    }
+
+    public ReportData getReportData ()
     {
-      return formatBox;
+      return reportData;
     }
 
     public File getFile ()

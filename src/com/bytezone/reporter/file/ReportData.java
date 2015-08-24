@@ -34,8 +34,10 @@ public class ReportData
   private final List<ReportMaker> reportMakers;
   private final List<ReportScore> scores;
 
+  private ReportScore selectedReportScore;
+
   private byte[] buffer;
-  boolean testing = false;
+  private final boolean testing = false;
 
   public ReportData ()
   {
@@ -133,7 +135,7 @@ public class ReportData
     return perfectScores;
   }
 
-  public ReportScore getBestReportScore ()
+  private ReportScore getBestReportScore ()
   {
     List<ReportMaker> reversedReportMakers = new ArrayList<> ();
     reversedReportMakers.addAll (reportMakers);
@@ -147,13 +149,31 @@ public class ReportData
     return null;
   }
 
-  public ReportScore findReportScore (RecordMaker recordMaker, TextMaker textMaker,
+  public ReportScore getSelectedReportScore ()
+  {
+    if (selectedReportScore == null)
+      selectedReportScore = getBestReportScore ();
+    return selectedReportScore;
+  }
+
+  public ReportScore setReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
   {
     for (ReportScore score : scores)
       if (score.matches (recordMaker, textMaker, reportMaker))
-        return score;
+      {
+        selectedReportScore = score;
+        break;
+      }
 
-    return null;
+    return selectedReportScore;
+  }
+
+  public boolean isAscii ()
+  {
+    if (selectedReportScore == null)
+      return false;
+
+    return selectedReportScore.textMaker.toString ().equals ("ASCII");// fix this
   }
 }

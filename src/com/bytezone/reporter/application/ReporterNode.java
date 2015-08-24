@@ -1,7 +1,6 @@
 package com.bytezone.reporter.application;
 
 import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +34,11 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   private final static boolean MAC_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
-  private FormatBox formatBox;
-  private TreePanel treePanel;
+  private final FormatBox formatBox;
+  private final TreePanel treePanel;
 
   private final BorderPane borderPane;
   private final MenuBar menuBar = new MenuBar ();
-  //  private Font font;
 
   private final Preferences prefs;
   private FileNode currentFileNode;
@@ -49,11 +47,10 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   {
     this.borderPane = new BorderPane ();
     this.prefs = prefs;
-  }
 
-  public HBox getRootNode ()
-  {
     String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
+
+    formatBox = new FormatBox (this);
 
     treePanel = new TreePanel (prefs);
     treePanel.addNodeSelectionListener (this);
@@ -66,32 +63,25 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
     borderPane.setLeft (stackPane);
     borderPane.setTop (menuBar);
+    borderPane.setRight (formatBox.getPanel ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
 
     if (MAC_MENUBAR)
       menuBar.useSystemMenuBarProperty ().set (true);
+  }
 
+  public HBox getRootNode ()
+  {
     HBox hbox = new HBox ();
     hbox.getChildren ().add (borderPane);
     return hbox;
   }
 
-  //  public void setFont (Font font)
-  //  {
-  //    this.font = font;
-  //    System.out.println (font);
-  //  }
-
   public MenuBar getMenuBar ()
   {
     return menuBar;
   }
-
-  //  public TreePanel getTreePanel ()
-  //  {
-  //    return treePanel;
-  //  }
 
   public void requestFocus ()
   {
@@ -107,11 +97,9 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   public void nodeSelected (FileNode fileNode)
   {
     currentFileNode = fileNode;
-    formatBox = fileNode.getFormatBox ();// this has to go
-    borderPane.setRight (formatBox.getFormattingBox ());
-    formatBox.setFileNode (fileNode, this);
+    formatBox.setFileNode (fileNode);
 
-    notifyNodeSelected (fileNode);
+    fireNodeSelected (fileNode);
   }
 
   public FileNode getSelectedNode ()
@@ -173,18 +161,18 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
       {
         PrinterJob printerJob = PrinterJob.getPrinterJob ();// AWT!!!
 
-        if (printerJob.printDialog ())
-        {
-          try
-          {
-            printerJob.setPrintable (formatBox.getSelectedReportMaker ());
-            printerJob.print ();
-          }
-          catch (PrinterException e)
-          {
-            e.printStackTrace ();
-          }
-        }
+        //        if (printerJob.printDialog ())
+        //        {
+        //          try
+        //          {
+        //            printerJob.setPrintable (formatBox.getSelectedReportMaker ());
+        //            printerJob.print ();
+        //          }
+        //          catch (PrinterException e)
+        //          {
+        //            e.printStackTrace ();
+        //          }
+        //        }
       }
     });
   }
@@ -224,7 +212,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     borderPane.setCenter (pagination);
   }
 
-  private void notifyNodeSelected (FileNode fileNode)
+  private void fireNodeSelected (FileNode fileNode)
   {
     for (NodeSelectionListener listener : nodeSelectionListeners)
       listener.nodeSelected (fileNode);

@@ -42,14 +42,15 @@ public class FormatBox
   private final VBox encodingsBox;
   private final VBox reportsBox;
 
-  private final ReportData reportData;
-  private VBox formattingBox;
+  private ReportData reportData;
+  private final VBox formattingBox;
   private final Font monospacedFont = Font.font ("monospaced", 14);
 
-  public FormatBox (ReportData reportData)
+  public FormatBox (PaginationChangeListener changeListener)
   {
-    this.reportData = reportData;
+    ReportData reportData = new ReportData ();
 
+    // create a temporary ReportData to get the xxxMakers' names
     List<RecordMaker> recordMakers = reportData.getRecordMakers ();
     List<TextMaker> textMakers = reportData.getTextMakers ();
     List<ReportMaker> reportMakers = reportData.getReportMakers ();
@@ -57,102 +58,30 @@ public class FormatBox
     recordsBox = createVBox (recordMakers, recordMakerButtons, recordsGroup);
     encodingsBox = createVBox (textMakers, textMakerButtons, encodingsGroup);
     reportsBox = createVBox (reportMakers, reportMakerButtons, reportsGroup);
+
+    formattingBox = createFormattingBox ();
+
+    // set ReporterNode as a PaginationChangeListener
+    addPaginationChangeListener (changeListener);
   }
 
-  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
-      ToggleGroup group)
+  public VBox getPanel ()
   {
-    VBox vbox = new VBox (10);
-    vbox.setPadding (new Insets (10));
-
-    // List of RecordMaker/TextMaker/ReportMaker
-    for (Object userData : objects)
-    {
-      RadioButton button = new RadioButton (userData.toString ());
-      button.setToggleGroup (group);
-      button.setOnAction (e -> buttonSelected ());
-
-      buttons.add (button);
-      vbox.getChildren ().add (button);
-    }
-
-    setUserData (buttons, objects);
-
-    return vbox;
-  }
-
-  private void setUserData (List<RadioButton> buttons, List<? extends Object> objects)
-  {
-    assert buttons.size () == objects.size ();
-    for (int i = 0; i < buttons.size (); i++)
-      buttons.get (i).setUserData (objects.get (i));
-  }
-
-  public VBox getFormattingBox ()
-  {
-    if (formattingBox == null)
-    {
-      Label lblSize = setLabel ("Bytes", 60);
-      Label lblRecords = setLabel ("Records", 60);
-      lblSizeText.setFont (monospacedFont);
-      lblRecordsText.setFont (monospacedFont);
-
-      HBox hbox1 = new HBox (10);
-      hbox1.getChildren ().addAll (lblSize, lblSizeText);
-
-      HBox hbox2 = new HBox (10);
-      hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
-
-      VBox vbox = new VBox (10);
-      vbox.setPadding (new Insets (10));
-      vbox.getChildren ().addAll (hbox1, hbox2);
-      vbox.setPrefWidth (180);
-
-      formattingBox = new VBox ();
-      addTitledPane ("Data size", vbox, formattingBox, true);
-      addTitledPane ("Structure", recordsBox, formattingBox, false);
-      addTitledPane ("Encoding", encodingsBox, formattingBox, false);
-      addTitledPane ("Formatting", reportsBox, formattingBox, true);
-    }
-
     return formattingBox;
   }
 
-  private Label setLabel (String text, int width)
-  {
-    Label label = new Label (text);
-    label.setPrefWidth (width);
-    return label;
-  }
-
-  private TitledPane addTitledPane (String text, VBox contents, VBox parent,
-      boolean expanded)
-  {
-    TitledPane titledPane = new TitledPane (text, contents);
-    titledPane.setCollapsible (true);
-    titledPane.setExpanded (expanded);
-    parent.getChildren ().add (titledPane);
-    return titledPane;
-  }
-
-  // this should be in MainframeFile
-      boolean isAscii ()
-  {
-    RadioButton btnEncoding = (RadioButton) encodingsGroup.getSelectedToggle ();
-    String encoding = btnEncoding.getUserData ().toString ();
-    return "ASCII".equals (encoding);
-  }
-
   // called from ReporterNode.nodeSelected()
-  public void setFileNode (FileNode fileNode, PaginationChangeListener reporterNode)
+  public void setFileNode (FileNode fileNode)
   {
+    this.reportData = fileNode.getReportData ();
     if (!reportData.hasData ())
-    {
       reportData.addBuffer (fileNode);// create scores
-      addPaginationChangeListener (reporterNode);
-      adjustButtons ();// uses scores to enable/disable buttons
-    }
 
+    setUserData (recordMakerButtons, reportData.getRecordMakers ());
+    setUserData (textMakerButtons, reportData.getTextMakers ());
+    setUserData (reportMakerButtons, reportData.getReportMakers ());
+
+    adjustButtons ();
     buttonSelected ();// force a pagination change
   }
 
@@ -171,7 +100,7 @@ public class FormatBox
     }
 
     // Find the best report possible and select its buttons
-    selectButtons (reportData.getBestReportScore ());
+    selectButtons (reportData.getSelectedReportScore ());
   }
 
   private void disableAll (List<RadioButton> buttons)
@@ -190,7 +119,7 @@ public class FormatBox
     lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
     ReportScore reportScore =
-        reportData.findReportScore (recordMaker, textMaker, reportMaker);
+        reportData.setReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
       firePaginationChange (reportScore.getPagination ());
@@ -198,7 +127,7 @@ public class FormatBox
       System.out.println ("no reportscore found");
   }
 
-  void selectButtons (ReportScore reportScore)
+  private void selectButtons (ReportScore reportScore)
   {
     if (reportScore != null)
     {
@@ -240,7 +169,7 @@ public class FormatBox
     return (TextMaker) encodingsGroup.getSelectedToggle ().getUserData ();
   }
 
-  ReportMaker getSelectedReportMaker ()
+  private ReportMaker getSelectedReportMaker ()
   {
     return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
   }
@@ -251,14 +180,87 @@ public class FormatBox
       listener.paginationChanged (pagination);
   }
 
-  public void addPaginationChangeListener (PaginationChangeListener listener)
+  private void addPaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.add (listener);
   }
 
-  public void removePaginationChangeListener (PaginationChangeListener listener)
+  private void removePaginationChangeListener (PaginationChangeListener listener)
   {
     paginationChangeListeners.remove (listener);
+  }
+
+  private VBox createFormattingBox ()
+  {
+    Label lblSize = setLabel ("Bytes", 60);
+    Label lblRecords = setLabel ("Records", 60);
+    lblSizeText.setFont (monospacedFont);
+    lblRecordsText.setFont (monospacedFont);
+
+    HBox hbox1 = new HBox (10);
+    hbox1.getChildren ().addAll (lblSize, lblSizeText);
+
+    HBox hbox2 = new HBox (10);
+    hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
+
+    VBox vbox = new VBox (10);
+    vbox.setPadding (new Insets (10));
+    vbox.getChildren ().addAll (hbox1, hbox2);
+    vbox.setPrefWidth (180);
+
+    VBox formattingBox = new VBox ();
+    addTitledPane (formattingBox, "Data size", vbox, true);
+    addTitledPane (formattingBox, "Structure", recordsBox, false);
+    addTitledPane (formattingBox, "Encoding", encodingsBox, false);
+    addTitledPane (formattingBox, "Formatting", reportsBox, true);
+
+    return formattingBox;
+  }
+
+  private TitledPane addTitledPane (VBox parent, String text, VBox contents,
+      boolean expanded)
+  {
+    TitledPane titledPane = new TitledPane (text, contents);
+    titledPane.setCollapsible (true);
+    titledPane.setExpanded (expanded);
+    parent.getChildren ().add (titledPane);
+    return titledPane;
+  }
+
+  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
+      ToggleGroup group)
+  {
+    VBox vbox = new VBox (10);
+    vbox.setPadding (new Insets (10));
+
+    // List of RecordMaker/TextMaker/ReportMaker
+    for (Object userData : objects)
+    {
+      RadioButton button = new RadioButton (userData.toString ());
+      button.setToggleGroup (group);
+      button.setOnAction (e -> buttonSelected ());
+
+      buttons.add (button);
+      vbox.getChildren ().add (button);
+    }
+
+    setUserData (buttons, objects);
+
+    return vbox;
+  }
+
+  private void setUserData (List<RadioButton> buttons, List<? extends Object> objects)
+  {
+    assert buttons.size () == objects.size ();
+    for (int i = 0; i < buttons.size (); i++)
+      buttons.get (i).setUserData (objects.get (i));
+  }
+
+  private Label setLabel (String text, int width)
+  {
+    Label label = new Label (text);
+    label.setPrefWidth (width);
+    return label;
   }
 
   @Override
@@ -267,11 +269,16 @@ public class FormatBox
     StringBuilder text = new StringBuilder ();
 
     RadioButton btnRecord = (RadioButton) recordsGroup.getSelectedToggle ();
-    text.append (String.format ("Record maker ..... %s%n", btnRecord.getUserData ()));
-    RadioButton btnEncoding = (RadioButton) encodingsGroup.getSelectedToggle ();
-    text.append (String.format ("Encoding ......... %s%n", btnEncoding.getUserData ()));
-    RadioButton btnReport = (RadioButton) reportsGroup.getSelectedToggle ();
-    text.append (String.format ("Report maker ..... %s%n", btnReport.getUserData ()));
+    if (btnRecord == null)
+      text.append ("Nothing selected yet");
+    else
+    {
+      text.append (String.format ("Record maker ..... %s%n", btnRecord.getUserData ()));
+      RadioButton btnEncoding = (RadioButton) encodingsGroup.getSelectedToggle ();
+      text.append (String.format ("Encoding ......... %s%n", btnEncoding.getUserData ()));
+      RadioButton btnReport = (RadioButton) reportsGroup.getSelectedToggle ();
+      text.append (String.format ("Report maker ..... %s%n", btnReport.getUserData ()));
+    }
 
     return text.toString ();
   }
