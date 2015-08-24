@@ -36,7 +36,6 @@ public class TreePanel
 
   public TreeView<FileNode> getTree (Path path)
   {
-    //    Path path = Paths.get (directoryName);
     if (Files.notExists (path) || !Files.isDirectory (path))
     {
       System.out.println (path + " not valid");
@@ -44,7 +43,6 @@ public class TreePanel
       if (Files.notExists (path))
         try
         {
-          System.out.println ("creating");
           Files.createDirectory (path);
         }
         catch (IOException e)
@@ -187,32 +185,36 @@ public class TreePanel
   public class FileNode
   {
     private File file;
-    //    private final FormatBox formatBox = new FormatBox (new ReportData ());
-    private final ReportData reportData = new ReportData ();
+    private final ReportData reportData;
     final String datasetName;
     private byte[] buffer;
 
     public FileNode (File file)
     {
       this.file = file;
-      datasetName = file.getName ();
+      if (file.isDirectory ())
+      {
+        reportData = null;
+        datasetName = file.getName ();
+      }
+      else
+      {
+        reportData = new ReportData ();
+        datasetName = file.getName ();
+      }
     }
 
     public FileNode (String name, byte[] buffer)
     {
       datasetName = name;
       this.buffer = buffer;
+      reportData = new ReportData ();
     }
 
     public boolean isAscii ()
     {
       return reportData.isAscii ();
     }
-
-    //    FormatBox getFormatBox ()
-    //    {
-    //      return formatBox;
-    //    }
 
     public ReportData getReportData ()
     {
@@ -226,20 +228,16 @@ public class TreePanel
 
     public byte[] getBuffer ()
     {
-      if (buffer == null)
-      {
-        if (file != null)
+      if (buffer == null && file != null)
+        try
         {
-          try
-          {
-            buffer = Files.readAllBytes (file.toPath ());
-          }
-          catch (IOException e)
-          {
-            e.printStackTrace ();
-          }
+          buffer = Files.readAllBytes (file.toPath ());
         }
-      }
+        catch (IOException e)
+        {
+          e.printStackTrace ();
+        }
+
       return buffer;
     }
 

@@ -49,9 +49,9 @@ public class FormatBox
 
   public FormatBox (PaginationChangeListener changeListener)
   {
+    // create a temporary ReportData to get the xxxMakers' names
     ReportData reportData = new ReportData ();
 
-    // create a temporary ReportData to get the xxxMakers' names
     List<RecordMaker> recordMakers = reportData.getRecordMakers ();
     List<TextMaker> textMakers = reportData.getTextMakers ();
     List<ReportMaker> reportMakers = reportData.getReportMakers ();
@@ -100,7 +100,6 @@ public class FormatBox
       enableButton (reportMakerButtons, reportScore.reportMaker);
     }
 
-    // Find the best report possible and select its buttons
     selectButtons (reportData.getSelectedReportScore ());
   }
 
@@ -116,24 +115,22 @@ public class FormatBox
     TextMaker textMaker = getSelectedTextMaker ();
     ReportMaker reportMaker = getSelectedReportMaker ();
 
-    if (recordMaker != null)
+    if (recordMaker == null)
     {
-      lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
-      lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
-    }
-
-    if (recordMaker != null && textMaker != null && reportMaker != null)
-    {
-      ReportScore reportScore =
-          reportData.setReportScore (recordMaker, textMaker, reportMaker);
-
-      if (reportScore != null)
-        firePaginationChange (reportScore.getPagination ());
-      else
-        System.out.println ("no reportscore found");
-    }
-    else
       System.out.println ("no makers found");
+      return;
+    }
+
+    lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
+    lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
+
+    ReportScore reportScore =
+        reportData.setReportScore (recordMaker, textMaker, reportMaker);
+
+    if (reportScore != null)
+      firePaginationChange (reportScore.getPagination ());
+    else
+      System.out.println ("no reportscore found");
   }
 
   private void selectButtons (ReportScore reportScore)
@@ -176,14 +173,12 @@ public class FormatBox
 
   private TextMaker getSelectedTextMaker ()
   {
-    //    return (TextMaker) encodingsGroup.getSelectedToggle ().getUserData ();
     Toggle toggle = encodingsGroup.getSelectedToggle ();
     return toggle == null ? null : (TextMaker) toggle.getUserData ();
   }
 
   private ReportMaker getSelectedReportMaker ()
   {
-    //    return (ReportMaker) reportsGroup.getSelectedToggle ().getUserData ();
     Toggle toggle = reportsGroup.getSelectedToggle ();
     return toggle == null ? null : (ReportMaker) toggle.getUserData ();
   }
@@ -199,10 +194,10 @@ public class FormatBox
     paginationChangeListeners.add (listener);
   }
 
-  private void removePaginationChangeListener (PaginationChangeListener listener)
-  {
-    paginationChangeListeners.remove (listener);
-  }
+  //  private void removePaginationChangeListener (PaginationChangeListener listener)
+  //  {
+  //    paginationChangeListeners.remove (listener);
+  //  }
 
   private VBox createFormattingBox ()
   {
