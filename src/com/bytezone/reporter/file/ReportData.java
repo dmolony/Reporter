@@ -74,7 +74,8 @@ public class ReportData
       }
       catch (IOException e)
       {
-        e.printStackTrace ();
+        //        e.printStackTrace ();
+        System.out.println (e.toString ());
         buffer = new byte[0];
       }
 
@@ -89,15 +90,14 @@ public class ReportData
         int recordLength = ((FbRecordMaker) recordMaker).getRecordLength ();
         int fileLength = recordMaker.getBuffer ().length;
         if (fileLength % recordLength == 0)
-          if (recordLength < 80)
-            testers.add (new RecordTester (recordMaker, 30 * recordLength));
-          else
-            testers.add (new RecordTester (recordMaker, 10 * recordLength));
+          testers.add (new RecordTester (recordMaker, 15 * recordLength));
       }
+      else if (recordMaker instanceof SingleRecordMaker)
+        testers.add (new RecordTester (recordMaker, 1024));
       else
       {
         RecordTester recordTester = new RecordTester (recordMaker, 1024);
-        if (recordTester.getSampleSize () > 2 || recordMaker instanceof SingleRecordMaker)
+        if (recordTester.getSampleSize () > 2)
           testers.add (recordTester);
       }
 
@@ -114,11 +114,10 @@ public class ReportData
 
     Collections.sort (scores);
     Collections.reverse (scores);
-    if (true)
-    {
+
+    if (false)
       for (ReportScore rs : scores)
         System.out.println (rs);
-    }
   }
 
   public List<RecordMaker> getRecordMakers ()
