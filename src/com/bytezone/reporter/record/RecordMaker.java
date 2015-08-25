@@ -12,7 +12,7 @@ public interface RecordMaker
 
   public byte[] getBuffer ();
 
-  //  public List<Record> test ();
-
   public List<Record> createSampleRecords (int length);
+
+  public double weight ();
 }

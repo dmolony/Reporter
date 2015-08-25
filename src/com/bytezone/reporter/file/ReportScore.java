@@ -25,6 +25,7 @@ public class ReportScore implements Comparable<ReportScore>
 
   private final double score;
   private final int sampleSize;
+  private final double weight;
 
   private final List<Page> pages = new ArrayList<> ();
   private Pagination pagination;
@@ -50,6 +51,7 @@ public class ReportScore implements Comparable<ReportScore>
 
     this.score = score;
     this.sampleSize = sampleSize;
+    this.weight = recordMaker.weight () * reportMaker.weight ();
 
     textArea.setFont (font);
     textArea.setEditable (false);
@@ -183,6 +185,8 @@ public class ReportScore implements Comparable<ReportScore>
   @Override
   public int compareTo (ReportScore o)
   {
+    if (this.score == o.score)
+      return Double.compare (this.weight, o.weight);
     return Double.compare (this.score, o.score);
   }
 

@@ -20,4 +20,6 @@ public interface ReportMaker extends Printable
   public boolean newlineBetweenRecords ();
 
   public boolean allowSplitRecords ();
+
+  public double weight ();
 }

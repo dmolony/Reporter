@@ -16,6 +16,7 @@ public abstract class DefaultReportMaker implements ReportMaker
   protected final String name;
   protected final boolean newlineBetweenRecords;
   protected final boolean allowSplitRecords;
+  protected double weight = 1.0;
 
   protected int pageSize = 66;
 
@@ -122,6 +123,12 @@ public abstract class DefaultReportMaker implements ReportMaker
   public boolean allowSplitRecords ()
   {
     return allowSplitRecords;
+  }
+
+  @Override
+  public double weight ()
+  {
+    return weight;
   }
 
   @Override

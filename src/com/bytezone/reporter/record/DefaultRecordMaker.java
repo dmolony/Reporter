@@ -7,6 +7,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
   protected byte[] buffer;
   protected List<Record> records;
   protected final String name;
+  protected double weight = 1.0;
 
   public DefaultRecordMaker (String name)
   {
@@ -50,6 +51,12 @@ public abstract class DefaultRecordMaker implements RecordMaker
       buffer = join (records);
 
     return buffer;
+  }
+
+  @Override
+  public double weight ()
+  {
+    return weight;
   }
 
   protected abstract List<Record> split (int length);
