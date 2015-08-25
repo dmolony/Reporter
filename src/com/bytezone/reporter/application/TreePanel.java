@@ -35,22 +35,10 @@ public class TreePanel
 
   public TreeView<FileNode> getTree (Path path)
   {
-    System.out.println (path);
-    //    if (Files.notExists (path) || !Files.isDirectory (path))
-    //    {
-    //      System.out.println (path + " not valid");
-    //      path = Paths.get (System.getProperty ("java.io.tmpdir", null), "dm3270");
-    //      if (Files.notExists (path))
-    //        try
-    //        {
-    //          Files.createDirectory (path);
-    //        }
-    //        catch (IOException e)
-    //        {
-    //          e.printStackTrace ();
-    //        }
-    //      System.out.println ("Changing directory to: " + path);
-    //    }
+    if (Files.notExists (path) || !Files.isDirectory (path))
+    {
+      System.out.println (path + " not valid");
+    }
 
     FileNode directory = new FileNode (path.toFile ());
     TreeItem<FileNode> root = findFiles (directory);
@@ -70,6 +58,9 @@ public class TreePanel
 
     if (selectedTreeItem != null)
       fileTree.getSelectionModel ().select (selectedTreeItem);
+
+    if (Files.notExists (path))
+      addBuffer ("message", getMessage ());
 
     return fileTree;
   }
@@ -181,6 +172,12 @@ public class TreePanel
   {
     String fileName = selectedFile == null ? "" : selectedFile.getAbsolutePath ();
     prefs.put ("LastFile", fileName);
+  }
+
+  private byte[] getMessage ()
+  {
+    String message = "Could not find download folder.\n \n \n \n";
+    return message.getBytes ();
   }
 
   public class FileNode
