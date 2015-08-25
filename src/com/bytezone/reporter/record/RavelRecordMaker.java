@@ -10,6 +10,7 @@ public class RavelRecordMaker extends DefaultRecordMaker
   public RavelRecordMaker ()
   {
     super ("Ravel");
+    weight = 1.1;
   }
 
   @Override

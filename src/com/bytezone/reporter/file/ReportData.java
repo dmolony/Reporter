@@ -112,9 +112,13 @@ public class ReportData
         scores.add (recordTester.testReportMaker (reportMaker, textMaker));
     }
 
-    if (false)
+    Collections.sort (scores);
+    Collections.reverse (scores);
+    if (true)
+    {
       for (ReportScore rs : scores)
         System.out.println (rs);
+    }
   }
 
   public List<RecordMaker> getRecordMakers ()
@@ -138,22 +142,15 @@ public class ReportData
     for (ReportScore score : scores)
       if (score.isPerfectScore ())
         perfectScores.add (score);
+      else
+        break;
 
     return perfectScores;
   }
 
   private ReportScore getBestReportScore ()
   {
-    List<ReportMaker> reversedReportMakers = new ArrayList<> ();
-    reversedReportMakers.addAll (reportMakers);
-    Collections.reverse (reversedReportMakers);
-
-    for (ReportMaker reportMaker : reversedReportMakers)
-      for (ReportScore score : getPerfectScores ())
-        if (score.reportMaker == reportMaker)
-          return score;
-
-    return null;
+    return scores.size () > 0 ? scores.get (0) : null;
   }
 
   public ReportScore getSelectedReportScore ()

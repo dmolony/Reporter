@@ -177,7 +177,6 @@ public class ReportScore implements Comparable<ReportScore>
       Page previousPage = pages.get (pages.size () - 2);
       page.setFirstRecordOffset (previousPage.getLastRecordOffset ());
     }
-    //    System.out.println (page);
 
     return page;
   }
@@ -193,7 +192,7 @@ public class ReportScore implements Comparable<ReportScore>
   @Override
   public String toString ()
   {
-    return String.format ("%-10s %-10s %-10s %6.2f %3d  %s", recordMaker, textMaker,
-                          reportMaker, score, sampleSize, pagination);
+    return String.format ("%-10s %-10s %-10s %6.2f %3d  %4.2f  %s", recordMaker,
+                          textMaker, reportMaker, score, sampleSize, weight, pagination);
   }
 }

@@ -8,6 +8,7 @@ public class LfRecordMaker extends DefaultRecordMaker
   public LfRecordMaker ()
   {
     super ("LF");
+    weight = 0.9;
   }
 
   @Override

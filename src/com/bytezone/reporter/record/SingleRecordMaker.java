@@ -8,6 +8,7 @@ public class SingleRecordMaker extends DefaultRecordMaker
   public SingleRecordMaker ()
   {
     super ("One record");
+    weight = .1;
   }
 
   @Override

@@ -11,6 +11,7 @@ public class NatloadReport extends DefaultReportMaker
   public NatloadReport (boolean newLine, boolean split)
   {
     super ("Natload", newLine, split);
+    weight = 1.1;
   }
 
   @Override

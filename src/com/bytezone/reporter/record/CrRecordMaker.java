@@ -8,6 +8,7 @@ public class CrRecordMaker extends DefaultRecordMaker
   public CrRecordMaker ()
   {
     super ("CR");
+    weight = 0.9;
   }
 
   @Override

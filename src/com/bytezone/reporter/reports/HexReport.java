@@ -14,6 +14,7 @@ public class HexReport extends DefaultReportMaker
   public HexReport (boolean newLine, boolean split)
   {
     super ("HEX", newLine, split);
+    weight = 0.1;
   }
 
   @Override

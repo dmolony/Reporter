@@ -19,6 +19,7 @@ public class AsaReport extends DefaultReportMaker
   public AsaReport (boolean newLine, boolean split)
   {
     super ("ASA", newLine, split);
+    weight = 1.1;
   }
 
   @Override
