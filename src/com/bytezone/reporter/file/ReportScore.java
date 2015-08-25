@@ -81,17 +81,7 @@ public class ReportScore implements Comparable<ReportScore>
 
       pagination = new Pagination ();
       pagination.setPageCount (pages.size ());
-      //      pagination.setMinHeight (50);
-      //      pagination.autosize ();
-      //      pagination.setManaged (true);
       pagination.setPageFactory (this::getFormattedPage);
-
-      //      AnchorPane anchor = new AnchorPane ();
-      //      AnchorPane.setTopAnchor (pagination, 10.0);
-      //      AnchorPane.setRightAnchor (pagination, 10.0);
-      //      AnchorPane.setBottomAnchor (pagination, 10.0);
-      //      AnchorPane.setLeftAnchor (pagination, 10.0);
-      //      anchor.getChildren ().add (pagination);
     }
     return pagination;
   }

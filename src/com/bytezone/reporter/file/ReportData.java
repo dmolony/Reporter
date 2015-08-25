@@ -67,7 +67,10 @@ public class ReportData
     else
       try
       {
-        buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
+        if (fileNode.getFile ().exists ())
+          buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
+        else
+          buffer = new byte[0];
       }
       catch (IOException e)
       {
@@ -108,6 +111,10 @@ public class ReportData
       for (ReportMaker reportMaker : reportMakers)
         scores.add (recordTester.testReportMaker (reportMaker, textMaker));
     }
+
+    if (false)
+      for (ReportScore rs : scores)
+        System.out.println (rs);
   }
 
   public List<RecordMaker> getRecordMakers ()

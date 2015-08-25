@@ -45,13 +45,16 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
   public ReporterNode (Preferences prefs)
   {
-    Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "files");
+    Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "filesx");
 
     treePanel = new TreePanel (prefs);
     treePanel.addNodeSelectionListener (this);
 
     StackPane stackPane = new StackPane ();
     stackPane.getChildren ().add (treePanel.getTree (path));
+
+    if (Files.notExists (path))
+      treePanel.addBuffer ("message", getMessage ());
 
     borderPane.setLeft (stackPane);
     borderPane.setTop (menuBar);
@@ -216,5 +219,11 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   public void removeFileSelectionListener (NodeSelectionListener listener)
   {
     nodeSelectionListeners.remove (listener);
+  }
+
+  private byte[] getMessage ()
+  {
+    String message = "Could not find download folder.\n \n \n \n";
+    return message.getBytes ();
   }
 }
