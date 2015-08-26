@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -181,8 +182,10 @@ public class TreePanel
 
   private byte[] getMessage ()
   {
-    String message = "Could not find download folder.\n \n \n \n";
-    return message.getBytes ();
+    Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "files");
+    String message1 = "Could not find download folder.\n \n";
+    String message2 = "Please create: " + path;
+    return (message1 + message2).getBytes ();
   }
 
   public class FileNode

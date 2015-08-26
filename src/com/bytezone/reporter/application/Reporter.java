@@ -16,7 +16,7 @@ public class Reporter extends Application
   @Override
   public void start (Stage primaryStage) throws Exception
   {
-    String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
+    //    String home = System.getProperty ("user.home") + "/Dropbox/testfiles";
 
     ReporterNode reporterNode = new ReporterNode (prefs);
     primaryStage.setTitle ("Reporter");

@@ -194,11 +194,6 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
       }
   }
 
-  private void closeWindow ()
-  {
-    System.out.println ("Close");
-  }
-
   @Override
   public void paginationChanged (Pagination pagination)
   {
