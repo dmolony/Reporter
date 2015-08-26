@@ -37,7 +37,6 @@ public class ReportData
   private ReportScore selectedReportScore;
 
   private byte[] buffer;
-  private final boolean testing = false;
 
   public ReportData ()
   {
@@ -112,6 +111,7 @@ public class ReportData
         scores.add (recordTester.testReportMaker (reportMaker, textMaker));
     }
 
+    assert scores.size () > 0;
     Collections.sort (scores);
     Collections.reverse (scores);
 
@@ -149,7 +149,8 @@ public class ReportData
 
   private ReportScore getBestReportScore ()
   {
-    return scores.size () > 0 ? scores.get (0) : null;
+    assert scores.size () > 0;
+    return scores.get (0);
   }
 
   public ReportScore getSelectedReportScore ()
