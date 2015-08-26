@@ -21,6 +21,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -101,25 +102,28 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   {
     Menu menuFile = new Menu ("File");
 
-    MenuItem menuItemOpen = getMenuItem ("Open...", e -> openFile (), KeyCode.O);
-    MenuItem menuItemSave = getMenuItem ("Save...", e -> saveFile (), KeyCode.S);
-    MenuItem menuItemPrint = getMenuItem ("Page setup", e -> pageSetup (), null);
-    MenuItem menuItemPageSetup = getMenuItem ("Print", e -> printFile (), KeyCode.P);
-    MenuItem menuItemClose = getMenuItem ("Close window", e -> closeWindow (), KeyCode.W);
+    getMenuItem (menuFile, "Open...", e -> openFile (), KeyCode.O);
+    getMenuItem (menuFile, "Save...", e -> saveFile (), KeyCode.S);
 
-    menuFile.getItems ().addAll (menuItemOpen, menuItemSave, menuItemPageSetup,
-                                 menuItemPrint, menuItemClose);
+    menuFile.getItems ().add (new SeparatorMenuItem ());
+
+    getMenuItem (menuFile, "Page setup", e -> pageSetup (), null);
+    getMenuItem (menuFile, "Print", e -> printFile (), KeyCode.P);
+
     return menuFile;
   }
 
-  private MenuItem getMenuItem (String text, EventHandler<ActionEvent> eventHandler,
-      KeyCode keyCode)
+  private MenuItem getMenuItem (Menu menu, String text,
+      EventHandler<ActionEvent> eventHandler, KeyCode keyCode)
   {
     MenuItem menuItem = new MenuItem (text);
+
     menuItem.setOnAction (eventHandler);
     if (keyCode != null)
       menuItem.setAccelerator (new KeyCodeCombination (keyCode,
           KeyCombination.SHORTCUT_DOWN));
+    menu.getItems ().add (menuItem);
+
     return menuItem;
   }
 
