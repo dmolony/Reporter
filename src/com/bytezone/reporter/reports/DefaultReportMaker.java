@@ -76,6 +76,11 @@ public abstract class DefaultReportMaker implements ReportMaker
 
     Graphics2D g2 = (Graphics2D) graphics;
 
+    plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
+    boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
+        plainFont.getSize ());
+    headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
+
     if (lineMetrics == null)
     {
       lineMetrics = plainFont.getLineMetrics ("crap", g2.getFontRenderContext ());

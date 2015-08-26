@@ -88,8 +88,13 @@ public class TreePanel
   {
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
 
-    if (Files.exists (directory.file.toPath ()))
-      for (File file : directory.file.listFiles ())
+    File directoryFile = directory.file;
+    if (Files.exists (directoryFile.toPath ()))
+    {
+      File[] files = directoryFile.listFiles ();
+      if (files == null)
+        return treeItem;
+      for (File file : files)
         if (!file.isHidden ())
           if (file.isDirectory ())
           {
@@ -104,6 +109,7 @@ public class TreePanel
             if (file.equals (selectedFile))
               selectedTreeItem = newItem;
           }
+    }
 
     return treeItem;
   }
