@@ -14,6 +14,7 @@ import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
+import com.bytezone.reporter.file.ReportData;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -186,7 +187,9 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     if (file != null && file.isFile () && !file.isHidden ())
       try
       {
-        Files.write (file.toPath (), currentFileNode.getBuffer ());
+        ReportData reportData = currentFileNode.getReportData ();
+        //        Files.write (file.toPath (), currentFileNode.getBuffer ());
+        Files.write (file.toPath (), reportData.getBuffer ());
       }
       catch (IOException e)
       {

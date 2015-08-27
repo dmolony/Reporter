@@ -61,19 +61,19 @@ public class ReportData
 
   public void addBuffer (FileNode fileNode)
   {
-    if (fileNode.getBuffer () != null)
-      buffer = fileNode.getBuffer ();
-    else
+    //    buffer = fileNode.getBuffer ();
+    if (buffer == null)
       try
       {
         if (fileNode.getFile ().exists ())
           buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
         else
           buffer = new byte[0];
+        //        fileNode.setBuffer (buffer);
+        System.out.printf ("reading %d bytes%n", buffer.length);
       }
       catch (IOException e)
       {
-        //        e.printStackTrace ();
         System.out.println (e.toString ());
         buffer = new byte[0];
       }
@@ -171,6 +171,11 @@ public class ReportData
       }
 
     return selectedReportScore;
+  }
+
+  public byte[] getBuffer ()
+  {
+    return buffer;
   }
 
   public boolean isAscii ()

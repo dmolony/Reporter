@@ -1,7 +1,6 @@
 package com.bytezone.reporter.application;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -129,27 +128,13 @@ public class TreePanel
     }
 
     FileNode fileNode = treeItem.getValue ();
+    if (fileNode == null || fileNode.file == null || fileNode.file.isDirectory ())
+      return;
 
-    if (fileNode.file == null)
-    {
-      if (fileNode.getBuffer () != null)
-      {
-        selectedFile = null;
-        selectedTreeItem = treeItem;
-        notifyNodeSelected (fileNode);
-      }
-    }
-    else if (fileNode.file.isDirectory () || !fileNode.file.exists ())
-    {
-      //      System.out.println (treeItem.getChildren ().size ());
-    }
-    else
-    {
-      selectedFile = fileNode.file;
-      selectedTreeItem = treeItem;
-      notifyNodeSelected (fileNode);
-      savePrefs ();
-    }
+    selectedFile = fileNode.file;
+    selectedTreeItem = treeItem;
+    notifyNodeSelected (fileNode);
+    savePrefs ();
   }
 
   private void notifyNodeSelected (FileNode fileNode)
@@ -193,7 +178,7 @@ public class TreePanel
     private File file;
     private final ReportData reportData;
     final String datasetName;
-    private byte[] buffer;
+    //    private byte[] buffer;
 
     public FileNode (File file)
     {
@@ -213,7 +198,7 @@ public class TreePanel
     public FileNode (String name, byte[] buffer)
     {
       datasetName = name;
-      this.buffer = buffer;
+      //      this.buffer = buffer;
       reportData = new ReportData ();
     }
 
@@ -232,20 +217,16 @@ public class TreePanel
       return file;
     }
 
-    public byte[] getBuffer ()
-    {
-      if (buffer == null && file != null && file.exists ())
-        try
-        {
-          buffer = Files.readAllBytes (file.toPath ());
-        }
-        catch (IOException e)
-        {
-          e.printStackTrace ();
-        }
+    //    public byte[] getBuffer ()
+    //    {
+    //      return buffer;
+    //    }
 
-      return buffer;
-    }
+    //    public void setBuffer (byte[] buffer)
+    //    {
+    //      assert this.buffer == null;
+    //      this.buffer = buffer;
+    //    }
 
     @Override
     public String toString ()
