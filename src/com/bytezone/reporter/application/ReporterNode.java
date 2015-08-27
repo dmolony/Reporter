@@ -190,11 +190,10 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
     File file = fileChooser.showSaveDialog (null);
 
-    if (file != null && file.isFile () && !file.isHidden ())
+    if (file != null)
       try
       {
         ReportData reportData = currentFileNode.getReportData ();
-        //        Files.write (file.toPath (), currentFileNode.getBuffer ());
         Files.write (file.toPath (), reportData.getBuffer ());
       }
       catch (IOException e)

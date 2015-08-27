@@ -76,7 +76,6 @@ public class ReportData
     assert buffer == null;
     try
     {
-      System.out.println ("reading");
       buffer = Files.readAllBytes (file.toPath ());
     }
     catch (IOException e)
@@ -88,6 +87,7 @@ public class ReportData
 
   public void createScores ()
   {
+    assert buffer != null;
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
 
