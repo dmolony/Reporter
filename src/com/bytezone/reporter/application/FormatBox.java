@@ -74,7 +74,6 @@ public class FormatBox
   // called from ReporterNode.nodeSelected()
   public void setFileNode (FileNode fileNode)
   {
-    System.out.println ("set file node");
     this.reportData = fileNode.getReportData ();
     if (!reportData.hasScores ())
       reportData.createScores (fileNode);// create scores

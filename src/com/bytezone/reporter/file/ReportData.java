@@ -1,5 +1,6 @@
 package com.bytezone.reporter.file;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -8,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
-import com.bytezone.reporter.application.Utility;
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
@@ -62,22 +62,22 @@ public class ReportData
 
   public void setTransfer (byte[] buffer)
   {
-    System.out.printf ("got %d bytes%n", buffer.length);
     this.buffer = buffer;
-    System.out.println (Utility.toHex (buffer, 0, 32, false));
   }
 
   public void createScores (FileNode fileNode)
   {
-    System.out.println ("creating scores");
     if (buffer == null)
       try
       {
-        if (fileNode.getFile ().exists ())
+        File file = fileNode.getFile ();
+        if (file != null && file.exists ())
           buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
         else
+        {
+          System.out.println ("Problem with file in ReportData.createScores()");
           buffer = new byte[0];
-        System.out.printf ("reading %d bytes%n", buffer.length);
+        }
       }
       catch (IOException e)
       {
