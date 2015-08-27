@@ -89,7 +89,13 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   public void nodeSelected (FileNode fileNode)
   {
     currentFileNode = fileNode;
-    formatBox.setFileNode (fileNode);
+
+    ReportData reportData = fileNode.getReportData ();
+    if (!reportData.hasData ())
+      reportData.fillBuffer (fileNode.getFile ());
+    if (!reportData.hasScores ())
+      reportData.createScores ();
+    formatBox.setFileNode (reportData);
 
     fireNodeSelected (fileNode);
   }

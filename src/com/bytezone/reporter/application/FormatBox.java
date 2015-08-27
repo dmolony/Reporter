@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.file.ReportData;
 import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.RecordMaker;
@@ -72,11 +71,9 @@ public class FormatBox
   }
 
   // called from ReporterNode.nodeSelected()
-  public void setFileNode (FileNode fileNode)
+  public void setFileNode (ReportData reportData)
   {
-    this.reportData = fileNode.getReportData ();
-    if (!reportData.hasScores ())
-      reportData.createScores (fileNode);// create scores
+    this.reportData = reportData;
 
     setUserData (recordMakerButtons, reportData.getRecordMakers ());
     setUserData (textMakerButtons, reportData.getTextMakers ());

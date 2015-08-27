@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
@@ -55,36 +54,40 @@ public class ReportData
     scores = new ArrayList<> ();
   }
 
+  // used for file transfers
+  public ReportData (byte[] buffer)
+  {
+    this ();
+    this.buffer = buffer;
+  }
+
+  public boolean hasData ()
+  {
+    return buffer != null;
+  }
+
   public boolean hasScores ()
   {
     return scores.size () > 0;
   }
 
-  public void setTransfer (byte[] buffer)
+  public void fillBuffer (File file)
   {
-    this.buffer = buffer;
+    assert buffer == null;
+    try
+    {
+      System.out.println ("reading");
+      buffer = Files.readAllBytes (file.toPath ());
+    }
+    catch (IOException e)
+    {
+      System.out.println (e.toString ());
+      buffer = new byte[0];
+    }
   }
 
-  public void createScores (FileNode fileNode)
+  public void createScores ()
   {
-    if (buffer == null)
-      try
-      {
-        File file = fileNode.getFile ();
-        if (file != null && file.exists ())
-          buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
-        else
-        {
-          System.out.println ("Problem with file in ReportData.createScores()");
-          buffer = new byte[0];
-        }
-      }
-      catch (IOException e)
-      {
-        System.out.println (e.toString ());
-        buffer = new byte[0];
-      }
-
     for (RecordMaker recordMaker : recordMakers)
       recordMaker.setBuffer (buffer);
 

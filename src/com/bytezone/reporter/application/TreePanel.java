@@ -214,9 +214,7 @@ public class TreePanel
     public FileNode (String name, byte[] buffer)
     {
       datasetName = name;
-      reportData = new ReportData ();
-      if (buffer != null)
-        reportData.setTransfer (buffer);
+      reportData = new ReportData (buffer);
     }
 
     public boolean isAscii ()
