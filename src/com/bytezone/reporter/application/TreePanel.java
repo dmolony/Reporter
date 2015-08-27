@@ -128,13 +128,30 @@ public class TreePanel
     }
 
     FileNode fileNode = treeItem.getValue ();
-    if (fileNode == null || fileNode.file == null || fileNode.file.isDirectory ())
+    if (fileNode == null)
       return;
 
-    selectedFile = fileNode.file;
-    selectedTreeItem = treeItem;
-    notifyNodeSelected (fileNode);
-    savePrefs ();
+    if (fileNode.file == null)
+    {
+      if (fileNode.reportData.getBuffer () == null)
+        return;
+      else
+      {
+        // file transfers have no file, but they have a buffer
+        selectedFile = null;
+        selectedTreeItem = treeItem;
+        notifyNodeSelected (fileNode);
+      }
+    }
+    else if (fileNode.file.isDirectory ())
+      return;
+    else
+    {
+      selectedFile = fileNode.file;
+      selectedTreeItem = treeItem;
+      notifyNodeSelected (fileNode);
+      savePrefs ();
+    }
   }
 
   private void notifyNodeSelected (FileNode fileNode)
@@ -178,7 +195,6 @@ public class TreePanel
     private File file;
     private final ReportData reportData;
     final String datasetName;
-    //    private byte[] buffer;
 
     public FileNode (File file)
     {
@@ -198,8 +214,9 @@ public class TreePanel
     public FileNode (String name, byte[] buffer)
     {
       datasetName = name;
-      //      this.buffer = buffer;
       reportData = new ReportData ();
+      if (buffer != null)
+        reportData.setTransfer (buffer);
     }
 
     public boolean isAscii ()

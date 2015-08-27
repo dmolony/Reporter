@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.bytezone.reporter.application.TreePanel.FileNode;
+import com.bytezone.reporter.application.Utility;
 import com.bytezone.reporter.record.CrRecordMaker;
 import com.bytezone.reporter.record.CrlfRecordMaker;
 import com.bytezone.reporter.record.FbRecordMaker;
@@ -54,14 +55,21 @@ public class ReportData
     scores = new ArrayList<> ();
   }
 
-  public boolean hasData ()
+  public boolean hasScores ()
   {
-    return buffer != null;
+    return scores.size () > 0;
   }
 
-  public void addBuffer (FileNode fileNode)
+  public void setTransfer (byte[] buffer)
   {
-    //    buffer = fileNode.getBuffer ();
+    System.out.printf ("got %d bytes%n", buffer.length);
+    this.buffer = buffer;
+    System.out.println (Utility.toHex (buffer, 0, 32, false));
+  }
+
+  public void createScores (FileNode fileNode)
+  {
+    System.out.println ("creating scores");
     if (buffer == null)
       try
       {
@@ -69,7 +77,6 @@ public class ReportData
           buffer = Files.readAllBytes (fileNode.getFile ().toPath ());
         else
           buffer = new byte[0];
-        //        fileNode.setBuffer (buffer);
         System.out.printf ("reading %d bytes%n", buffer.length);
       }
       catch (IOException e)
