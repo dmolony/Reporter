@@ -23,9 +23,12 @@ public abstract class DefaultReportMaker implements ReportMaker
   private LineMetrics lineMetrics;
   private int lineHeight;
 
-  private java.awt.Font plainFont;
-  private java.awt.Font boldFont;
-  private java.awt.Font headerFont;
+  //  private static java.awt.Font plainFont =
+  //      new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
+  //  private static java.awt.Font boldFont = new java.awt.Font (plainFont.getFontName (),
+  //      java.awt.Font.BOLD, plainFont.getSize ());
+  //  private static java.awt.Font headerFont =
+  //      new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
 
   public DefaultReportMaker (String name, boolean newLine, boolean split)
   {
@@ -33,13 +36,13 @@ public abstract class DefaultReportMaker implements ReportMaker
     this.newlineBetweenRecords = newLine;
     this.allowSplitRecords = split;
 
-    if (true)
-    {
-      plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
-      boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
-          plainFont.getSize ());
-      headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
-    }
+    //    if (true)
+    //    {
+    //      plainFont = new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);
+    //      boldFont = new java.awt.Font (plainFont.getFontName (), java.awt.Font.BOLD,
+    //          plainFont.getSize ());
+    //      headerFont = new java.awt.Font ("Dialog", java.awt.Font.PLAIN, 14);
+    //    }
   }
 
   @Override
@@ -76,11 +79,11 @@ public abstract class DefaultReportMaker implements ReportMaker
 
     Graphics2D g2 = (Graphics2D) graphics;
 
-    if (lineMetrics == null)
-    {
-      lineMetrics = plainFont.getLineMetrics ("crap", g2.getFontRenderContext ());
-      lineHeight = (int) lineMetrics.getHeight () + 1;
-    }
+    //    if (lineMetrics == null)
+    //    {
+    //      lineMetrics = plainFont.getLineMetrics ("crap", g2.getFontRenderContext ());
+    //      lineHeight = (int) lineMetrics.getHeight () + 1;
+    //    }
 
     int x = 50;
     int y = 10;
@@ -92,13 +95,13 @@ public abstract class DefaultReportMaker implements ReportMaker
 
     if (pageFormat.getOrientation () == PageFormat.PORTRAIT)
     {
-      g2.setFont (headerFont);
+      //      g2.setFont (headerFont);
       g2.drawString (name, x, y);
       g2.drawLine (x, y + 3, g2.getClipBounds ().width - x, y + 3);
       y += 30;
     }
 
-    g2.setFont (plainFont);
+    //    g2.setFont (plainFont);
 
     //    String[] lines = getFormattedPage (pageIndex).getText ().split ("\n");
     //    for (String line : lines)
@@ -108,7 +111,7 @@ public abstract class DefaultReportMaker implements ReportMaker
     //    }
 
     // page number
-    g2.setFont (boldFont);
+    //    g2.setFont (boldFont);
 
     return (Printable.PAGE_EXISTS);
   }
