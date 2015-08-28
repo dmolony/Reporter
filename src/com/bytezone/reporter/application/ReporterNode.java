@@ -30,7 +30,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
-public class ReporterNode implements PaginationChangeListener, NodeSelectionListener
+public class ReporterNode extends BorderPane
+    implements PaginationChangeListener, NodeSelectionListener
 {
   private final static String OS = System.getProperty ("os.name");
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
@@ -38,8 +39,6 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private final FormatBox formatBox;
   private final TreePanel treePanel;
-
-  private final BorderPane borderPane = new BorderPane ();
   private final MenuBar menuBar = new MenuBar ();
 
   private FileNode currentFileNode;
@@ -56,17 +55,12 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
     stackPane.getChildren ().add (treePanel.getTree (path));
 
-    borderPane.setLeft (stackPane);
-    borderPane.setTop (menuBar);
-    borderPane.setRight (formatBox.getPanel ());
+    setLeft (stackPane);
+    setTop (menuBar);
+    setRight (formatBox.getPanel ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
     menuBar.useSystemMenuBarProperty ().set (SYSTEM_MENUBAR);
-  }
-
-  public BorderPane getBorderPane ()
-  {
-    return borderPane;
   }
 
   public MenuBar getMenuBar ()
@@ -74,6 +68,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     return menuBar;
   }
 
+  @Override
   public void requestFocus ()
   {
     treePanel.getTree ().requestFocus ();
@@ -205,7 +200,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   public void paginationChanged (Pagination pagination)
   {
     pagination.setPrefWidth (18000);// need this to make it expand
-    borderPane.setCenter (pagination);
+    setCenter (pagination);
   }
 
   private void fireNodeSelected (FileNode fileNode)
