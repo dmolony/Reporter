@@ -130,12 +130,18 @@ public class TreePanel
 
     FileNode fileNode = treeItem.getValue ();
     if (fileNode == null)
+    {
+      System.out.println ("null filenode selected");
       return;
+    }
 
     if (fileNode.file == null)
     {
-      if (fileNode.reportData.getBuffer () == null)
+      // check for downloads node - it has no directory and no buffer
+      if (!fileNode.reportData.hasData ())
+      {
         return;
+      }
       else
       {
         // file transfers have no file, but they have a buffer
@@ -145,7 +151,11 @@ public class TreePanel
       }
     }
     else if (fileNode.file.isDirectory ())
+    {
+      // this includes all non-data nodes (except the downloads 'folder')
+      //      System.out.println (fileNode.file.getAbsolutePath ());
       return;
+    }
     else
     {
       selectedFile = fileNode.file;

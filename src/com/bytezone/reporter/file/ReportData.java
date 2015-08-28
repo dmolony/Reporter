@@ -61,6 +61,11 @@ public class ReportData
     this.buffer = buffer;
   }
 
+  public byte[] getBuffer ()
+  {
+    return buffer;
+  }
+
   public boolean hasData ()
   {
     return buffer != null;
@@ -181,11 +186,6 @@ public class ReportData
       }
 
     return selectedReportScore;
-  }
-
-  public byte[] getBuffer ()
-  {
-    return buffer;
   }
 
   public boolean isAscii ()
