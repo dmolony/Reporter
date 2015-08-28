@@ -1,9 +1,7 @@
 package com.bytezone.reporter.application;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.bytezone.reporter.file.ReportData;
 import com.bytezone.reporter.file.ReportScore;
@@ -13,7 +11,6 @@ import com.bytezone.reporter.text.TextMaker;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.control.Pagination;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
@@ -24,12 +21,9 @@ import javafx.scene.text.Font;
 
 public class FormatBox
 {
-  private final Set<PaginationChangeListener> paginationChangeListeners =
-      new HashSet<> ();
-
-  final ToggleGroup recordsGroup = new ToggleGroup ();
-  final ToggleGroup encodingsGroup = new ToggleGroup ();
-  final ToggleGroup reportsGroup = new ToggleGroup ();
+  private final ToggleGroup recordsGroup = new ToggleGroup ();
+  private final ToggleGroup encodingsGroup = new ToggleGroup ();
+  private final ToggleGroup reportsGroup = new ToggleGroup ();
 
   private final List<RadioButton> recordMakerButtons = new ArrayList<> ();
   private final List<RadioButton> textMakerButtons = new ArrayList<> ();
@@ -42,9 +36,11 @@ public class FormatBox
   private final VBox encodingsBox;
   private final VBox reportsBox;
 
-  private ReportData reportData;
   private final VBox formattingBox;
   private final Font monospacedFont = Font.font ("monospaced", 14);
+  private final PaginationChangeListener changeListener;
+
+  private ReportData currentReportData;
 
   public FormatBox (PaginationChangeListener changeListener)
   {
@@ -61,8 +57,7 @@ public class FormatBox
 
     formattingBox = createFormattingBox ();
 
-    // set ReporterNode as a PaginationChangeListener
-    addPaginationChangeListener (changeListener);
+    this.changeListener = changeListener;
   }
 
   public VBox getPanel ()
@@ -71,9 +66,9 @@ public class FormatBox
   }
 
   // called from ReporterNode.nodeSelected()
-  public void setFileNode (ReportData reportData)
+  public void setReportData (ReportData reportData)
   {
-    this.reportData = reportData;
+    this.currentReportData = reportData;
 
     setUserData (recordMakerButtons, reportData.getRecordMakers ());
     setUserData (textMakerButtons, reportData.getTextMakers ());
@@ -90,14 +85,14 @@ public class FormatBox
     disableAll (reportMakerButtons);
 
     // Enable the buttons that have perfect scores
-    for (ReportScore reportScore : reportData.getPerfectScores ())
+    for (ReportScore reportScore : currentReportData.getPerfectScores ())
     {
       enableButton (recordMakerButtons, reportScore.recordMaker);
       enableButton (textMakerButtons, reportScore.textMaker);
       enableButton (reportMakerButtons, reportScore.reportMaker);
     }
 
-    selectButtons (reportData.getSelectedReportScore ());
+    selectButtons (currentReportData.getSelectedReportScore ());
   }
 
   private void disableAll (List<RadioButton> buttons)
@@ -122,10 +117,10 @@ public class FormatBox
     lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
     ReportScore reportScore =
-        reportData.setReportScore (recordMaker, textMaker, reportMaker);
+        currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
-      firePaginationChange (reportScore.getPagination ());
+      changeListener.paginationChanged (reportScore.getPagination ());
     else
       System.out.println ("no reportscore found");
   }
@@ -180,22 +175,6 @@ public class FormatBox
     return toggle == null ? null : (ReportMaker) toggle.getUserData ();
   }
 
-  private void firePaginationChange (Pagination pagination)
-  {
-    for (PaginationChangeListener listener : paginationChangeListeners)
-      listener.paginationChanged (pagination);
-  }
-
-  private void addPaginationChangeListener (PaginationChangeListener listener)
-  {
-    paginationChangeListeners.add (listener);
-  }
-
-  //  private void removePaginationChangeListener (PaginationChangeListener listener)
-  //  {
-  //    paginationChangeListeners.remove (listener);
-  //  }
-
   private VBox createFormattingBox ()
   {
     Label lblSize = setLabel ("Bytes", 60);
@@ -243,11 +222,12 @@ public class FormatBox
     for (Object userData : objects)
     {
       RadioButton button = new RadioButton (userData.toString ());
+
       button.setToggleGroup (group);
       button.setOnAction (e -> buttonSelected ());
 
-      buttons.add (button);
       vbox.getChildren ().add (button);
+      buttons.add (button);
     }
 
     setUserData (buttons, objects);
