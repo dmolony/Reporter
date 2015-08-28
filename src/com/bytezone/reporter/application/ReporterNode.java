@@ -37,7 +37,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
   private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
 
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
-  private final FormatBox formatBox = new FormatBox (this);
+  private final FormatBox formatBox;
   private final TreePanel treePanel;
 
   private final BorderPane borderPane = new BorderPane ();
@@ -47,12 +47,14 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
 
   public ReporterNode (Preferences prefs)
   {
+    formatBox = new FormatBox (this);
     Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "files");
 
     treePanel = new TreePanel (prefs);
     treePanel.addNodeSelectionListener (this);
 
     StackPane stackPane = new StackPane ();
+
     stackPane.getChildren ().add (treePanel.getTree (path));
 
     borderPane.setLeft (stackPane);
@@ -95,7 +97,7 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
       reportData.fillBuffer (fileNode.getFile ());
     if (!reportData.hasScores ())
       reportData.createScores ();
-    formatBox.setFileNode (reportData);
+    formatBox.setReportData (reportData);
 
     fireNodeSelected (fileNode);
   }
