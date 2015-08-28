@@ -4,19 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import com.bytezone.reporter.record.RecordMaker;
-import com.bytezone.reporter.reports.ReportMaker;
-import com.bytezone.reporter.text.TextMaker;
-
 public class MainframeFile
 {
   private final String name;
   private byte[] buffer;
   private File file;
-
-  private TextMaker textMaker;
-  private RecordMaker recordMaker;
-  private ReportMaker reportMaker;
 
   public MainframeFile (String name, byte[] buffer)
   {

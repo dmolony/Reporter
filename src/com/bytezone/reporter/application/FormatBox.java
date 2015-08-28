@@ -196,7 +196,7 @@ public class FormatBox
     VBox formattingBox = new VBox ();
     addTitledPane (formattingBox, "Data size", vbox, true);
     addTitledPane (formattingBox, "Structure", recordsBox, false);
-    addTitledPane (formattingBox, "Encoding", encodingsBox, false);
+    addTitledPane (formattingBox, "Encoding", encodingsBox, true);
     addTitledPane (formattingBox, "Formatting", reportsBox, true);
 
     return formattingBox;
