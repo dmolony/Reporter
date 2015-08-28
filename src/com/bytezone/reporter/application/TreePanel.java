@@ -44,6 +44,7 @@ public class TreePanel
     TreeItem<FileNode> root = findFiles (directory);
     root.setExpanded (true);
     fileTree.setRoot (root);
+    fileTree.setStyle ("-fx-font-size: 12; -fx-font-family: Monospaced");
 
     if (false)
     {
@@ -207,7 +208,7 @@ public class TreePanel
       else
       {
         reportData = new ReportData ();
-        datasetName = file.getName ();
+        datasetName = file.getName ().toUpperCase ();
       }
     }
 
