@@ -3,12 +3,14 @@ package com.bytezone.reporter.file;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 public class MainframeFile
 {
   private final String name;
   private byte[] buffer;
   private File file;
+  private List<ReportScore> scores;
 
   public MainframeFile (String name, byte[] buffer)
   {
@@ -22,9 +24,14 @@ public class MainframeFile
     this.name = file.getName ();
   }
 
+  private void analyse ()
+  {
+    if (buffer == null && file != null)
+      readFile ();
+  }
+
   private void readFile ()
   {
-    assert buffer == null;
     try
     {
       buffer = Files.readAllBytes (file.toPath ());
@@ -34,12 +41,6 @@ public class MainframeFile
       e.printStackTrace ();
       buffer = new byte[0];
     }
-  }
-
-  private void analyse ()
-  {
-    if (buffer == null)
-      readFile ();
   }
 
   @Override

@@ -27,7 +27,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
@@ -65,11 +64,9 @@ public class ReporterNode implements PaginationChangeListener, NodeSelectionList
     menuBar.useSystemMenuBarProperty ().set (SYSTEM_MENUBAR);
   }
 
-  public HBox getRootNode ()
+  public BorderPane getBorderPane ()
   {
-    HBox hbox = new HBox ();
-    hbox.getChildren ().add (borderPane);
-    return hbox;
+    return borderPane;
   }
 
   public MenuBar getMenuBar ()
