@@ -7,7 +7,7 @@ Java                            36            572            185           2703
 -------------------------------------------------------------------------------
 SUM:                            36            572            185           2703
 -------------------------------------------------------------------------------
-/Users/denismolony/Documents/workspace/Reporter/src/com/bytezone/
+.
 └── reporter
     ├── application
     │   ├── FormatBox.java
