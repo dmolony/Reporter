@@ -2,19 +2,29 @@
 Display mainframe files in various formats. This is part of the dm3270 terminal emulator, but it is also being built as a standalone application. When a file is opened it is analysed and then displayed in the best format.
 
 Supported record types
--Prefix
---RDW
---VB
--Terminated
---CR/LF
---CR
---LF
--Fixed length
---FB80
---FB132
---FB252
--Other
---Ravel
+*Prefix
+**RDW
+**VB
+*Terminated
+**CR/LF
+**CR
+**LF
+*Fixed length
+**FB80
+**FB132
+**FB252
+*Other
+**Ravel
+
+Supported encodings
+*ASCII
+*EBCDIC
+
+Display formats
+*Hex
+*Text
+*ASA
+*Natload
 
 ### Documentation
 * [Project layout](resources/structure.md)
