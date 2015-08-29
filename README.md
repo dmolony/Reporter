@@ -3,18 +3,18 @@ Display mainframe files in various formats. This is part of the dm3270 terminal 
 
 Supported record types
 * Prefix
-** RDW
-** VB
+  * RDW
+  * VB
 * Terminated
-** CR/LF
-** CR
-** LF
+  * CR/LF
+  * CR
+  * LF
 * Fixed length
-** FB80
-** FB132
-** FB252
+  * FB80
+  * FB132
+  * FB252
 * Other
-** Ravel
+  * Ravel
 
 Supported encodings
 * ASCII
