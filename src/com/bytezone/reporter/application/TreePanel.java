@@ -150,12 +150,9 @@ public class TreePanel
         notifyNodeSelected (fileNode);
       }
     }
+    // this includes all non-data nodes (except the downloads 'folder')
     else if (fileNode.file.isDirectory ())
-    {
-      // this includes all non-data nodes (except the downloads 'folder')
-      //      System.out.println (fileNode.file.getAbsolutePath ());
       return;
-    }
     else
     {
       selectedFile = fileNode.file;

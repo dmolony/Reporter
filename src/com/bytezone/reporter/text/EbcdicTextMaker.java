@@ -71,8 +71,8 @@ public class EbcdicTextMaker implements TextMaker
   @Override
   public boolean test (byte[] buffer, int offset, int length)
   {
-    if (length == 0)
-      return false;
+    //    if (length == 0)
+    //      return false;
 
     int max = Math.min (offset + length, buffer.length);
     for (int ptr = offset; ptr < max; ptr++)

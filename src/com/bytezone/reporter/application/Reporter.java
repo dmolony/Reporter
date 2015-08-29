@@ -16,7 +16,6 @@ public class Reporter extends Application
   {
     ReporterNode reporterNode = new ReporterNode (prefs);
     primaryStage.setTitle ("Reporter");
-    //    primaryStage.setScene (new Scene (reporterNode.getRootNode (), 800, 592));
     primaryStage.setScene (new Scene (reporterNode, 800, 592));
     primaryStage.setOnCloseRequest (e -> closeWindow ());
 

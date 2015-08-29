@@ -178,6 +178,8 @@ public class ReportData
   public ReportScore setReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
   {
+    selectedReportScore = null;
+
     for (ReportScore score : scores)
       if (score.matches (recordMaker, textMaker, reportMaker))
       {
