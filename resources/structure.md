@@ -1,22 +1,30 @@
 ```
-http://cloc.sourceforge.net v 1.64  T=0.11 s (304.2 files/s, 28056.1 lines/s)
+http://cloc.sourceforge.net v 1.64  T=0.11 s (334.8 files/s, 32180.4 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Java                            34            523            154           2459
+Java                            36            572            185           2703
 -------------------------------------------------------------------------------
-SUM:                            34            523            154           2459
+SUM:                            36            572            185           2703
 -------------------------------------------------------------------------------
+/Users/denismolony/Documents/workspace/Reporter/src/com/bytezone/
 └── reporter
     ├── application
     │   ├── FormatBox.java
     │   ├── NodeSelectionListener.java
     │   ├── PaginationChangeListener.java
-    │   ├── ReportData.java
     │   ├── Reporter.java
     │   ├── ReporterNode.java
     │   ├── TreePanel.java
+    │   ├── Utility.java
     │   └── WindowSaver.java
+    ├── file
+    │   ├── MainframeFile.java
+    │   ├── RecordTester.java
+    │   ├── ReportData.java
+    │   ├── ReportScore.java
+    │   ├── ReportTester.java
+    │   └── TextTester.java
     ├── record
     │   ├── CrRecordMaker.java
     │   ├── CrlfRecordMaker.java
@@ -38,15 +46,10 @@ SUM:                            34            523            154           2459
     │   ├── Page.java
     │   ├── ReportMaker.java
     │   └── TextReport.java
-    ├── tests
-    │   ├── RecordTester.java
-    │   ├── ReportScore.java
-    │   ├── ReportTester.java
-    │   └── TextTester.java
     └── text
         ├── AsciiTextMaker.java
         ├── EbcdicTextMaker.java
         └── TextMaker.java
 
-6 directories, 34 files
+6 directories, 36 files
 ```
