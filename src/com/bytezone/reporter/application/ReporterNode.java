@@ -56,11 +56,11 @@ public class ReporterNode extends BorderPane
     stackPane.getChildren ().add (treePanel.getTree (path));
 
     setLeft (stackPane);
-    setTop (menuBar);
+    //    setTop (menuBar);
     setRight (formatBox.getPanel ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
-    menuBar.useSystemMenuBarProperty ().set (SYSTEM_MENUBAR);
+    menuBar.setUseSystemMenuBar (SYSTEM_MENUBAR);
   }
 
   public MenuBar getMenuBar ()
