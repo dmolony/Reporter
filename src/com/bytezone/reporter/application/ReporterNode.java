@@ -33,15 +33,23 @@ import javafx.stage.FileChooser;
 public class ReporterNode extends BorderPane
     implements PaginationChangeListener, NodeSelectionListener
 {
+  private static final String PREFS_SAVE_LOCATION = "SaveLocation";
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private final FormatBox formatBox;
   private final TreePanel treePanel;
   private final MenuBar menuBar = new MenuBar ();
+  private File lastSaveLocation;
+  private final Preferences prefs;
 
   private FileNode currentFileNode;
 
   public ReporterNode (Preferences prefs)
   {
+    this.prefs = prefs;
+    String saveLocation = prefs.get (PREFS_SAVE_LOCATION, "");
+    if (!saveLocation.isEmpty ())
+      lastSaveLocation = new File (saveLocation);
+
     formatBox = new FormatBox (this);
     Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "files");
 
@@ -52,7 +60,6 @@ public class ReporterNode extends BorderPane
     stackPane.getChildren ().add (treePanel.getTree (path));
 
     setLeft (stackPane);
-    //    setTop (menuBar);
     setRight (formatBox.getPanel ());
 
     menuBar.getMenus ().addAll (getFileMenu ());
@@ -171,19 +178,19 @@ public class ReporterNode extends BorderPane
   {
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setInitialFileName (currentFileNode.datasetName);
-
-    //Set extension filter
-    //    FileChooser.ExtensionFilter extFilter =
-    //        new FileChooser.ExtensionFilter ("TXT files (*.txt)", "*.txt");
-    //    fileChooser.getExtensionFilters ().add (extFilter);
+    if (lastSaveLocation != null)
+      fileChooser.setInitialDirectory (lastSaveLocation);
 
     File file = fileChooser.showSaveDialog (null);
 
-    if (file != null)
+    if (file != null && !file.isDirectory ())
       try
       {
         ReportData reportData = currentFileNode.getReportData ();
         Files.write (file.toPath (), reportData.getBuffer ());
+        lastSaveLocation = fileChooser.getInitialDirectory ();
+        lastSaveLocation = file.getParentFile ();
+        prefs.put (PREFS_SAVE_LOCATION, lastSaveLocation.getAbsolutePath ());
       }
       catch (IOException e)
       {
