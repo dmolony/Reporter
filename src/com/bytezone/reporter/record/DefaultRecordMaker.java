@@ -24,6 +24,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
   public void setRecords (List<Record> records)
   {
     this.records = records;
+    System.out.printf ("given %d records%n", records.size ());
   }
 
   @Override
@@ -39,7 +40,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
   public List<Record> getRecords ()
   {
     if (records == null)
-      records = split (buffer.length);
+      records = split (buffer.length);// use the entire buffer
 
     return records;
   }
@@ -62,6 +63,27 @@ public abstract class DefaultRecordMaker implements RecordMaker
   protected abstract List<Record> split (int length);
 
   protected abstract byte[] join (List<Record> records);
+
+  protected boolean hasNumbers (byte[] buffer, int offset, int length, int min, int max)
+  {
+    for (int i = offset; length > 0; i++, length--)
+    {
+      int value = buffer[i] & 0xFF;
+      if (value < min || value > max)
+        return false;
+    }
+    return true;
+  }
+
+  protected int countTrailingSpaces (byte[] buffer, int offset, int length, byte space)
+  {
+    int ptr = offset + length - 1;
+    int spaces = 0;
+    while (ptr >= offset && buffer[ptr--] == space)
+      ++spaces;
+
+    return spaces;
+  }
 
   @Override
   public String toString ()
