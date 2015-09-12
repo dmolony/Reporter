@@ -11,8 +11,8 @@ public class CrlfRecordMaker extends DefaultRecordMaker
   public CrlfRecordMaker ()
   {
     super ("CR/LF");
-    trimNumbers = true;
-    trimSpaces = true;
+    trimNumbers = false;
+    trimSpaces = false;
   }
 
   @Override

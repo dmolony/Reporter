@@ -37,7 +37,6 @@ public class AsaReport extends DefaultReportMaker
     for (int recordNumber = 0; recordNumber < records.size (); recordNumber++)
     {
       Record record = records.get (recordNumber);
-      //      System.out.println (record);
 
       char c = reportScore.textMaker.getChar (record.buffer[record.offset] & 0xFF);
       int lines = 0;

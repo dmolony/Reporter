@@ -2,7 +2,6 @@ package com.bytezone.reporter.reports;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.font.LineMetrics;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -20,8 +19,8 @@ public abstract class DefaultReportMaker implements ReportMaker
 
   protected int pageSize = 66;
 
-  private LineMetrics lineMetrics;
-  private int lineHeight;
+  //  private LineMetrics lineMetrics;
+  //  private int lineHeight;
 
   //  private static java.awt.Font plainFont =
   //      new java.awt.Font ("Ubuntu Mono", java.awt.Font.PLAIN, 8);

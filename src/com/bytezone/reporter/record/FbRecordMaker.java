@@ -36,12 +36,8 @@ public class FbRecordMaker extends DefaultRecordMaker
         if (trimNulls)
         {
           int ptr2 = ptr + reclen - 1;
-          while (reclen > 0)
-          {
-            if (buffer[ptr2--] != 0)
-              break;
+          while (reclen >= 0 && buffer[ptr2--] == 0)
             --reclen;
-          }
         }
 
         records.add (new Record (buffer, ptr, reclen, recordNumber++));
