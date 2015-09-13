@@ -20,28 +20,22 @@ public class Reporter extends Application
   public void start (Stage primaryStage) throws Exception
   {
     ReporterNode reporterNode = new ReporterNode (prefs);
+    MenuBar menuBar = reporterNode.getMenuBar ();
+    menuBar.setUseSystemMenuBar (SYSTEM_MENUBAR);
+
     BorderPane borderPane = new BorderPane ();
     borderPane.setCenter (reporterNode);
-    borderPane.setTop (reporterNode.getMenuBar ());
-
-    primaryStage.setTitle ("Reporter");
-    primaryStage.setScene (new Scene (borderPane, 800, 592));
-    primaryStage.setOnCloseRequest (e -> closeWindow ());
+    borderPane.setTop (menuBar);
 
     windowSaver = new WindowSaver (prefs, primaryStage, "Reporter");
     windowSaver.restoreWindow ();
 
+    primaryStage.setTitle ("Reporter");
+    primaryStage.setScene (new Scene (borderPane, 800, 592));
+    primaryStage.setOnCloseRequest (e -> windowSaver.saveWindow ());
+
     reporterNode.requestFocus ();
-
-    MenuBar menuBar = reporterNode.getMenuBar ();
-    menuBar.setUseSystemMenuBar (SYSTEM_MENUBAR);
-
     primaryStage.show ();
-  }
-
-  private void closeWindow ()
-  {
-    windowSaver.saveWindow ();
   }
 
   public static void main (String[] args)
