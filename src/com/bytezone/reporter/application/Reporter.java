@@ -34,8 +34,8 @@ public class Reporter extends Application
     primaryStage.setScene (new Scene (borderPane, 800, 592));
     primaryStage.setOnCloseRequest (e -> windowSaver.saveWindow ());
 
-    reporterNode.requestFocus ();
     primaryStage.show ();
+    reporterNode.requestFocus ();
   }
 
   public static void main (String[] args)

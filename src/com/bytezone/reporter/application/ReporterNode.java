@@ -13,7 +13,6 @@ import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 
-import com.bytezone.reporter.application.TreePanel.FileNode;
 import com.bytezone.reporter.file.ReportData;
 
 import javafx.event.ActionEvent;
@@ -177,7 +176,7 @@ public class ReporterNode extends BorderPane
   private void saveFile ()
   {
     FileChooser fileChooser = new FileChooser ();
-    fileChooser.setInitialFileName (currentFileNode.datasetName);
+    fileChooser.setInitialFileName (currentFileNode.getDatasetName ());
     if (lastSaveLocation != null)
       fileChooser.setInitialDirectory (lastSaveLocation);
 
@@ -216,7 +215,7 @@ public class ReporterNode extends BorderPane
     nodeSelectionListeners.add (listener);
   }
 
-  public void removeFileSelectionListener (NodeSelectionListener listener)
+  public void removeNodeSelectionListener (NodeSelectionListener listener)
   {
     nodeSelectionListeners.remove (listener);
   }

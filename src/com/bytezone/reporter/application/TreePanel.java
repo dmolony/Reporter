@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import com.bytezone.reporter.file.ReportData;
-
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,7 +40,7 @@ public class TreePanel
 
     FileNode directory = new FileNode (path.toFile ());
     TreeItem<FileNode> root = findFiles (directory);
-    root.setExpanded (true);
+    //    root.setExpanded (true);
     fileTree.setRoot (root);
     fileTree.setStyle ("-fx-font-size: 12; -fx-font-family: Monospaced");
 
@@ -58,7 +56,10 @@ public class TreePanel
     fileTree.getSelectionModel ().selectedItemProperty ().addListener (changeListener);
 
     if (selectedTreeItem != null)
+    {
+      fileTree.getSelectionModel ().clearSelection ();// fixes a strange bug
       fileTree.getSelectionModel ().select (selectedTreeItem);
+    }
 
     if (Files.notExists (path))
       addBuffer ("message", getMessage ());
@@ -89,7 +90,7 @@ public class TreePanel
   {
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
 
-    File directoryFile = directory.file;
+    File directoryFile = directory.getFile ();
     if (Files.exists (directoryFile.toPath ()))
     {
       File[] files = directoryFile.listFiles ();
@@ -135,34 +136,29 @@ public class TreePanel
       return;
     }
 
-    if (fileNode.file == null)
+    if (fileNode.getFile () == null)
     {
-      // check for downloads node - it has no directory and no buffer
-      if (!fileNode.reportData.hasData ())
-      {
-        return;
-      }
-      else
+      if (fileNode.getReportData ().hasData ())
       {
         // file transfers have no file, but they have a buffer
         selectedFile = null;
         selectedTreeItem = treeItem;
-        notifyNodeSelected (fileNode);
+        fireNodeSelected (fileNode);
       }
+      else
+        return;// downloads node  has no directory and no buffer
     }
     // this includes all non-data nodes (except the downloads 'folder')
-    else if (fileNode.file.isDirectory ())
-      return;
-    else
+    else if (fileNode.getFile ().isFile ())
     {
-      selectedFile = fileNode.file;
+      selectedFile = fileNode.getFile ();
       selectedTreeItem = treeItem;
-      notifyNodeSelected (fileNode);
+      fireNodeSelected (fileNode);
       savePrefs ();
     }
   }
 
-  private void notifyNodeSelected (FileNode fileNode)
+  private void fireNodeSelected (FileNode fileNode)
   {
     for (NodeSelectionListener listener : nodeSelectionListeners)
       listener.nodeSelected (fileNode);
@@ -196,66 +192,6 @@ public class TreePanel
     String message1 = "Could not find download folder.\n \n";
     String message2 = "Please create: " + path;
     return (message1 + message2).getBytes ();
-  }
-
-  public class FileNode
-  {
-    private File file;
-    private final ReportData reportData;
-    final String datasetName;
-
-    public FileNode (File file)
-    {
-      this.file = file;
-      if (file.isDirectory ())
-      {
-        reportData = null;
-        datasetName = file.getName ();
-      }
-      else
-      {
-        reportData = new ReportData ();
-        datasetName = file.getName ().toUpperCase ();
-      }
-    }
-
-    public FileNode (String name, byte[] buffer)
-    {
-      datasetName = name;
-      reportData = new ReportData (buffer);
-    }
-
-    public boolean isAscii ()
-    {
-      return reportData.isAscii ();
-    }
-
-    public ReportData getReportData ()
-    {
-      return reportData;
-    }
-
-    public File getFile ()
-    {
-      return file;
-    }
-
-    //    public byte[] getBuffer ()
-    //    {
-    //      return buffer;
-    //    }
-
-    //    public void setBuffer (byte[] buffer)
-    //    {
-    //      assert this.buffer == null;
-    //      this.buffer = buffer;
-    //    }
-
-    @Override
-    public String toString ()
-    {
-      return datasetName;
-    }
   }
 
   TreeView<File> buildFileSystemBrowser ()
