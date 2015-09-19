@@ -58,6 +58,7 @@ public class ReporterNode extends BorderPane
     StackPane stackPane = new StackPane ();
     stackPane.getChildren ().add (treePanel.getTree (path));
 
+    stackPane.setPrefWidth (280);
     setLeft (stackPane);
     setRight (formatBox.getPanel ());
 
