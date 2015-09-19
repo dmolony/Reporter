@@ -43,6 +43,7 @@ public class TreePanel
     //    root.setExpanded (true);
     fileTree.setRoot (root);
     fileTree.setStyle ("-fx-font-size: 12; -fx-font-family: Monospaced");
+    fileTree.setShowRoot (false);
 
     if (false)
     {
