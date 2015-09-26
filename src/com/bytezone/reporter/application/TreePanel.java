@@ -12,8 +12,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.util.Callback;
 
 public class TreePanel
 {
@@ -64,6 +71,95 @@ public class TreePanel
 
     if (Files.notExists (path))
       addBuffer ("message", getMessage ());
+
+    fileTree.setCellFactory (new Callback<TreeView<FileNode>, TreeCell<FileNode>> ()
+    {
+      @Override
+      public TreeCell<FileNode> call (TreeView<FileNode> treeView)
+      {
+        TreeCell<FileNode> treeCell = new TreeCell<FileNode> ()
+        {
+          @Override
+          protected void updateItem (FileNode item, boolean empty)
+          {
+            super.updateItem (item, empty);
+            if (item != null)
+              setText (item.toString ());
+          }
+        };
+
+        treeCell.setOnDragDetected (new EventHandler<MouseEvent> ()
+        {
+          @Override
+          public void handle (MouseEvent event)
+          {
+            System.out.println ("dragDetected");
+            System.out.println (treeCell.getItem ());
+            Dragboard db = treeCell.startDragAndDrop (TransferMode.MOVE);
+            ClipboardContent content = new ClipboardContent ();
+            content.putString (treeCell.getItem ().toString ());
+            db.setContent (content);
+            event.consume ();
+          }
+        });
+
+        treeCell.setOnDragOver (new EventHandler<DragEvent> ()
+        {
+          @Override
+          public void handle (DragEvent event)
+          {
+            System.out.println ("dragOver");
+            if (event.getGestureSource () != this// not sure about this
+                && event.getDragboard ().hasString ())
+              event.acceptTransferModes (TransferMode.MOVE);
+
+            event.consume ();
+          }
+        });
+
+        treeCell.setOnDragEntered (new EventHandler<DragEvent> ()
+        {
+          @Override
+          public void handle (DragEvent event)
+          {
+            System.out.println ("dragEntered");
+            event.consume ();
+          }
+        });
+
+        treeCell.setOnDragExited (new EventHandler<DragEvent> ()
+        {
+          @Override
+          public void handle (DragEvent event)
+          {
+            System.out.println ("dragExited");
+            event.consume ();
+          }
+        });
+
+        treeCell.setOnDragDropped (new EventHandler<DragEvent> ()
+        {
+          @Override
+          public void handle (DragEvent event)
+          {
+            System.out.println ("dragDropped");
+            event.consume ();
+          }
+        });
+
+        treeCell.setOnDragDone (new EventHandler<DragEvent> ()
+        {
+          @Override
+          public void handle (DragEvent event)
+          {
+            System.out.println ("dragDone");
+            event.consume ();
+          }
+        });
+
+        return treeCell;
+      }
+    });
 
     return fileTree;
   }
