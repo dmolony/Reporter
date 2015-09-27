@@ -20,6 +20,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 public class TreePanel
@@ -31,6 +32,7 @@ public class TreePanel
   private File selectedFile;
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
+  private FileNode pending;
 
   public TreePanel (Preferences prefs)
   {
@@ -93,12 +95,13 @@ public class TreePanel
           @Override
           public void handle (MouseEvent event)
           {
-            System.out.println ("dragDetected");
-            System.out.println (treeCell.getItem ());
+            //            System.out.println ("dragDetected");
+            //            System.out.println (treeCell.getItem ());
             Dragboard db = treeCell.startDragAndDrop (TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent ();
             content.putString (treeCell.getItem ().toString ());
             db.setContent (content);
+            pending = treeCell.getItem ();
             event.consume ();
           }
         });
@@ -113,11 +116,11 @@ public class TreePanel
 
             if (file != null & file.isDirectory ())
             {
-              System.out.printf ("dragOver: %s%n", fileNode);
+              //              System.out.printf ("dragOver: %s%n", fileNode);
 
-              if (event.getGestureSource () != event.getGestureTarget ()
-                  && event.getDragboard ().hasString ())
-                event.acceptTransferModes (TransferMode.MOVE);
+              //              if (event.getGestureSource () != event.getGestureTarget ()
+              //                  && event.getDragboard ().hasString ())
+              event.acceptTransferModes (TransferMode.MOVE);
             }
 
             event.consume ();
@@ -133,7 +136,11 @@ public class TreePanel
             File file = fileNode.getFile ();
 
             if (file != null & file.isDirectory ())
-              System.out.printf ("dragEntered: %s%n", fileNode);
+            {
+              //              System.out.printf ("dragEntered: %s%n", fileNode);
+              treeCell.setTextFill (Color.RED);
+            }
+
             event.consume ();
           }
         });
@@ -147,7 +154,10 @@ public class TreePanel
             File file = fileNode.getFile ();
 
             if (file != null & file.isDirectory ())
-              System.out.printf ("dragExited: %s%n", fileNode);
+            {
+              //              System.out.printf ("dragExited: %s%n", fileNode);
+              treeCell.setTextFill (Color.BLACK);
+            }
 
             event.consume ();
           }
@@ -158,7 +168,7 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.printf ("dragDropped: %s%n", treeCell.getItem ());
+            System.out.printf ("dragDropped: %s to %s%n", pending, treeCell.getItem ());
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -169,12 +179,13 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.printf ("dragDone: %s%n", treeCell.getItem ());
+            //            System.out.printf ("dragDone: %s%n", treeCell.getItem ());
 
-            if (event.getTransferMode () == TransferMode.MOVE)
-              System.out.println ("success");
-            else
-              System.out.println ("fail");
+            //            if (event.getTransferMode () == TransferMode.MOVE)
+            //              System.out.println (event);
+            //            else
+            //              System.out.println ("fail");
+            pending = null;
             event.consume ();
           }
         });
@@ -208,7 +219,6 @@ public class TreePanel
   private TreeItem<FileNode> findFiles (FileNode directory)
   {
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
-    directory.setTreeItem (treeItem);
 
     File directoryFile = directory.getFile ();
     if (Files.exists (directoryFile.toPath ()))
