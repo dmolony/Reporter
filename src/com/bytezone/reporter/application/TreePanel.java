@@ -129,10 +129,11 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.println ("dragEntered");
-            Object target = event.getGestureTarget ();
-            //            if (target instanceof EventHandler)
-            //              System.out.println ("gotcha");
+            FileNode fileNode = treeCell.getItem ();
+            File file = fileNode.getFile ();
+
+            if (file != null & file.isDirectory ())
+              System.out.printf ("dragEntered: %s%n", fileNode);
             event.consume ();
           }
         });
@@ -142,7 +143,12 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.println ("dragExited");
+            FileNode fileNode = treeCell.getItem ();
+            File file = fileNode.getFile ();
+
+            if (file != null & file.isDirectory ())
+              System.out.printf ("dragExited: %s%n", fileNode);
+
             event.consume ();
           }
         });
@@ -152,7 +158,7 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.println ("dragDropped");
+            System.out.printf ("dragDropped: %s%n", treeCell.getItem ());
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -163,7 +169,8 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.println ("dragDone");
+            System.out.printf ("dragDone: %s%n", treeCell.getItem ());
+
             if (event.getTransferMode () == TransferMode.MOVE)
               System.out.println ("success");
             else
