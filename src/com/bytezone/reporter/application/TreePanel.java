@@ -108,10 +108,17 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.println ("dragOver");
-            if (event.getGestureSource () != this// not sure about this
-                && event.getDragboard ().hasString ())
-              event.acceptTransferModes (TransferMode.MOVE);
+            FileNode fileNode = treeCell.getItem ();
+            File file = fileNode.getFile ();
+
+            if (file != null & file.isDirectory ())
+            {
+              System.out.printf ("dragOver: %s%n", fileNode);
+
+              if (event.getGestureSource () != event.getGestureTarget ()
+                  && event.getDragboard ().hasString ())
+                event.acceptTransferModes (TransferMode.MOVE);
+            }
 
             event.consume ();
           }
@@ -123,6 +130,9 @@ public class TreePanel
           public void handle (DragEvent event)
           {
             System.out.println ("dragEntered");
+            Object target = event.getGestureTarget ();
+            //            if (target instanceof EventHandler)
+            //              System.out.println ("gotcha");
             event.consume ();
           }
         });
@@ -143,6 +153,7 @@ public class TreePanel
           public void handle (DragEvent event)
           {
             System.out.println ("dragDropped");
+            event.setDropCompleted (true);
             event.consume ();
           }
         });
@@ -153,6 +164,10 @@ public class TreePanel
           public void handle (DragEvent event)
           {
             System.out.println ("dragDone");
+            if (event.getTransferMode () == TransferMode.MOVE)
+              System.out.println ("success");
+            else
+              System.out.println ("fail");
             event.consume ();
           }
         });
@@ -186,6 +201,7 @@ public class TreePanel
   private TreeItem<FileNode> findFiles (FileNode directory)
   {
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
+    directory.setTreeItem (treeItem);
 
     File directoryFile = directory.getFile ();
     if (Files.exists (directoryFile.toPath ()))
@@ -296,6 +312,21 @@ public class TreePanel
     TreeItem<File> root = createNode (new File ("/"));
     return new TreeView<File> (root);
   }
+
+  //  public class DnDCell extends TreeCell<FileNode>
+  //  {
+  //    private FileNode item;
+  //
+  //    @Override
+  //    protected void updateItem (FileNode item, boolean empty)
+  //    {
+  //      super.updateItem (item, empty);
+  //      System.out.println (getItem ());
+  //      //      this.item = item;
+  //      //      String text = (item == null) ? null : item.toString ();
+  //      //      setText (text);
+  //    }
+  //  }
 
   // This method creates a TreeItem to represent the given File. It does this
   // by overriding the TreeItem.getChildren() and TreeItem.isLeaf() methods 
