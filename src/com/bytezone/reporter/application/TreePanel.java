@@ -1,6 +1,7 @@
 package com.bytezone.reporter.application;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -173,6 +174,18 @@ public class TreePanel
     return fileTree;
   }
 
+  private void saveFile (FileNode fileNode, File file)
+  {
+    try
+    {
+      Files.write (file.toPath (), fileNode.getReportData ().getBuffer ());
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+    }
+  }
+
   public TreeView<FileNode> getTree ()
   {
     return fileTree;
@@ -306,21 +319,6 @@ public class TreePanel
     return new TreeView<File> (root);
   }
 
-  //  public class DnDCell extends TreeCell<FileNode>
-  //  {
-  //    private FileNode item;
-  //
-  //    @Override
-  //    protected void updateItem (FileNode item, boolean empty)
-  //    {
-  //      super.updateItem (item, empty);
-  //      System.out.println (getItem ());
-  //      //      this.item = item;
-  //      //      String text = (item == null) ? null : item.toString ();
-  //      //      setText (text);
-  //    }
-  //  }
-
   // This method creates a TreeItem to represent the given File. It does this
   // by overriding the TreeItem.getChildren() and TreeItem.isLeaf() methods 
   // anonymously, but this could be better abstracted by creating a 
@@ -384,9 +382,7 @@ public class TreePanel
                 FXCollections.observableArrayList ();
 
             for (File childFile : files)
-            {
               children.add (createNode (childFile));
-            }
 
             return children;
           }
