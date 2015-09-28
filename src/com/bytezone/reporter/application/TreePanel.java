@@ -152,6 +152,9 @@ public class TreePanel
           public void handle (DragEvent event)
           {
             System.out.printf ("dragDropped: %s to %s%n", pending, treeCell.getItem ());
+            File newFile =
+                new File (treeCell.getItem ().getFile (), pending.getDatasetName ());
+            System.out.println (newFile);
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -178,7 +181,13 @@ public class TreePanel
   {
     try
     {
-      Files.write (file.toPath (), fileNode.getReportData ().getBuffer ());
+      File newFile = new File (file, fileNode.getDatasetName ());
+      if (newFile.exists ())
+      {
+        System.out.printf ("Exists: %s%n", newFile);
+      }
+      else
+        Files.write (newFile.toPath (), fileNode.getReportData ().getBuffer ());
     }
     catch (IOException e)
     {
@@ -187,6 +196,7 @@ public class TreePanel
     }
 
     // adjust tree
+
   }
 
   public TreeView<FileNode> getTree ()
