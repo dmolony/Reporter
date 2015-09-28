@@ -183,7 +183,10 @@ public class TreePanel
     catch (IOException e)
     {
       e.printStackTrace ();
+      return;
     }
+
+    // adjust tree
   }
 
   public TreeView<FileNode> getTree ()
