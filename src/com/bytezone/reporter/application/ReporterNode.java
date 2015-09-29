@@ -196,6 +196,10 @@ public class ReporterNode extends BorderPane
       {
         e.printStackTrace ();
       }
+
+    // if file is saved to a location withing the tree, add a new node
+
+    // remove old tree node
   }
 
   @Override

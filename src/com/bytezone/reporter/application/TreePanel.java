@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -13,6 +15,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -154,7 +159,9 @@ public class TreePanel
             System.out.printf ("dragDropped: %s to %s%n", pending, treeCell.getItem ());
             File newFile =
                 new File (treeCell.getItem ().getFile (), pending.getDatasetName ());
+            File targetDirectory = treeCell.getItem ().getFile ();
             System.out.println (newFile);
+            saveFile (pending, targetDirectory);
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -177,26 +184,59 @@ public class TreePanel
     return fileTree;
   }
 
-  private void saveFile (FileNode fileNode, File file)
+  private void saveFile (FileNode fileNode, File targetDirectory)
   {
     try
     {
-      File newFile = new File (file, fileNode.getDatasetName ());
+      File newFile = new File (targetDirectory, fileNode.getDatasetName ());
+      File oldFile = fileNode.getFile ();
+
+      // check for overwrite
       if (newFile.exists ())
       {
         System.out.printf ("Exists: %s%n", newFile);
+        showAlert ("File already exists");
       }
       else
-        Files.write (newFile.toPath (), fileNode.getReportData ().getBuffer ());
+      {
+        if (oldFile == null)
+        {
+          // create new file from buffer
+          System.out.printf ("Saving buffer as new file: %s --> %s%n",
+                             fileNode.getDatasetName (), newFile);
+          if (false)
+            Files.write (newFile.toPath (), fileNode.getReportData ().getBuffer ());
+        }
+        else
+        {
+          // move existing file
+          System.out.printf ("Moving existing file: %s --> %s%n", oldFile, newFile);
+          if (false)
+            Files.move (oldFile.toPath (), newFile.toPath (),
+                        StandardCopyOption.ATOMIC_MOVE);
+        }
+
+        // adjust tree
+
+        // remove old node
+
+        // add new node
+
+      }
     }
     catch (IOException e)
     {
       e.printStackTrace ();
       return;
     }
+  }
 
-    // adjust tree
-
+  private boolean showAlert (String message)
+  {
+    Alert alert = new Alert (AlertType.ERROR, message);
+    alert.getDialogPane ().setHeaderText (null);
+    Optional<ButtonType> result = alert.showAndWait ();
+    return (result.isPresent () && result.get () == ButtonType.OK);
   }
 
   public TreeView<FileNode> getTree ()
