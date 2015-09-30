@@ -4,12 +4,14 @@ import java.io.File;
 
 import com.bytezone.reporter.file.ReportData;
 
+import javafx.scene.control.TreeItem;
+
 public class FileNode
 {
   private File file;
   private final ReportData reportData;
   private final String datasetName;
-  //  private TreeItem<FileNode> treeItem;
+  private TreeItem<FileNode> treeItem;
 
   public FileNode (File file)
   {
@@ -32,15 +34,15 @@ public class FileNode
     reportData = new ReportData (buffer);
   }
 
-  //  public void setTreeItem (TreeItem<FileNode> treeItem)
-  //  {
-  //    this.treeItem = treeItem;
-  //  }
-  //
-  //  public TreeItem<FileNode> getTreeItem ()
-  //  {
-  //    return treeItem;
-  //  }
+  public void setTreeItem (TreeItem<FileNode> treeItem)
+  {
+    this.treeItem = treeItem;
+  }
+
+  public TreeItem<FileNode> getTreeItem ()
+  {
+    return treeItem;
+  }
 
   public boolean isAscii ()
   {

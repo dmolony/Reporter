@@ -132,7 +132,7 @@ public class ReporterNode extends BorderPane
 
   private void openFile ()
   {
-    System.out.println ("Open");
+    System.out.println ("Open not written yet");
   }
 
   private void pageSetup ()

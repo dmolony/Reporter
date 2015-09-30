@@ -162,6 +162,7 @@ public class TreePanel
             File targetDirectory = treeCell.getItem ().getFile ();
             System.out.println (newFile);
             saveFile (pending, targetDirectory);
+
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -254,6 +255,7 @@ public class TreePanel
 
     FileNode fileNode = new FileNode (name, buffer);
     TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
+    fileNode.setTreeItem (treeItem);
     unsavedFilesItem.getChildren ().add (treeItem);
     fileTree.getSelectionModel ().select (treeItem);
   }
@@ -261,6 +263,7 @@ public class TreePanel
   private TreeItem<FileNode> findFiles (FileNode directory)
   {
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
+    directory.setTreeItem (treeItem);
 
     File directoryFile = directory.getFile ();
     if (Files.exists (directoryFile.toPath ()))
@@ -277,7 +280,9 @@ public class TreePanel
             }
             else
             {
-              TreeItem<FileNode> newItem = new TreeItem<> (new FileNode (file));
+              FileNode fileNode = new FileNode (file);
+              TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
+              fileNode.setTreeItem (treeItem);
               treeItem.getChildren ().add (newItem);
               if (file.equals (selectedFile))
                 selectedTreeItem = newItem;
