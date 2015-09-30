@@ -38,7 +38,7 @@ public class TreePanel
   private File selectedFile;
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
-  private FileNode pending;
+  private FileNode pendingFileNode;
 
   public TreePanel (Preferences prefs)
   {
@@ -105,7 +105,7 @@ public class TreePanel
             ClipboardContent content = new ClipboardContent ();
             content.putString (treeCell.getItem ().toString ());
             db.setContent (content);
-            pending = treeCell.getItem ();
+            pendingFileNode = treeCell.getItem ();
             event.consume ();
           }
         });
@@ -156,12 +156,15 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            System.out.printf ("dragDropped: %s to %s%n", pending, treeCell.getItem ());
-            File newFile =
-                new File (treeCell.getItem ().getFile (), pending.getDatasetName ());
-            File targetDirectory = treeCell.getItem ().getFile ();
+            FileNode targetFileNode = treeCell.getItem ();
+
+            File targetDirectory = targetFileNode.getFile ();
+            File newFile = new File (targetDirectory, pendingFileNode.getDatasetName ());
+
+            System.out.printf ("dragDropped: %s to %s%n", pendingFileNode,
+                               targetFileNode);
             System.out.println (newFile);
-            saveFile (pending, targetDirectory);
+            saveFile (pendingFileNode, newFile);
 
             event.setDropCompleted (true);
             event.consume ();
@@ -173,7 +176,7 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            pending = null;
+            pendingFileNode = null;
             event.consume ();
           }
         });
@@ -185,17 +188,17 @@ public class TreePanel
     return fileTree;
   }
 
-  private void saveFile (FileNode fileNode, File targetDirectory)
+  private void saveFile (FileNode fileNode, File targetFile)
   {
     try
     {
-      File newFile = new File (targetDirectory, fileNode.getDatasetName ());
+      //      File newFile = new File (targetDirectory, fileNode.getDatasetName ());
       File oldFile = fileNode.getFile ();
 
       // check for overwrite
-      if (newFile.exists ())
+      if (targetFile.exists ())
       {
-        System.out.printf ("Exists: %s%n", newFile);
+        System.out.printf ("Exists: %s%n", targetFile);
         showAlert ("File already exists");
       }
       else
@@ -204,16 +207,16 @@ public class TreePanel
         {
           // create new file from buffer
           System.out.printf ("Saving buffer as new file: %s --> %s%n",
-                             fileNode.getDatasetName (), newFile);
+                             fileNode.getDatasetName (), targetFile);
           if (false)
-            Files.write (newFile.toPath (), fileNode.getReportData ().getBuffer ());
+            Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
         }
         else
         {
           // move existing file
-          System.out.printf ("Moving existing file: %s --> %s%n", oldFile, newFile);
+          System.out.printf ("Moving existing file: %s --> %s%n", oldFile, targetFile);
           if (false)
-            Files.move (oldFile.toPath (), newFile.toPath (),
+            Files.move (oldFile.toPath (), targetFile.toPath (),
                         StandardCopyOption.ATOMIC_MOVE);
         }
 
