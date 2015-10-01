@@ -166,6 +166,13 @@ public class TreePanel
             System.out.println (newFile);
             saveFile (pendingFileNode, newFile);
 
+            if (true)
+            {
+              TreeItem<FileNode> treeItem = treeCell.getItem ().getTreeItem ();
+              System.out.printf ("Adding %s%n", treeItem);
+              treeItem.getChildren ().add (new TreeItem<FileNode> (pendingFileNode));
+            }
+
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -176,6 +183,14 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
+            assert pendingFileNode == treeCell.getItem ();
+            if (true) // if successful
+            {
+              TreeItem<FileNode> treeItem = pendingFileNode.getTreeItem ();
+              System.out.printf ("Removing %s%n", treeItem);
+              treeItem.getParent ().getChildren ().remove (treeItem);
+            }
+
             pendingFileNode = null;
             event.consume ();
           }
@@ -208,14 +223,15 @@ public class TreePanel
           // create new file from buffer
           System.out.printf ("Saving buffer as new file: %s --> %s%n",
                              fileNode.getDatasetName (), targetFile);
-          if (false)
+          if (true)
             Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
         }
         else
         {
           // move existing file
-          System.out.printf ("Moving existing file: %s --> %s%n", oldFile, targetFile);
-          if (false)
+          System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", oldFile,
+                             targetFile);
+          if (true)
             Files.move (oldFile.toPath (), targetFile.toPath (),
                         StandardCopyOption.ATOMIC_MOVE);
         }
