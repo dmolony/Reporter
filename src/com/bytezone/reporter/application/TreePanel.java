@@ -38,7 +38,7 @@ public class TreePanel
   private File selectedFile;
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
-  private FileNode pendingFileNode;
+  //  private FileNode pendingFileNode;
   //  private TreeItem<FileNode> pendingTreeItem;
 
   public TreePanel (Preferences prefs)
@@ -74,148 +74,143 @@ public class TreePanel
 
     if (selectedTreeItem != null)
     {
-      fileTree.getSelectionModel ().clearSelection ();// fixes a strange bug
+      //      fileTree.getSelectionModel ().clearSelection ();// fixes a strange bug
       fileTree.getSelectionModel ().select (selectedTreeItem);
     }
 
     if (Files.notExists (path))
       addBuffer ("message", getMessage ());
 
-    fileTree.setCellFactory (new Callback<TreeView<FileNode>, TreeCell<FileNode>> ()
-    {
-      @Override
-      public TreeCell<FileNode> call (TreeView<FileNode> treeView)
-      {
-        TreeCell<FileNode> treeCell = new TreeCell<FileNode> ()
-        {
-          @Override
-          protected void updateItem (FileNode item, boolean empty)
-          {
-            super.updateItem (item, empty);
-            if (item != null)
-              setText (item.toString ());
-          }
-        };
-
-        treeCell.setOnDragDetected (new EventHandler<MouseEvent> ()
-        {
-          @Override
-          public void handle (MouseEvent event)
-          {
-            Dragboard db = treeCell.startDragAndDrop (TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent ();
-            content.putString (treeCell.getItem ().toString ());
-            db.setContent (content);
-            pendingFileNode = treeCell.getItem ();
-            event.consume ();
-          }
-        });
-
-        treeCell.setOnDragOver (new EventHandler<DragEvent> ()
-        {
-          @Override
-          public void handle (DragEvent event)
-          {
-            FileNode fileNode = treeCell.getItem ();
-            File file = fileNode.getFile ();
-
-            if (file != null & file.isDirectory ())
-              event.acceptTransferModes (TransferMode.MOVE);
-
-            event.consume ();
-          }
-        });
-
-        treeCell.setOnDragEntered (new EventHandler<DragEvent> ()
-        {
-          @Override
-          public void handle (DragEvent event)
-          {
-            File file = treeCell.getItem ().getFile ();
-            if (file != null & file.isDirectory ())
-              treeCell.setTextFill (Color.RED);
-
-            event.consume ();
-          }
-        });
-
-        treeCell.setOnDragExited (new EventHandler<DragEvent> ()
-        {
-          @Override
-          public void handle (DragEvent event)
-          {
-            File file = treeCell.getItem ().getFile ();
-            if (file != null & file.isDirectory ())
-              treeCell.setTextFill (Color.BLACK);
-
-            event.consume ();
-          }
-        });
-
-        treeCell.setOnDragDropped (new EventHandler<DragEvent> ()
-        {
-          @Override
-          public void handle (DragEvent event)
-          {
-            FileNode targetFileNode = treeCell.getItem ();
-
-            File targetDirectory = targetFileNode.getFile ();// must be a folder
-            assert targetDirectory.isDirectory ();
-
-            File targetFile =
-                new File (targetDirectory, pendingFileNode.getDatasetName ());
-            System.out.printf ("New file: %s%n", targetFile);
-
-            System.out.printf ("dragDropped: %s to %s%n", pendingFileNode,
-                               targetFileNode);
-
-            if (saveFile (pendingFileNode, targetFile))
-            {
-              pendingFileNode.setFile (targetFile);
-
-              // remove source TreeItem from the tree
-              TreeItem<FileNode> pendingTreeItem = pendingFileNode.getTreeItem ();
-              pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
-
-              // create a new TreeItem
-              TreeItem<FileNode> newItem = new TreeItem<FileNode> (pendingFileNode);
-              pendingFileNode.setTreeItem (newItem);
-
-              // connect new TreeItem to target TreeItem
-              TreeItem<FileNode> treeItem = targetFileNode.getTreeItem ();
-              treeItem.getChildren ().add (newItem);
-              System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
-            }
-
-            pendingFileNode = null;
-            event.setDropCompleted (true);
-            event.consume ();
-          }
-        });
-
-        treeCell.setOnDragDone (new EventHandler<DragEvent> ()
-        {
-          @Override
-          public void handle (DragEvent event)
-          {
-            //            assert pendingFileNode == treeCell.getItem ();
-            if (false) // if successful
-            {
-              //              TreeItem<FileNode> treeItem = pendingFileNode.getTreeItem ();
-              //              System.out.printf ("Removing : %s%n", pendingTreeItem);
-              //              pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
-            }
-
-            //            pendingFileNode = null;
-            event.consume ();
-          }
-        });
-
-        return treeCell;
-      }
-    });
+    fileTree.setCellFactory (new TreeCellFactory ());
 
     return fileTree;
+  }
+
+  private final class TreeCellFileNode extends TreeCell<FileNode>
+  {
+    @Override
+    protected void updateItem (FileNode item, boolean empty)
+    {
+      super.updateItem (item, empty);
+      setText (item == null ? "" : item.toString ());
+    }
+  }
+
+  private final class TreeCellFactory
+      implements Callback<TreeView<FileNode>, TreeCell<FileNode>>
+  {
+    private FileNode pendingFileNode;
+
+    @Override
+    public TreeCell<FileNode> call (TreeView<FileNode> treeView)
+    {
+      TreeCell<FileNode> treeCell = new TreeCellFileNode ();
+
+      treeCell.setOnDragDetected (new EventHandler<MouseEvent> ()
+      {
+        @Override
+        public void handle (MouseEvent event)
+        {
+          Dragboard db = treeCell.startDragAndDrop (TransferMode.MOVE);
+          ClipboardContent content = new ClipboardContent ();
+          content.putString (treeCell.getItem ().toString ());
+          db.setContent (content);
+          pendingFileNode = treeCell.getItem ();
+          event.consume ();
+        }
+      });
+
+      treeCell.setOnDragOver (new EventHandler<DragEvent> ()
+      {
+        @Override
+        public void handle (DragEvent event)
+        {
+          FileNode fileNode = treeCell.getItem ();
+          File file = fileNode.getFile ();
+
+          if (file != null & file.isDirectory ())
+            event.acceptTransferModes (TransferMode.MOVE);
+
+          event.consume ();
+        }
+      });
+
+      treeCell.setOnDragEntered (new EventHandler<DragEvent> ()
+      {
+        @Override
+        public void handle (DragEvent event)
+        {
+          File file = treeCell.getItem ().getFile ();
+          if (file != null & file.isDirectory ())
+            treeCell.setTextFill (Color.RED);
+
+          event.consume ();
+        }
+      });
+
+      treeCell.setOnDragExited (new EventHandler<DragEvent> ()
+      {
+        @Override
+        public void handle (DragEvent event)
+        {
+          File file = treeCell.getItem ().getFile ();
+          if (file != null & file.isDirectory ())
+            treeCell.setTextFill (Color.BLACK);
+
+          event.consume ();
+        }
+      });
+
+      treeCell.setOnDragDropped (new EventHandler<DragEvent> ()
+      {
+        @Override
+        public void handle (DragEvent event)
+        {
+          FileNode targetFileNode = treeCell.getItem ();
+
+          File targetDirectory = targetFileNode.getFile ();// must be a folder
+          assert targetDirectory.isDirectory ();
+
+          File targetFile = new File (targetDirectory, pendingFileNode.getDatasetName ());
+          System.out.printf ("New file: %s%n", targetFile);
+
+          System.out.printf ("dragDropped: %s to %s%n", pendingFileNode, targetFileNode);
+
+          if (saveFile (pendingFileNode, targetFile))
+          {
+            pendingFileNode.setFile (targetFile);
+
+            // remove source TreeItem from the tree
+            TreeItem<FileNode> pendingTreeItem = pendingFileNode.getTreeItem ();
+            pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
+
+            // create a new TreeItem
+            TreeItem<FileNode> newItem = new TreeItem<FileNode> (pendingFileNode);
+            pendingFileNode.setTreeItem (newItem);
+
+            // connect new TreeItem to target TreeItem
+            TreeItem<FileNode> treeItem = targetFileNode.getTreeItem ();
+            treeItem.getChildren ().add (newItem);
+            System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
+          }
+
+          pendingFileNode = null;
+          event.setDropCompleted (true);
+          event.consume ();
+        }
+      });
+
+      treeCell.setOnDragDone (new EventHandler<DragEvent> ()
+      {
+        @Override
+        public void handle (DragEvent event)
+        {
+          event.consume ();
+        }
+      });
+
+      return treeCell;
+    }
   }
 
   private boolean saveFile (FileNode fileNode, File targetFile)
