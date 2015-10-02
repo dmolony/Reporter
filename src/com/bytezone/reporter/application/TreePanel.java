@@ -38,8 +38,6 @@ public class TreePanel
   private File selectedFile;
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
-  //  private FileNode pendingFileNode;
-  //  private TreeItem<FileNode> pendingTreeItem;
 
   public TreePanel (Preferences prefs)
   {
