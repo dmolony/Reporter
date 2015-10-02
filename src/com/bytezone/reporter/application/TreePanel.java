@@ -92,7 +92,7 @@ public class TreePanel
     protected void updateItem (FileNode item, boolean empty)
     {
       super.updateItem (item, empty);
-      setText (item == null ? "" : item.toString ());
+      setText (empty ? null : item.toString ());
     }
   }
 
