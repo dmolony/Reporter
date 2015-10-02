@@ -39,7 +39,7 @@ public class TreePanel
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
   private FileNode pendingFileNode;
-  private TreeItem<FileNode> pendingTreeItem;
+  //  private TreeItem<FileNode> pendingTreeItem;
 
   public TreePanel (Preferences prefs)
   {
@@ -159,25 +159,35 @@ public class TreePanel
           {
             FileNode targetFileNode = treeCell.getItem ();
 
-            File targetDirectory = targetFileNode.getFile ();
-            File newFile = new File (targetDirectory, pendingFileNode.getDatasetName ());
+            File targetDirectory = targetFileNode.getFile ();// must be a folder
+            assert targetDirectory.isDirectory ();
+
+            File targetFile =
+                new File (targetDirectory, pendingFileNode.getDatasetName ());
+            System.out.printf ("New file: %s%n", targetFile);
 
             System.out.printf ("dragDropped: %s to %s%n", pendingFileNode,
                                targetFileNode);
-            System.out.println (newFile);
-            saveFile (pendingFileNode, newFile);
 
-            if (true)
+            if (saveFile (pendingFileNode, targetFile))
             {
-              TreeItem<FileNode> treeItem = treeCell.getItem ().getTreeItem ();
-              System.out.printf ("Adding   : %s%n", treeItem);
+              pendingFileNode.setFile (targetFile);
+
+              // remove source TreeItem from the tree
+              TreeItem<FileNode> pendingTreeItem = pendingFileNode.getTreeItem ();
+              pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
+
+              // create a new TreeItem
               TreeItem<FileNode> newItem = new TreeItem<FileNode> (pendingFileNode);
-              treeItem.getChildren ().add (newItem);
-              pendingTreeItem = pendingFileNode.getTreeItem ();
               pendingFileNode.setTreeItem (newItem);
-              pendingFileNode = null;
+
+              // connect new TreeItem to target TreeItem
+              TreeItem<FileNode> treeItem = targetFileNode.getTreeItem ();
+              treeItem.getChildren ().add (newItem);
+              System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
             }
 
+            pendingFileNode = null;
             event.setDropCompleted (true);
             event.consume ();
           }
@@ -189,14 +199,14 @@ public class TreePanel
           public void handle (DragEvent event)
           {
             //            assert pendingFileNode == treeCell.getItem ();
-            if (true) // if successful
+            if (false) // if successful
             {
               //              TreeItem<FileNode> treeItem = pendingFileNode.getTreeItem ();
-              System.out.printf ("Removing : %s%n", pendingTreeItem);
-              pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
+              //              System.out.printf ("Removing : %s%n", pendingTreeItem);
+              //              pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
             }
 
-            pendingFileNode = null;
+            //            pendingFileNode = null;
             event.consume ();
           }
         });
@@ -208,58 +218,41 @@ public class TreePanel
     return fileTree;
   }
 
-  private void saveFile (FileNode fileNode, File targetFile)
+  private boolean saveFile (FileNode fileNode, File targetFile)
   {
     try
     {
-      //      File newFile = new File (targetDirectory, fileNode.getDatasetName ());
-      File oldFile = fileNode.getFile ();
-
-      // check for overwrite
-      if (targetFile.exists ())
+      if (targetFile.exists ()) // check for overwrite
       {
         System.out.printf ("Exists: %s%n", targetFile);
         showAlert ("File already exists");
+        return false;
+      }
+
+      File sourceFile = fileNode.getFile ();
+      if (sourceFile == null)
+      {
+        // create new file from buffer
+        System.out.printf ("Saving buffer as new file: %s --> %s%n",
+                           fileNode.getDatasetName (), targetFile);
+        Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
+        return true;
       }
       else
       {
-        if (oldFile == null)
-        {
-          // create new file from buffer
-          System.out.printf ("Saving buffer as new file: %s --> %s%n",
-                             fileNode.getDatasetName (), targetFile);
-          if (true)
-          {
-            Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
-            fileNode.setFile (targetFile);
-          }
-        }
-        else
-        {
-          // move existing file
-          System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", oldFile,
-                             targetFile);
-          if (true)
-          {
-            Files.move (oldFile.toPath (), targetFile.toPath (),
-                        StandardCopyOption.ATOMIC_MOVE);
-            fileNode.setFile (targetFile);
-          }
-        }
-
-        // adjust tree
-
-        // remove old node
-
-        // add new node
-
+        // move existing file
+        System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", sourceFile,
+                           targetFile);
+        Files.move (sourceFile.toPath (), targetFile.toPath (),
+                    StandardCopyOption.ATOMIC_MOVE);
+        return true;
       }
     }
     catch (IOException e)
     {
       e.printStackTrace ();
-      return;
     }
+    return false;
   }
 
   private boolean showAlert (String message)
