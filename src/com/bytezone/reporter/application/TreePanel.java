@@ -39,6 +39,7 @@ public class TreePanel
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
   private FileNode pendingFileNode;
+  private TreeItem<FileNode> pendingTreeItem;
 
   public TreePanel (Preferences prefs)
   {
@@ -169,8 +170,12 @@ public class TreePanel
             if (true)
             {
               TreeItem<FileNode> treeItem = treeCell.getItem ().getTreeItem ();
-              System.out.printf ("Adding %s%n", treeItem);
-              treeItem.getChildren ().add (new TreeItem<FileNode> (pendingFileNode));
+              System.out.printf ("Adding   : %s%n", treeItem);
+              TreeItem<FileNode> newItem = new TreeItem<FileNode> (pendingFileNode);
+              treeItem.getChildren ().add (newItem);
+              pendingTreeItem = pendingFileNode.getTreeItem ();
+              pendingFileNode.setTreeItem (newItem);
+              pendingFileNode = null;
             }
 
             event.setDropCompleted (true);
@@ -183,12 +188,12 @@ public class TreePanel
           @Override
           public void handle (DragEvent event)
           {
-            assert pendingFileNode == treeCell.getItem ();
+            //            assert pendingFileNode == treeCell.getItem ();
             if (true) // if successful
             {
-              TreeItem<FileNode> treeItem = pendingFileNode.getTreeItem ();
-              System.out.printf ("Removing %s%n", treeItem);
-              treeItem.getParent ().getChildren ().remove (treeItem);
+              //              TreeItem<FileNode> treeItem = pendingFileNode.getTreeItem ();
+              System.out.printf ("Removing : %s%n", pendingTreeItem);
+              pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
             }
 
             pendingFileNode = null;
@@ -224,7 +229,10 @@ public class TreePanel
           System.out.printf ("Saving buffer as new file: %s --> %s%n",
                              fileNode.getDatasetName (), targetFile);
           if (true)
+          {
             Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
+            fileNode.setFile (targetFile);
+          }
         }
         else
         {
@@ -232,8 +240,11 @@ public class TreePanel
           System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", oldFile,
                              targetFile);
           if (true)
+          {
             Files.move (oldFile.toPath (), targetFile.toPath (),
                         StandardCopyOption.ATOMIC_MOVE);
+            fileNode.setFile (targetFile);
+          }
         }
 
         // adjust tree
@@ -301,7 +312,7 @@ public class TreePanel
             {
               FileNode fileNode = new FileNode (file);
               TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
-              fileNode.setTreeItem (treeItem);
+              fileNode.setTreeItem (newItem);
               treeItem.getChildren ().add (newItem);
               if (file.equals (selectedFile))
                 selectedTreeItem = newItem;

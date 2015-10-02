@@ -64,6 +64,11 @@ public class FileNode
     return file;
   }
 
+  public void setFile (File file)
+  {
+    this.file = file;
+  }
+
   //    public byte[] getBuffer ()
   //    {
   //      return buffer;
