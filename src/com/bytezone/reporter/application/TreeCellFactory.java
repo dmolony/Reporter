@@ -54,23 +54,12 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       }
 
       File sourceFile = fileNode.getFile ();
-      if (sourceFile == null)
-      {
-        // create new file from buffer
-        System.out.printf ("Saving buffer as new file: %s --> %s%n",
-                           fileNode.getDatasetName (), targetFile);
+      if (sourceFile == null)     // create new file from buffer
         Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
-        return true;
-      }
-      else
-      {
-        // move existing file
-        //        System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", sourceFile,
-        //                           targetFile);
+      else                        // move existing file
         Files.move (sourceFile.toPath (), targetFile.toPath (),
                     StandardCopyOption.ATOMIC_MOVE);
-        return true;
-      }
+      return true;
     }
     catch (IOException e)
     {
