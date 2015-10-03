@@ -49,7 +49,6 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
     {
       if (targetFile.exists ())             // check for overwrite
       {
-        System.out.printf ("Exists: %s%n", targetFile);
         showAlert ("File already exists");
         return false;
       }
@@ -58,16 +57,16 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       if (sourceFile == null)
       {
         // create new file from buffer
-        System.out.printf ("Saving buffer as new file: %s --> %s%n",
-                           fileNode.getDatasetName (), targetFile);
+        //        System.out.printf ("Saving buffer as new file: %s --> %s%n",
+        //                           fileNode.getDatasetName (), targetFile);
         Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
         return true;
       }
       else
       {
         // move existing file
-        System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", sourceFile,
-                           targetFile);
+        //        System.out.printf ("Moving existing file:%nFrom: %s%nTo  : %s%n", sourceFile,
+        //                           targetFile);
         Files.move (sourceFile.toPath (), targetFile.toPath (),
                     StandardCopyOption.ATOMIC_MOVE);
         return true;
@@ -181,9 +180,9 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
         assert targetDirectory.isDirectory ();
 
         File targetFile = new File (targetDirectory, pendingFileNode.getDatasetName ());
-        System.out.printf ("New file: %s%n", targetFile);
+        //        System.out.printf ("New file: %s%n", targetFile);
 
-        System.out.printf ("dragDropped: %s to %s%n", pendingFileNode, targetFileNode);
+        //        System.out.printf ("dragDropped: %s to %s%n", pendingFileNode, targetFileNode);
 
         if (saveFile (pendingFileNode, targetFile))
         {
@@ -200,7 +199,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
           // connect new TreeItem to target TreeItem
           TreeItem<FileNode> treeItem = targetFileNode.getTreeItem ();
           treeItem.getChildren ().add (newItem);        // needs to be sorted
-          System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
+          //          System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
         }
 
         pendingFileNode = null;
