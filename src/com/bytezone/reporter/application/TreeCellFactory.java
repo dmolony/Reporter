@@ -57,8 +57,8 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       if (sourceFile == null)
       {
         // create new file from buffer
-        //        System.out.printf ("Saving buffer as new file: %s --> %s%n",
-        //                           fileNode.getDatasetName (), targetFile);
+        System.out.printf ("Saving buffer as new file: %s --> %s%n",
+                           fileNode.getDatasetName (), targetFile);
         Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
         return true;
       }
@@ -138,7 +138,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       if (type == DragEvent.DRAG_ENTERED)
       {
         File file = treeCell.getItem ().getFile ();
-        if (file != null & file.isDirectory ())
+        if (file != null && file.isDirectory ())
         {
           treeCell.setTextFill (Color.RED);
           //          System.out.println (treeCell.getBackground ());
@@ -152,7 +152,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       else if (type == DragEvent.DRAG_EXITED)
       {
         File file = treeCell.getItem ().getFile ();
-        if (file != null & file.isDirectory ())
+        if (file != null && file.isDirectory ())
         {
           treeCell.setTextFill (Color.BLACK);
           //            treeCell.setBackground (Background.EMPTY);
@@ -167,7 +167,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
         FileNode fileNode = treeCell.getItem ();
         File file = fileNode.getFile ();
 
-        if (file != null & file.isDirectory ())
+        if (file != null && file.isDirectory ())
           event.acceptTransferModes (TransferMode.MOVE);
 
         event.consume ();
