@@ -188,6 +188,8 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
           // connect new TreeItem to target TreeItem
           TreeItem<FileNode> treeItem = targetFileNode.getTreeItem ();
           treeItem.getChildren ().add (newItem);        // needs to be sorted
+
+          treeCell.getTreeView ().getSelectionModel ().select (newItem);
           //          System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
         }
 
