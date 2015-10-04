@@ -169,9 +169,6 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
         assert targetDirectory.isDirectory ();
 
         File targetFile = new File (targetDirectory, pendingFileNode.getDatasetName ());
-        //        System.out.printf ("New file: %s%n", targetFile);
-
-        //        System.out.printf ("dragDropped: %s to %s%n", pendingFileNode, targetFileNode);
 
         if (saveFile (pendingFileNode, targetFile))
         {
@@ -189,8 +186,8 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
           TreeItem<FileNode> treeItem = targetFileNode.getTreeItem ();
           treeItem.getChildren ().add (newItem);        // needs to be sorted
 
+          // select the new TreeItem
           treeCell.getTreeView ().getSelectionModel ().select (newItem);
-          //          System.out.printf ("Linking : %s -->. %s%n", treeItem, newItem);
         }
 
         pendingFileNode = null;
