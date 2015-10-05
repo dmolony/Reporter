@@ -31,14 +31,17 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
   {
     TreeCell<FileNode> treeCell = new TreeCellFileNode ();
 
-    treeCell.setOnDragDetected (new MouseHandler (treeCell));
+    // detect the beginning of a drag
+    MouseHandler mouseHandler = new MouseHandler (treeCell);
+    treeCell.setOnDragDetected (mouseHandler);    // set pendingFileNode
 
+    // handle the various drag events
     DragHandler dragHandler = new DragHandler (treeCell);
     treeCell.setOnDragOver (dragHandler);
     treeCell.setOnDragEntered (dragHandler);
     treeCell.setOnDragExited (dragHandler);
-    treeCell.setOnDragDropped (dragHandler);
-    treeCell.setOnDragDone (dragHandler);
+    treeCell.setOnDragDropped (dragHandler);      // clear pendingFileNode
+    treeCell.setOnDragDone (dragHandler);         // clear pendingFileNode
 
     return treeCell;
   }
@@ -47,16 +50,16 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
   {
     try
     {
-      if (targetFile.exists ())             // check for overwrite
+      if (targetFile.exists ())                   // check for overwrite
       {
         showAlert ("File already exists");
         return false;
       }
 
       File sourceFile = fileNode.getFile ();
-      if (sourceFile == null)     // create new file from buffer
+      if (sourceFile == null)                     // create new file from buffer
         Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
-      else                        // move existing file
+      else                                        // move existing file
         Files.move (sourceFile.toPath (), targetFile.toPath (),
                     StandardCopyOption.ATOMIC_MOVE);
       return true;
