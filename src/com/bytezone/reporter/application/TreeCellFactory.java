@@ -82,7 +82,16 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
     protected void updateItem (FileNode item, boolean empty)
     {
       super.updateItem (item, empty);
-      setText (empty ? null : item.toString ());
+      if (!empty && item != null)
+      {
+        setText (item.toString ());
+        setGraphic (getTreeItem ().getGraphic ());
+      }
+      else
+      {
+        setText (null);
+        setGraphic (null);
+      }
     }
   }
 
