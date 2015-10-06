@@ -110,7 +110,12 @@ public class ReportData
         testers.add (new RecordTester (recordMaker, 1024));
       else
       {
-        RecordTester recordTester = new RecordTester (recordMaker, 1024);
+        int length = 1024;
+        // avoid splitting between 0x0D and 0x0A
+        if (recordMaker instanceof CrlfRecordMaker && buffer.length > 1024
+            && buffer[length - 1] == 0x0D)
+          length = 1025;
+        RecordTester recordTester = new RecordTester (recordMaker, length);
         if (recordTester.getSampleSize () > 2)
           testers.add (recordTester);
       }

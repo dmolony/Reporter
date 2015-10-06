@@ -62,6 +62,7 @@ public class Record
   @Override
   public String toString ()
   {
-    return String.format ("%,5d  %,5d  %,5d", recordNumber, offset, length);
+    return String.format ("%,5d  %,5d  %,5d  %04X  %04X", recordNumber, offset, length,
+                          offset, length);
   }
 }
