@@ -116,7 +116,7 @@ public class ReportData
             && buffer[length - 1] == 0x0D)
           length = 1025;
         RecordTester recordTester = new RecordTester (recordMaker, length);
-        if (recordTester.getSampleSize () > 2)
+        if (recordTester.getSampleSize () > 0)
           testers.add (recordTester);
       }
 

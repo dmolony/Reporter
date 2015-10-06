@@ -40,7 +40,7 @@ public abstract class DefaultRecordMaker implements RecordMaker
   public List<Record> getRecords ()
   {
     if (records == null)
-      records = split (buffer.length);// use the entire buffer
+      records = split (buffer.length);          // use the entire buffer
 
     return records;
   }
