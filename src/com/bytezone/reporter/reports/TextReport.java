@@ -41,8 +41,8 @@ public class TextReport extends DefaultReportMaker
   @Override
   public boolean test (Record record, TextMaker textMaker)
   {
-    if (record.length > 200)
-      return false;
-    return textMaker.test (record);
+    boolean result = record.length > 200 ? false : textMaker.test (record);
+    //    System.out.printf ("%s  %s%n", record, result);
+    return result;
   }
 }
