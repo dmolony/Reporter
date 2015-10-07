@@ -29,6 +29,8 @@ import com.bytezone.reporter.text.TextMaker;
 
 public class ReportData
 {
+  private static final int SAMPLE_SIZE = 1024;
+
   private final List<RecordMaker> recordMakers;
   private final List<TextMaker> textMakers;
   private final List<ReportMaker> reportMakers;
@@ -110,11 +112,12 @@ public class ReportData
         testers.add (new RecordTester (recordMaker, 1024));
       else
       {
-        int length = 1024;
+        int length = SAMPLE_SIZE;
         // avoid splitting between 0x0D and 0x0A
-        if (recordMaker instanceof CrlfRecordMaker && buffer.length > 1024
+        if (recordMaker instanceof CrlfRecordMaker && buffer.length > length
             && buffer[length - 1] == 0x0D)
-          length = 1025;
+          length++;
+
         RecordTester recordTester = new RecordTester (recordMaker, length);
         if (recordTester.getSampleSize () > 0)
           testers.add (recordTester);
