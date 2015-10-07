@@ -119,7 +119,7 @@ public class ReportData
           length++;
 
         RecordTester recordTester = new RecordTester (recordMaker, length);
-        if (recordTester.getSampleSize () > 0)
+        if (recordTester.countSampleRecords () > 0)
           testers.add (recordTester);
       }
 

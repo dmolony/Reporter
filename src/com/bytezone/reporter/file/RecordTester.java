@@ -22,7 +22,7 @@ public class RecordTester
     sampleRecords = recordMaker.createSampleRecords (testSize);
   }
 
-  public int getSampleSize ()
+  public int countSampleRecords ()
   {
     return sampleRecords.size ();
   }
