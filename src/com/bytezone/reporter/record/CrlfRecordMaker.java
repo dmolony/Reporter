@@ -13,6 +13,7 @@ public class CrlfRecordMaker extends DefaultRecordMaker
     super ("CR/LF");
     trimNumbers = false;
     trimSpaces = false;
+    weight = 0.95;
   }
 
   @Override

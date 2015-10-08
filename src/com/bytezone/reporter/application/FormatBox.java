@@ -75,7 +75,7 @@ public class FormatBox
     setUserData (reportMakerButtons, reportData.getReportMakers ());
 
     adjustButtons ();
-    buttonSelected ();// force a pagination change
+    buttonSelected ();              // force a pagination change
   }
 
   private void adjustButtons ()
