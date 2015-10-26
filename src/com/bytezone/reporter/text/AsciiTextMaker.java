@@ -24,7 +24,7 @@ public class AsciiTextMaker implements TextMaker
     for (int ptr = offset; ptr < max; ptr++)
     {
       int value = buffer[ptr] & 0xFF;
-      if (value < 0x20 || value > 0xC0)
+      if (value < 0x20 || value >= 0xC0)
         textLine.append ('.');
       else
         textLine.append ((char) value);
