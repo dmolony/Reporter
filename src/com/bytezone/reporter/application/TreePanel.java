@@ -22,6 +22,7 @@ public class TreePanel
   private final Preferences prefs;
 
   private File selectedFile;
+  private Path treePath;
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
 
@@ -38,6 +39,7 @@ public class TreePanel
       System.out.println (path + " not valid");
     }
 
+    treePath = path;
     FileNode directory = new FileNode (path.toFile ());
     TreeItem<FileNode> root = findFiles (directory);
     //    root.setExpanded (true);
@@ -70,6 +72,27 @@ public class TreePanel
   public TreeView<FileNode> getTree ()
   {
     return fileTree;
+  }
+
+  public void addBuffer (String name, byte[] buffer, String folderName)
+  {
+    Path filePath =
+        Paths.get (System.getProperty ("user.home"), "dm3270", "files", folderName);
+    System.out.println (filePath);
+
+    String buildPath = filePath.toString ();
+    String[] segments = name.split ("\\.");
+    for (String segment : segments)
+    {
+      System.out.println (segment);
+      Path path = Paths.get (buildPath, segment);
+      System.out.println (path);
+      buildPath = path.toString ();
+      System.out.println (Files.exists (path));
+      System.out.println ();
+    }
+
+    addBuffer (name, buffer);
   }
 
   public void addBuffer (String name, byte[] buffer)

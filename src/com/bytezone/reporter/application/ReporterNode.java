@@ -81,6 +81,11 @@ public class ReporterNode extends BorderPane
     treePanel.addBuffer (name, buffer);
   }
 
+  public void addBuffer (String name, byte[] buffer, String folderName)
+  {
+    treePanel.addBuffer (name, buffer, folderName);
+  }
+
   @Override
   public void nodeSelected (FileNode fileNode)
   {
