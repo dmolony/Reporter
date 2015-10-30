@@ -78,18 +78,23 @@ public class TreePanel
   {
     Path filePath =
         Paths.get (System.getProperty ("user.home"), "dm3270", "files", folderName);
-    System.out.println (filePath);
 
-    String buildPath = filePath.toString ();
-    String[] segments = name.split ("\\.");
-    for (String segment : segments)
+    if (Files.exists (filePath))
     {
-      System.out.println (segment);
-      Path path = Paths.get (buildPath, segment);
-      System.out.println (path);
-      buildPath = path.toString ();
-      System.out.println (Files.exists (path));
-      System.out.println ();
+      String buildPath = filePath.toString ();
+      String[] segments = name.split ("\\.");
+      for (String segment : segments)
+      {
+        System.out.println (segment);
+        Path path = Paths.get (buildPath, segment);
+        System.out.println (path);
+        System.out.println ();
+        if (Files.notExists (path))
+          break;
+        buildPath = path.toString ();
+      }
+      filePath = Paths.get (buildPath);
+      System.out.printf ("Store file %s in %s%n", name, filePath);
     }
 
     addBuffer (name, buffer);
