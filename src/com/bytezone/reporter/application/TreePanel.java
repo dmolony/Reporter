@@ -1,6 +1,7 @@
 package com.bytezone.reporter.application;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -93,10 +94,36 @@ public class TreePanel
           break;
         buildPath = path.toString ();
       }
+
       filePath = Paths.get (buildPath);
       System.out.printf ("Store file %s in %s%n", name, filePath);
-    }
 
+      // does the tree node already exist?
+      // does the file already exist?
+      printChildren (fileTree.getRoot ());
+
+      if (false)
+      {
+        FileNode fileNode = new FileNode (name, buffer);
+        TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
+        fileNode.setTreeItem (treeItem);
+
+        // find the parent node and link the new tree node
+        //      parent.getChildren ().add (treeItem);
+        //      fileTree.getSelectionModel ().select (treeItem);
+
+        try
+        {
+          Files.write (filePath, buffer);
+          fileNode.setFile (filePath.toFile ());
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace ();
+        }
+      }
+    }
+    //    else
     addBuffer (name, buffer);
   }
 
@@ -113,6 +140,7 @@ public class TreePanel
     FileNode fileNode = new FileNode (name, buffer);
     TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
     fileNode.setTreeItem (treeItem);
+
     unsavedFilesItem.getChildren ().add (treeItem);
 
     fileTree.getSelectionModel ().select (treeItem);
@@ -152,6 +180,16 @@ public class TreePanel
     }
 
     return treeItem;
+  }
+
+  private void printChildren (TreeItem<FileNode> root)
+  {
+    System.out.println ("Current Parent :" + root.getValue ());
+    for (TreeItem<FileNode> child : root.getChildren ())
+      if (child.getChildren ().isEmpty ())
+        System.out.println (child.getValue ());
+      else
+        printChildren (child);
   }
 
   public void openDirectory (TreeItem.TreeModificationEvent<FileNode> evt)
