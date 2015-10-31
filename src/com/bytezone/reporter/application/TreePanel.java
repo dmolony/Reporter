@@ -104,7 +104,9 @@ public class TreePanel
   {
     if (unsavedFilesItem == null)
     {
-      unsavedFilesItem = new TreeItem<> (new FileNode ("downloads", null));
+      FileNode fileNode = new FileNode ("downloads", null);
+      unsavedFilesItem = new TreeItem<> (fileNode);
+      fileNode.setTreeItem (unsavedFilesItem);
       fileTree.getRoot ().getChildren ().add (unsavedFilesItem);
     }
 
@@ -112,6 +114,7 @@ public class TreePanel
     TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
     fileNode.setTreeItem (treeItem);
     unsavedFilesItem.getChildren ().add (treeItem);
+
     fileTree.getSelectionModel ().select (treeItem);
   }
 
@@ -126,22 +129,26 @@ public class TreePanel
       File[] files = directoryFile.listFiles ();
       if (files != null)
         for (File file : files)
-          if (!file.isHidden ())
-            if (file.isDirectory ())
-            {
-              TreeItem<FileNode> newItem = findFiles (new FileNode (file));
-              if (!newItem.isLeaf ())
-                treeItem.getChildren ().add (newItem);
-            }
-            else
-            {
-              FileNode fileNode = new FileNode (file);
-              TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
-              fileNode.setTreeItem (newItem);
+        {
+          if (file.isHidden ())
+            continue;
+
+          if (file.isDirectory ())
+          {
+            TreeItem<FileNode> newItem = findFiles (new FileNode (file));
+            if (!newItem.isLeaf ())
               treeItem.getChildren ().add (newItem);
-              if (file.equals (selectedFile))
-                selectedTreeItem = newItem;
-            }
+          }
+          else
+          {
+            FileNode fileNode = new FileNode (file);
+            TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
+            fileNode.setTreeItem (newItem);
+            treeItem.getChildren ().add (newItem);
+            if (file.equals (selectedFile))
+              selectedTreeItem = newItem;
+          }
+        }
     }
 
     return treeItem;
@@ -178,7 +185,7 @@ public class TreePanel
         fireNodeSelected (fileNode);
       }
       else
-        return;// downloads node  has no directory and no buffer
+        return;             // downloads node  has no directory and no buffer
     }
     // this includes all non-data nodes (except the downloads 'folder')
     else if (fileNode.getFile ().isFile ())
