@@ -79,6 +79,7 @@ public class TreePanel
   {
     Path filePath =
         Paths.get (System.getProperty ("user.home"), "dm3270", "files", folderName);
+    boolean fileSaved = false;
 
     if (Files.exists (filePath))
     {
@@ -116,6 +117,7 @@ public class TreePanel
         {
           Files.write (filePath, buffer);
           fileNode.setFile (filePath.toFile ());
+          fileSaved = true;
         }
         catch (IOException e)
         {
@@ -123,8 +125,9 @@ public class TreePanel
         }
       }
     }
-    //    else
-    addBuffer (name, buffer);
+
+    if (!fileSaved)
+      addBuffer (name, buffer);
   }
 
   public void addBuffer (String name, byte[] buffer)
