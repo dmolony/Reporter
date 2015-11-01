@@ -144,7 +144,7 @@ public class TreePanel
         fileNode.setTreeItem (child);
         fileNode.setFile (filePath.toFile ());
 
-        fileTree.getSelectionModel ().select (child);
+        fileTree.getSelectionModel ().select (child);     // how to refresh the display?
 
       }
       catch (IOException e)
@@ -193,7 +193,9 @@ public class TreePanel
 
           if (file.isDirectory ())
           {
-            TreeItem<FileNode> newItem = findFiles (new FileNode (file));
+            FileNode fileNode = new FileNode (file);
+            TreeItem<FileNode> newItem = findFiles (fileNode);
+            fileNode.setTreeItem (newItem);
             //            if (!newItem.isLeaf ())
             treeItem.getChildren ().add (newItem);
           }
