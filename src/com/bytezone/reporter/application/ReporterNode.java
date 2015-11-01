@@ -76,6 +76,11 @@ public class ReporterNode extends BorderPane
     treePanel.getTree ().requestFocus ();
   }
 
+  //  public void setFolder (String folderName)
+  //  {
+  //    treePanel.setFolder (folderName);
+  //  }
+
   public void addBuffer (String name, byte[] buffer)
   {
     treePanel.addBuffer (name, buffer);

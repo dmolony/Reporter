@@ -75,14 +75,26 @@ public class TreePanel
     return fileTree;
   }
 
-  public void addBuffer (String name, byte[] buffer, String folderName)
+  private TreeItem<FileNode> getTreeItem (TreeItem<FileNode> root, String folderName)
+  {
+    System.out.printf ("Setting folder: %s%n", folderName);
+
+    for (TreeItem<FileNode> child : root.getChildren ())
+      if (child.getValue ().getFile ().getName ().equals (folderName))
+        return child;
+
+    return null;
+  }
+
+  public void addBuffer (String name, byte[] buffer, String siteFolderName)
   {
     Path filePath =
-        Paths.get (System.getProperty ("user.home"), "dm3270", "files", folderName);
+        Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
     boolean fileSaved = false;
 
     if (Files.exists (filePath))
     {
+      TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
       String buildPath = filePath.toString ();
       String[] segments = name.split ("\\.");
       for (String segment : segments)
@@ -94,24 +106,27 @@ public class TreePanel
         if (Files.notExists (path))
           break;
         buildPath = path.toString ();
+        currentNode = getTreeItem (currentNode, segment);
       }
 
-      filePath = Paths.get (buildPath);
+      filePath = Paths.get (buildPath, name);
       System.out.printf ("Store file %s in %s%n", name, filePath);
+      System.out.printf ("Using node %s%n", currentNode);
 
       // does the tree node already exist?
       // does the file already exist?
-      printChildren (fileTree.getRoot ());
+      //      printChildren (fileTree.getRoot ());
 
-      if (false)
+      if (true)
       {
+        // create a new TreeItem<FileNode>
         FileNode fileNode = new FileNode (name, buffer);
         TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
         fileNode.setTreeItem (treeItem);
 
         // find the parent node and link the new tree node
-        //      parent.getChildren ().add (treeItem);
-        //      fileTree.getSelectionModel ().select (treeItem);
+        currentNode.getChildren ().add (treeItem);
+        fileTree.getSelectionModel ().select (treeItem);
 
         try
         {
