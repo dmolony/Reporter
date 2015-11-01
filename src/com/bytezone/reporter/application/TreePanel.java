@@ -96,48 +96,60 @@ public class TreePanel
     {
       TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
       String buildPath = filePath.toString ();
-      String[] segments = name.split ("\\.");
+
+      int pos = name.indexOf ('(');
+      String datasetName = pos <= 0 ? name : name.substring (0, pos);
+      String[] segments = datasetName.split ("\\.");
+
       for (String segment : segments)
       {
-        System.out.println (segment);
+        System.out.printf ("Segment: %s%n", segment);
+
         Path path = Paths.get (buildPath, segment);
-        System.out.println (path);
-        System.out.println ();
         if (Files.notExists (path))
           break;
+
+        TreeItem<FileNode> tempNode = getTreeItem (currentNode, segment);
+        if (tempNode == null)
+          break;
+
+        currentNode = tempNode;
         buildPath = path.toString ();
-        currentNode = getTreeItem (currentNode, segment);
       }
 
       filePath = Paths.get (buildPath, name);
-      System.out.printf ("Store file %s in %s%n", name, filePath);
-      System.out.printf ("Using node %s%n", currentNode);
+      //      System.out.printf ("Store file %s in %s%n", name, filePath);
+      //      System.out.printf ("Using node %s%n", currentNode);
 
       // does the tree node already exist?
       // does the file already exist?
-      //      printChildren (fileTree.getRoot ());
 
-      if (true)
+      try
       {
-        // create a new TreeItem<FileNode>
+        Files.write (filePath, buffer);
+        fileSaved = true;
+
+        // check for an existing TreeItem
+        TreeItem<FileNode> child = getTreeItem (currentNode, name);
         FileNode fileNode = new FileNode (name, buffer);
-        TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
-        fileNode.setTreeItem (treeItem);
 
-        // find the parent node and link the new tree node
-        currentNode.getChildren ().add (treeItem);
-        fileTree.getSelectionModel ().select (treeItem);
+        if (child == null)
+        {
+          child = new TreeItem<> (fileNode);        // create a new TreeItem
+          currentNode.getChildren ().add (child);
+        }
+        else
+          child.setValue (fileNode);                // modify the existing TreeItem
 
-        try
-        {
-          Files.write (filePath, buffer);
-          fileNode.setFile (filePath.toFile ());
-          fileSaved = true;
-        }
-        catch (IOException e)
-        {
-          e.printStackTrace ();
-        }
+        fileNode.setTreeItem (child);
+        fileNode.setFile (filePath.toFile ());
+
+        fileTree.getSelectionModel ().select (child);
+
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
       }
     }
 
@@ -182,8 +194,8 @@ public class TreePanel
           if (file.isDirectory ())
           {
             TreeItem<FileNode> newItem = findFiles (new FileNode (file));
-            if (!newItem.isLeaf ())
-              treeItem.getChildren ().add (newItem);
+            //            if (!newItem.isLeaf ())
+            treeItem.getChildren ().add (newItem);
           }
           else
           {
@@ -198,16 +210,6 @@ public class TreePanel
     }
 
     return treeItem;
-  }
-
-  private void printChildren (TreeItem<FileNode> root)
-  {
-    System.out.println ("Current Parent :" + root.getValue ());
-    for (TreeItem<FileNode> child : root.getChildren ())
-      if (child.getChildren ().isEmpty ())
-        System.out.println (child.getValue ());
-      else
-        printChildren (child);
   }
 
   public void openDirectory (TreeItem.TreeModificationEvent<FileNode> evt)
