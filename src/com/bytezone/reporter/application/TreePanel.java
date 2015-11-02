@@ -77,8 +77,6 @@ public class TreePanel
 
   private TreeItem<FileNode> getTreeItem (TreeItem<FileNode> root, String folderName)
   {
-    //    System.out.printf ("Setting folder: %s%n", folderName);
-
     for (TreeItem<FileNode> child : root.getChildren ())
       if (child.getValue ().getFile ().getName ().equals (folderName))
         return child;
@@ -116,11 +114,6 @@ public class TreePanel
       }
 
       filePath = Paths.get (buildPath, name);
-      //      System.out.printf ("Store file %s in %s%n", name, filePath);
-      //      System.out.printf ("Using node %s%n", currentNode);
-
-      // does the tree node already exist?
-      // does the file already exist?
 
       try
       {
