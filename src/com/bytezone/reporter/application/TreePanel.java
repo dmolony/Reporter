@@ -77,7 +77,7 @@ public class TreePanel
 
   private TreeItem<FileNode> getTreeItem (TreeItem<FileNode> root, String folderName)
   {
-    System.out.printf ("Setting folder: %s%n", folderName);
+    //    System.out.printf ("Setting folder: %s%n", folderName);
 
     for (TreeItem<FileNode> child : root.getChildren ())
       if (child.getValue ().getFile ().getName ().equals (folderName))
@@ -103,9 +103,7 @@ public class TreePanel
 
       for (String segment : segments)
       {
-        System.out.printf ("Segment: %s%n", segment);
-
-        Path path = Paths.get (buildPath, segment);
+        Path path = Paths.get (buildPath, segment);     // add segment to the path
         if (Files.notExists (path))
           break;
 
@@ -128,10 +126,10 @@ public class TreePanel
       {
         Files.write (filePath, buffer);
         fileSaved = true;
+        FileNode fileNode = new FileNode (name, buffer);
 
         // check for an existing TreeItem
         TreeItem<FileNode> child = getTreeItem (currentNode, name);
-        FileNode fileNode = new FileNode (name, buffer);
 
         if (child == null)
         {
@@ -161,15 +159,17 @@ public class TreePanel
   {
     if (unsavedFilesItem == null)
     {
-      FileNode fileNode = new FileNode ("downloads", null);
-      unsavedFilesItem = new TreeItem<> (fileNode);
-      fileNode.setTreeItem (unsavedFilesItem);
+      //      FileNode fileNode = new FileNode ("downloads", null);
+      //      unsavedFilesItem = new TreeItem<> (fileNode);
+      //      fileNode.setTreeItem (unsavedFilesItem);
+      unsavedFilesItem = createTreeItem ("downloads", null);
       fileTree.getRoot ().getChildren ().add (unsavedFilesItem);
     }
 
-    FileNode fileNode = new FileNode (name, buffer);
-    TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
-    fileNode.setTreeItem (treeItem);
+    //    FileNode fileNode = new FileNode (name, buffer);
+    //    TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
+    //    fileNode.setTreeItem (treeItem);
+    TreeItem<FileNode> treeItem = createTreeItem (name, buffer);
 
     unsavedFilesItem.getChildren ().add (treeItem);
 
@@ -201,9 +201,10 @@ public class TreePanel
           }
           else
           {
-            FileNode fileNode = new FileNode (file);
-            TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
-            fileNode.setTreeItem (newItem);
+            //            FileNode fileNode = new FileNode (file);
+            //            TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
+            //            fileNode.setTreeItem (newItem);
+            TreeItem<FileNode> newItem = createTreeItem (file);
             treeItem.getChildren ().add (newItem);
             if (file.equals (selectedFile))
               selectedTreeItem = newItem;
@@ -212,6 +213,22 @@ public class TreePanel
     }
 
     return treeItem;
+  }
+
+  private TreeItem<FileNode> createTreeItem (File file)
+  {
+    FileNode fileNode = new FileNode (file);
+    TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
+    fileNode.setTreeItem (newItem);
+    return newItem;
+  }
+
+  private TreeItem<FileNode> createTreeItem (String name, byte[] buffer)
+  {
+    FileNode fileNode = new FileNode (name, buffer);
+    TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
+    fileNode.setTreeItem (newItem);
+    return newItem;
   }
 
   public void openDirectory (TreeItem.TreeModificationEvent<FileNode> evt)
