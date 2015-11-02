@@ -117,6 +117,9 @@ public class TreePanel
 
       try
       {
+        String action = Files.exists (filePath) ? "overwriting " : "creating";
+        System.out.println (action + filePath);
+
         Files.write (filePath, buffer);
         fileSaved = true;
         FileNode fileNode = new FileNode (name, buffer);
