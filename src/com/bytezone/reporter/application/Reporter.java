@@ -10,8 +10,8 @@ import javafx.stage.Stage;
 
 public class Reporter extends Application
 {
-  private final static String OS = System.getProperty ("os.name");
-  private final static boolean SYSTEM_MENUBAR = OS != null && OS.startsWith ("Mac");
+  private final static String OS = System.getProperty ("os.name", "");
+  private final static boolean SYSTEM_MENUBAR = OS.startsWith ("Mac");
 
   private WindowSaver windowSaver;
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
