@@ -1,14 +1,12 @@
 package com.bytezone.reporter.application;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bytezone.reporter.file.ReportData;
 import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
-
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -116,8 +114,8 @@ public class FormatBox
     lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
     lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
-    ReportScore reportScore =
-        currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
+    ReportScore reportScore
+            = currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
       changeListener.paginationChanged (reportScore.getPagination ());
@@ -132,8 +130,7 @@ public class FormatBox
       selectButton (recordMakerButtons, reportScore.recordMaker);
       selectButton (textMakerButtons, reportScore.textMaker);
       selectButton (reportMakerButtons, reportScore.reportMaker);
-    }
-    else
+    } else
       System.out.println ("Imperfect ReportScore selected");
   }
 
@@ -188,22 +185,22 @@ public class FormatBox
     HBox hbox2 = new HBox (10);
     hbox2.getChildren ().addAll (lblRecords, lblRecordsText);
 
-    VBox vbox = new VBox (10);
-    vbox.setPadding (new Insets (10));
-    vbox.getChildren ().addAll (hbox1, hbox2);
-    vbox.setPrefWidth (180);
+    VBox vbox1 = new VBox (10);
+    vbox1.setPadding (new Insets (10));
+    vbox1.getChildren ().addAll (hbox1, hbox2);
+    vbox1.setPrefWidth (180);
 
-    VBox formattingBox = new VBox ();
-    addTitledPane (formattingBox, "Data size", vbox, true);
-    addTitledPane (formattingBox, "Structure", recordsBox, false);
-    addTitledPane (formattingBox, "Encoding", encodingsBox, true);
-    addTitledPane (formattingBox, "Formatting", reportsBox, true);
+    VBox vBox2 = new VBox ();
+    addTitledPane (vBox2, "Data size", vbox1, true);
+    addTitledPane (vBox2, "Structure", recordsBox, false);
+    addTitledPane (vBox2, "Encoding", encodingsBox, true);
+    addTitledPane (vBox2, "Formatting", reportsBox, true);
 
-    return formattingBox;
+    return vBox2;
   }
 
   private TitledPane addTitledPane (VBox parent, String text, VBox contents,
-      boolean expanded)
+          boolean expanded)
   {
     TitledPane titledPane = new TitledPane (text, contents);
     titledPane.setCollapsible (true);
@@ -213,7 +210,7 @@ public class FormatBox
   }
 
   private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
-      ToggleGroup group)
+          ToggleGroup group)
   {
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
