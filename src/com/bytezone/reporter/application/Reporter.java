@@ -1,9 +1,7 @@
 package com.bytezone.reporter.application;
 
-import java.util.prefs.Preferences;
-
 import com.bytezone.dm3270.utilities.WindowSaver;
-
+import java.util.prefs.Preferences;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
