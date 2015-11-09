@@ -95,8 +95,7 @@ public class FormatBox
 
   private void disableAll (List<RadioButton> buttons)
   {
-    for (RadioButton button : buttons)
-      button.setDisable (true);
+    buttons.stream ().forEach (button -> button.setDisable (true));
   }
 
   private void buttonSelected ()
@@ -114,8 +113,8 @@ public class FormatBox
     lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
     lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
-    ReportScore reportScore
-            = currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
+    ReportScore reportScore =
+        currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
       changeListener.paginationChanged (reportScore.getPagination ());
@@ -130,7 +129,8 @@ public class FormatBox
       selectButton (recordMakerButtons, reportScore.recordMaker);
       selectButton (textMakerButtons, reportScore.textMaker);
       selectButton (reportMakerButtons, reportScore.reportMaker);
-    } else
+    }
+    else
       System.out.println ("Imperfect ReportScore selected");
   }
 
@@ -200,7 +200,7 @@ public class FormatBox
   }
 
   private TitledPane addTitledPane (VBox parent, String text, VBox contents,
-          boolean expanded)
+      boolean expanded)
   {
     TitledPane titledPane = new TitledPane (text, contents);
     titledPane.setCollapsible (true);
@@ -210,7 +210,7 @@ public class FormatBox
   }
 
   private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
-          ToggleGroup group)
+      ToggleGroup group)
   {
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
