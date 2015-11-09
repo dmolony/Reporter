@@ -140,13 +140,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       {
         File file = treeCell.getItem ().getFile ();
         if (file != null && file.isDirectory ())
-        {
           treeCell.setTextFill (Color.RED);
-          //          System.out.println (treeCell.getBackground ());
-          //          Background background = treeCell.getBackground ();
-          //            treeCell.setBackground (new Background (
-          //                new BackgroundFill (Color.AQUAMARINE, null, null)));
-        }
 
         event.consume ();
       }
@@ -154,12 +148,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       {
         File file = treeCell.getItem ().getFile ();
         if (file != null && file.isDirectory ())
-        {
           treeCell.setTextFill (Color.BLACK);
-          //            treeCell.setBackground (Background.EMPTY);
-          //            Background background = treeCell.getBackground ();
-          //            background.getFills ().clear ();
-        }
 
         event.consume ();
       }
@@ -191,7 +180,7 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
           pendingTreeItem.getParent ().getChildren ().remove (pendingTreeItem);
 
           // create a new TreeItem
-          TreeItem<FileNode> newItem = new TreeItem<FileNode> (pendingFileNode);
+          TreeItem<FileNode> newItem = new TreeItem<> (pendingFileNode);
           pendingFileNode.setTreeItem (newItem);
 
           // connect new TreeItem to target TreeItem
