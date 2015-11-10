@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class FormatBox
+ class FormatBox
 {
   private final ToggleGroup recordsGroup = new ToggleGroup ();
   private final ToggleGroup encodingsGroup = new ToggleGroup ();
