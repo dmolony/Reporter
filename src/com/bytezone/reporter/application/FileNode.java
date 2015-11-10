@@ -5,7 +5,7 @@ import javafx.scene.control.TreeItem;
 
 import java.io.File;
 
-class FileNode
+public class FileNode
 {
   private final ReportData reportData;
   private final String datasetName;

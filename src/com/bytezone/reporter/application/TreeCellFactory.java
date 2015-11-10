@@ -1,28 +1,20 @@
 package com.bytezone.reporter.application;
 
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.*;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
-import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.paint.Color;
-import javafx.util.Callback;
-
-public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>>
+class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>>
 {
   private FileNode pendingFileNode;
 
@@ -60,11 +52,9 @@ public class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<Fi
       if (sourceFile == null)                     // create new file from buffer
         Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
       else                                        // move existing file
-        Files.move (sourceFile.toPath (), targetFile.toPath (),
-                    StandardCopyOption.ATOMIC_MOVE);
+        Files.move (sourceFile.toPath (), targetFile.toPath (), StandardCopyOption.ATOMIC_MOVE);
       return true;
-    }
-    catch (IOException e)
+    } catch (IOException e)
     {
       e.printStackTrace ();
     }

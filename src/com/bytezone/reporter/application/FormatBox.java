@@ -5,19 +5,16 @@ import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
- class FormatBox
+import java.util.ArrayList;
+import java.util.List;
+
+class FormatBox
 {
   private final ToggleGroup recordsGroup = new ToggleGroup ();
   private final ToggleGroup encodingsGroup = new ToggleGroup ();
@@ -113,8 +110,7 @@ import javafx.scene.text.Font;
     lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
     lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
-    ReportScore reportScore =
-        currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
+    ReportScore reportScore = currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
       changeListener.paginationChanged (reportScore.getPagination ());
@@ -199,8 +195,7 @@ import javafx.scene.text.Font;
     return vBox2;
   }
 
-  private TitledPane addTitledPane (VBox parent, String text, VBox contents,
-      boolean expanded)
+  private TitledPane addTitledPane (VBox parent, String text, VBox contents, boolean expanded)
   {
     TitledPane titledPane = new TitledPane (text, contents);
     titledPane.setCollapsible (true);
@@ -209,8 +204,7 @@ import javafx.scene.text.Font;
     return titledPane;
   }
 
-  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
-      ToggleGroup group)
+  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons, ToggleGroup group)
   {
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
