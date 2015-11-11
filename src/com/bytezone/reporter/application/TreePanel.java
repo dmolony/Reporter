@@ -1,5 +1,12 @@
 package com.bytezone.reporter.application;
 
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,14 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-
-public class TreePanel
+class TreePanel
 {
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private final TreeView<FileNode> fileTree = new TreeView<> ();
@@ -50,13 +50,12 @@ public class TreePanel
 
     if (false)
     {
-      EventHandler<TreeItem.TreeModificationEvent<FileNode>> expandListener =
-          (TreeItem.TreeModificationEvent<FileNode> node) -> openDirectory (node);
-      root.addEventHandler (TreeItem.<FileNode> branchExpandedEvent (), expandListener);
+      EventHandler<TreeItem.TreeModificationEvent<FileNode>> expandListener
+          = (TreeItem.TreeModificationEvent<FileNode> node) -> openDirectory (node);
+      root.addEventHandler (TreeItem.<FileNode>branchExpandedEvent (), expandListener);
     }
 
-    ChangeListener<TreeItem<FileNode>> changeListener =
-        (observable, oldValue, newValue) -> selection (newValue);
+    ChangeListener<TreeItem<FileNode>> changeListener = (observable, oldValue, newValue) -> selection (newValue);
     fileTree.getSelectionModel ().selectedItemProperty ().addListener (changeListener);
 
     if (selectedTreeItem != null)
@@ -86,8 +85,7 @@ public class TreePanel
 
   public void addBuffer (String name, byte[] buffer, String siteFolderName)
   {
-    Path filePath =
-        Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
+    Path filePath = Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
     boolean fileSaved = false;
 
     if (Files.exists (filePath))
@@ -371,8 +369,7 @@ public class TreePanel
           File[] files = f.listFiles ();
           if (files != null)
           {
-            ObservableList<TreeItem<File>> children =
-                FXCollections.observableArrayList ();
+            ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
 
             for (File childFile : files)
               children.add (createNode (childFile));
