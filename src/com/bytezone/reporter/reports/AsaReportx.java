@@ -14,9 +14,9 @@ import com.bytezone.reporter.text.TextMaker;
  * '1:C' - Skip to channel 1-12 (channel 1 is top of page)
  */
 
-public class AsaReport extends DefaultReportMaker
+public class AsaReportx extends DefaultReportMaker
 {
-  public AsaReport (boolean newLine, boolean split)
+  public AsaReportx (boolean newLine, boolean split)
   {
     super ("ASA", newLine, split);
     weight = 1.1;
