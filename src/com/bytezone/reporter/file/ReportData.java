@@ -18,7 +18,7 @@ import com.bytezone.reporter.record.RdwRecordMaker;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.record.SingleRecordMaker;
 import com.bytezone.reporter.record.VbRecordMaker;
-import com.bytezone.reporter.reports.AsaReportx;
+import com.bytezone.reporter.reports.AsaReport;
 import com.bytezone.reporter.reports.HexReport;
 import com.bytezone.reporter.reports.NatloadReport;
 import com.bytezone.reporter.reports.ReportMaker;
@@ -52,7 +52,7 @@ public class ReportData
         new ArrayList<> (Arrays.asList (new AsciiTextMaker (), new EbcdicTextMaker ()));
     reportMakers = new ArrayList<> (
         Arrays.asList (new HexReport (true, true), new TextReport (false, false),
-                       new AsaReportx (false, true), new NatloadReport (false, false)));
+                       new AsaReport (false, true), new NatloadReport (false, false)));
     scores = new ArrayList<> ();
   }
 
