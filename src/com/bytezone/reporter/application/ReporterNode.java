@@ -37,9 +37,8 @@ public class ReporterNode extends BorderPane
   private final FormatBox formatBox;
   private final TreePanel treePanel;
   private final MenuBar menuBar = new MenuBar ();
-  private File lastSaveLocation;
   private final Preferences prefs;
-
+  private File lastSaveLocation;
   private FileNode currentFileNode;
 
   public ReporterNode (Preferences prefs)
@@ -75,11 +74,6 @@ public class ReporterNode extends BorderPane
   {
     treePanel.getTree ().requestFocus ();
   }
-
-  //  public void setFolder (String folderName)
-  //  {
-  //    treePanel.setFolder (folderName);
-  //  }
 
   public void addBuffer (String name, byte[] buffer)
   {
@@ -211,23 +205,24 @@ public class ReporterNode extends BorderPane
   @Override
   public void paginationChanged (Pagination pagination)
   {
-    pagination.setPrefWidth (18000);// need this to make it expand
+    pagination.setPrefWidth (18000);            // need this to make it expand
     setCenter (pagination);
   }
 
   private void fireNodeSelected (FileNode fileNode)
   {
-    for (NodeSelectionListener listener : nodeSelectionListeners)
-      listener.nodeSelected (fileNode);
+    nodeSelectionListeners.forEach (l -> l.nodeSelected (fileNode));
   }
 
   public void addNodeSelectionListener (NodeSelectionListener listener)
   {
-    nodeSelectionListeners.add (listener);
+    if (!nodeSelectionListeners.contains (listener))
+      nodeSelectionListeners.add (listener);
   }
 
   public void removeNodeSelectionListener (NodeSelectionListener listener)
   {
-    nodeSelectionListeners.remove (listener);
+    if (nodeSelectionListeners.contains (listener))
+      nodeSelectionListeners.remove (listener);
   }
 }
