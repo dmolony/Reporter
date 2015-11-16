@@ -1,5 +1,17 @@
 package com.bytezone.reporter.application;
 
+import com.bytezone.reporter.file.ReportData;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
+
+import javax.swing.*;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterJob;
 import java.io.File;
@@ -11,26 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import javax.swing.SwingUtilities;
-
-import com.bytezone.reporter.file.ReportData;
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.stage.FileChooser;
-
-public class ReporterNode extends BorderPane
-    implements PaginationChangeListener, NodeSelectionListener
+public class ReporterNode extends BorderPane implements PaginationChangeListener, NodeSelectionListener
 {
   private static final String PREFS_SAVE_LOCATION = "SaveLocation";
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
@@ -120,15 +113,13 @@ public class ReporterNode extends BorderPane
     return menuFile;
   }
 
-  private MenuItem getMenuItem (Menu menu, String text,
-      EventHandler<ActionEvent> eventHandler, KeyCode keyCode)
+  private MenuItem getMenuItem (Menu menu, String text, EventHandler<ActionEvent> eventHandler, KeyCode keyCode)
   {
     MenuItem menuItem = new MenuItem (text);
 
     menuItem.setOnAction (eventHandler);
     if (keyCode != null)
-      menuItem.setAccelerator (new KeyCodeCombination (keyCode,
-          KeyCombination.SHORTCUT_DOWN));
+      menuItem.setAccelerator (new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
     menu.getItems ().add (menuItem);
 
     return menuItem;

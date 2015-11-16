@@ -1,9 +1,10 @@
 package com.bytezone.reporter.application;
 
-import com.bytezone.reporter.file.ReportData;
-import javafx.scene.control.TreeItem;
-
 import java.io.File;
+
+import com.bytezone.reporter.file.ReportData;
+
+import javafx.scene.control.TreeItem;
 
 public class FileNode
 {

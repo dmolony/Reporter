@@ -1,8 +1,8 @@
 package com.bytezone.reporter.text;
 
-import java.io.UnsupportedEncodingException;
-
 import com.bytezone.reporter.record.Record;
+
+import java.io.UnsupportedEncodingException;
 
 public class EbcdicTextMaker implements TextMaker
 {
