@@ -13,7 +13,11 @@ public class FbRecordMaker extends DefaultRecordMaker
     super ("FB" + recordLength);
     this.recordLength = recordLength;
     trimNulls = recordLength != 63;
-    weight = 0.9;
+
+    if (recordLength == 80)
+      weight = 0.91;
+    else
+      weight = 0.9;
   }
 
   public int getRecordLength ()
