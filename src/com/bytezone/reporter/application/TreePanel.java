@@ -1,12 +1,5 @@
 package com.bytezone.reporter.application;
 
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +8,13 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
+
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 
 class TreePanel
 {
@@ -50,12 +50,13 @@ class TreePanel
 
     if (false)
     {
-      EventHandler<TreeItem.TreeModificationEvent<FileNode>> expandListener
-          = (TreeItem.TreeModificationEvent<FileNode> node) -> openDirectory (node);
-      root.addEventHandler (TreeItem.<FileNode>branchExpandedEvent (), expandListener);
+      EventHandler<TreeItem.TreeModificationEvent<FileNode>> expandListener =
+          (TreeItem.TreeModificationEvent<FileNode> node) -> openDirectory (node);
+      root.addEventHandler (TreeItem.<FileNode> branchExpandedEvent (), expandListener);
     }
 
-    ChangeListener<TreeItem<FileNode>> changeListener = (observable, oldValue, newValue) -> selection (newValue);
+    ChangeListener<TreeItem<FileNode>> changeListener =
+        (observable, oldValue, newValue) -> selection (newValue);
     fileTree.getSelectionModel ().selectedItemProperty ().addListener (changeListener);
 
     if (selectedTreeItem != null)
@@ -85,7 +86,8 @@ class TreePanel
 
   public void addBuffer (String name, byte[] buffer, String siteFolderName)
   {
-    Path filePath = Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
+    Path filePath =
+        Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
     boolean fileSaved = false;
 
     if (Files.exists (filePath))
@@ -136,7 +138,7 @@ class TreePanel
         fileNode.setTreeItem (child);
         fileNode.setFile (filePath.toFile ());
 
-        fileTree.getSelectionModel ().select (child);     // how to refresh the display?
+        fileTree.getSelectionModel ().select (child);    // how to refresh the display?
 
       }
       catch (IOException e)
@@ -153,20 +155,12 @@ class TreePanel
   {
     if (unsavedFilesItem == null)
     {
-      //      FileNode fileNode = new FileNode ("downloads", null);
-      //      unsavedFilesItem = new TreeItem<> (fileNode);
-      //      fileNode.setTreeItem (unsavedFilesItem);
       unsavedFilesItem = createTreeItem ("downloads", null);
       fileTree.getRoot ().getChildren ().add (unsavedFilesItem);
     }
 
-    //    FileNode fileNode = new FileNode (name, buffer);
-    //    TreeItem<FileNode> treeItem = new TreeItem<> (fileNode);
-    //    fileNode.setTreeItem (treeItem);
     TreeItem<FileNode> treeItem = createTreeItem (name, buffer);
-
     unsavedFilesItem.getChildren ().add (treeItem);
-
     fileTree.getSelectionModel ().select (treeItem);
   }
 
@@ -195,9 +189,6 @@ class TreePanel
           }
           else
           {
-            //            FileNode fileNode = new FileNode (file);
-            //            TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
-            //            fileNode.setTreeItem (newItem);
             TreeItem<FileNode> newItem = createTreeItem (file);
             treeItem.getChildren ().add (newItem);
             if (file.equals (selectedFile))
@@ -369,7 +360,8 @@ class TreePanel
           File[] files = f.listFiles ();
           if (files != null)
           {
-            ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
+            ObservableList<TreeItem<File>> children =
+                FXCollections.observableArrayList ();
 
             for (File childFile : files)
               children.add (createNode (childFile));
