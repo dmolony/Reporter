@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import com.bytezone.dm3270.utilities.FileSaver;
+
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -86,6 +88,9 @@ class TreePanel
 
   public void addBuffer (String name, byte[] buffer, String siteFolderName)
   {
+    //    System.out.println ("saving " + name);
+    //    System.out.println ("in " + siteFolderName);
+
     Path filePath =
         Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
     boolean fileSaved = false;
@@ -114,6 +119,9 @@ class TreePanel
       }
 
       filePath = Paths.get (buildPath, name);
+      TreeItem<FileNode> node = addFile (siteFolderName, name);
+      //      System.out.println ("old: " + currentNode.getValue ());
+      //      System.out.println ("new: " + node.getValue ());
 
       try
       {
@@ -149,6 +157,20 @@ class TreePanel
 
     if (!fileSaved)
       addBuffer (name, buffer);
+  }
+
+  public TreeItem<FileNode> addFile (String siteFolderName, String datasetName)
+  {
+    TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
+    String[] segments = FileSaver.getSegments (datasetName);
+    for (String segment : segments)
+    {
+      TreeItem<FileNode> tempNode = getTreeItem (currentNode, segment);
+      if (tempNode == null)
+        break;
+      currentNode = tempNode;
+    }
+    return currentNode;
   }
 
   public void addBuffer (String name, byte[] buffer)

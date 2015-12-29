@@ -69,17 +69,6 @@ public class FileNode
     this.file = file;
   }
 
-  //    public byte[] getBuffer ()
-  //    {
-  //      return buffer;
-  //    }
-
-  //    public void setBuffer (byte[] buffer)
-  //    {
-  //      assert this.buffer == null;
-  //      this.buffer = buffer;
-  //    }
-
   @Override
   public String toString ()
   {
