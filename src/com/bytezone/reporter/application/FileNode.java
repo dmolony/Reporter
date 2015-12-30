@@ -69,6 +69,16 @@ public class FileNode
     this.file = file;
   }
 
+  public String toDetailedString ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Dataset name ... %s%n", datasetName));
+    text.append (String.format ("File name ...... %s", file));
+
+    return text.toString ();
+  }
+
   @Override
   public String toString ()
   {

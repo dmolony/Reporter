@@ -1,7 +1,6 @@
 package com.bytezone.reporter.application;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,80 +85,77 @@ class TreePanel
     return null;
   }
 
-  public void addBuffer (String name, byte[] buffer, String siteFolderName)
+  private void addBuffer (String name, byte[] buffer, String siteFolderName)
   {
-    //    System.out.println ("saving " + name);
-    //    System.out.println ("in " + siteFolderName);
+    //    Path filePath =
+    //        Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
+    //    boolean fileSaved = false;
 
-    Path filePath =
-        Paths.get (System.getProperty ("user.home"), "dm3270", "files", siteFolderName);
-    boolean fileSaved = false;
+    Path filePath = FileSaver.getHomePath (siteFolderName);
 
-    if (Files.exists (filePath))
+    //    if (Files.exists (filePath))
+    //    {
+    //      TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
+    //      String buildPath = filePath.toString ();
+    //
+    //      int pos = name.indexOf ('(');
+    //      String datasetName = pos <= 0 ? name : name.substring (0, pos);
+    //      String[] segments = datasetName.split ("\\.");
+    //
+    //      for (String segment : segments)
+    //      {
+    //        Path path = Paths.get (buildPath, segment);     // add segment to the path
+    //        if (Files.notExists (path))
+    //          break;
+    //
+    //        TreeItem<FileNode> tempNode = getTreeItem (currentNode, segment);
+    //        if (tempNode == null)
+    //          break;
+    //
+    //        currentNode = tempNode;
+    //        buildPath = path.toString ();
+    //      }
+
+    TreeItem<FileNode> currentNode = findNode (siteFolderName, name);
+    //    filePath = Paths.get (buildPath, name);
+
+    //      try
+    //      {
+    //    String action = Files.exists (filePath) ? "overwriting " : "creating";
+    //    System.out.println (action + filePath);
+
+    //        Files.write (filePath, buffer);
+    //        fileSaved = true;
+    FileNode fileNode = new FileNode (name, buffer);
+
+    // check for an existing TreeItem
+    TreeItem<FileNode> child = getTreeItem (currentNode, name);
+
+    if (child == null)
     {
-      TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
-      String buildPath = filePath.toString ();
-
-      int pos = name.indexOf ('(');
-      String datasetName = pos <= 0 ? name : name.substring (0, pos);
-      String[] segments = datasetName.split ("\\.");
-
-      for (String segment : segments)
-      {
-        Path path = Paths.get (buildPath, segment);     // add segment to the path
-        if (Files.notExists (path))
-          break;
-
-        TreeItem<FileNode> tempNode = getTreeItem (currentNode, segment);
-        if (tempNode == null)
-          break;
-
-        currentNode = tempNode;
-        buildPath = path.toString ();
-      }
-
-      filePath = Paths.get (buildPath, name);
-      TreeItem<FileNode> node = addFile (siteFolderName, name);
-      //      System.out.println ("old: " + currentNode.getValue ());
-      //      System.out.println ("new: " + node.getValue ());
-
-      try
-      {
-        String action = Files.exists (filePath) ? "overwriting " : "creating";
-        System.out.println (action + filePath);
-
-        Files.write (filePath, buffer);
-        fileSaved = true;
-        FileNode fileNode = new FileNode (name, buffer);
-
-        // check for an existing TreeItem
-        TreeItem<FileNode> child = getTreeItem (currentNode, name);
-
-        if (child == null)
-        {
-          child = new TreeItem<> (fileNode);        // create a new TreeItem
-          currentNode.getChildren ().add (child);
-        }
-        else
-          child.setValue (fileNode);                // modify the existing TreeItem
-
-        fileNode.setTreeItem (child);
-        fileNode.setFile (filePath.toFile ());
-
-        fileTree.getSelectionModel ().select (child);    // how to refresh the display?
-
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace ();
-      }
+      child = new TreeItem<> (fileNode);        // create a new TreeItem
+      currentNode.getChildren ().add (child);
     }
+    else
+      child.setValue (fileNode);                // modify the existing TreeItem
 
-    if (!fileSaved)
-      addBuffer (name, buffer);
+    fileNode.setTreeItem (child);
+    fileNode.setFile (filePath.toFile ());
+
+    fileTree.getSelectionModel ().select (child);    // how to refresh the display?
+
+    //      }
+    //      catch (IOException e)
+    //      {
+    //        e.printStackTrace ();
+    //      }
+    //    }
+
+    //    if (!fileSaved)
+    //      addBuffer (name, buffer);
   }
 
-  public TreeItem<FileNode> addFile (String siteFolderName, String datasetName)
+  private TreeItem<FileNode> findNode (String siteFolderName, String datasetName)
   {
     TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
     String[] segments = FileSaver.getSegments (datasetName);
@@ -171,6 +167,40 @@ class TreePanel
       currentNode = tempNode;
     }
     return currentNode;
+  }
+
+  public void addFile (File file, String siteFolderName)
+  {
+    System.out.printf ("Adding file: %s%n", file);
+    TreeItem<FileNode> currentNode = findNode (siteFolderName, file.getName ());
+    if (currentNode == null)
+    {
+      System.out.println ("**** not found ****");
+    }
+    else
+    {
+      System.out.println ("Found: " + currentNode.getValue ());
+
+      FileNode fileNode = new FileNode (file);
+
+      // check for an existing TreeItem
+      TreeItem<FileNode> child = getTreeItem (currentNode, file.getName ());
+
+      if (child == null)
+      {
+        System.out.println ("adding new node");
+        child = new TreeItem<> (fileNode);        // create a new TreeItem
+        currentNode.getChildren ().add (child);
+      }
+      else
+      {
+        System.out.println ("updating existing node");
+        child.setValue (fileNode);                // modify the existing TreeItem
+      }
+
+      fileNode.setTreeItem (child);
+      fileTree.getSelectionModel ().select (child);    // how to refresh the display?
+    }
   }
 
   public void addBuffer (String name, byte[] buffer)
