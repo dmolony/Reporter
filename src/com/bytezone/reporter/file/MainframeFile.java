@@ -3,14 +3,13 @@ package com.bytezone.reporter.file;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 public class MainframeFile
 {
   private final String name;
   private byte[] buffer;
   private File file;
-  private List<ReportScore> scores;
+  //  private List<ReportScore> scores;
 
   public MainframeFile (String name, byte[] buffer)
   {
