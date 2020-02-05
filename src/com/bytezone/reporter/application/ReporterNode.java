@@ -29,8 +29,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
+// -----------------------------------------------------------------------------------//
 public class ReporterNode extends BorderPane
     implements PaginationChangeListener, NodeSelectionListener
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_SAVE_LOCATION = "SaveLocation";
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
@@ -41,7 +43,9 @@ public class ReporterNode extends BorderPane
   private File lastSaveLocation;
   private FileNode currentFileNode;
 
+  // ---------------------------------------------------------------------------------//
   public ReporterNode (Preferences prefs)
+  // ---------------------------------------------------------------------------------//
   {
     this.prefs = prefs;
     String saveLocation = prefs.get (PREFS_SAVE_LOCATION, "");
@@ -64,18 +68,24 @@ public class ReporterNode extends BorderPane
     menuBar.getMenus ().addAll (getFileMenu ());
   }
 
+  // ---------------------------------------------------------------------------------//
   public MenuBar getMenuBar ()
+  // ---------------------------------------------------------------------------------//
   {
     return menuBar;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void requestFocus ()
+  // ---------------------------------------------------------------------------------//
   {
     treePanel.getTree ().requestFocus ();
   }
 
+  // ---------------------------------------------------------------------------------//
   public void addBuffer (String name, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
   {
     treePanel.addBuffer (name, buffer);
   }
@@ -85,13 +95,17 @@ public class ReporterNode extends BorderPane
   //    treePanel.addBuffer (name, buffer, folderName);
   //  }
 
+  // ---------------------------------------------------------------------------------//
   public void addFile (File file, String siteFolderName)
+  // ---------------------------------------------------------------------------------//
   {
     treePanel.addFile (file, siteFolderName);
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void nodeSelected (FileNode fileNode)
+  // ---------------------------------------------------------------------------------//
   {
     currentFileNode = fileNode;
 
@@ -105,12 +119,16 @@ public class ReporterNode extends BorderPane
     fireNodeSelected (fileNode);
   }
 
+  // ---------------------------------------------------------------------------------//
   public FileNode getSelectedNode ()
+  // ---------------------------------------------------------------------------------//
   {
     return currentFileNode;
   }
 
+  // ---------------------------------------------------------------------------------//
   private Menu getFileMenu ()
+  // ---------------------------------------------------------------------------------//
   {
     Menu menuFile = new Menu ("File");
 
@@ -125,26 +143,32 @@ public class ReporterNode extends BorderPane
     return menuFile;
   }
 
+  // ---------------------------------------------------------------------------------//
   private MenuItem getMenuItem (Menu menu, String text,
       EventHandler<ActionEvent> eventHandler, KeyCode keyCode)
+  // ---------------------------------------------------------------------------------//
   {
     MenuItem menuItem = new MenuItem (text);
 
     menuItem.setOnAction (eventHandler);
     if (keyCode != null)
-      menuItem.setAccelerator (new KeyCodeCombination (keyCode,
-          KeyCombination.SHORTCUT_DOWN));
+      menuItem.setAccelerator (
+          new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
     menu.getItems ().add (menuItem);
 
     return menuItem;
   }
 
+  // ---------------------------------------------------------------------------------//
   private void openFile ()
+  // ---------------------------------------------------------------------------------//
   {
     System.out.println ("Open not written yet");
   }
 
+  // ---------------------------------------------------------------------------------//
   private void pageSetup ()
+  // ---------------------------------------------------------------------------------//
   {
     SwingUtilities.invokeLater (new Runnable ()
     {
@@ -158,7 +182,9 @@ public class ReporterNode extends BorderPane
     });
   }
 
+  // ---------------------------------------------------------------------------------//
   private void printFile ()
+  // ---------------------------------------------------------------------------------//
   {
     SwingUtilities.invokeLater (new Runnable ()
     {
@@ -183,7 +209,9 @@ public class ReporterNode extends BorderPane
     });
   }
 
+  // ---------------------------------------------------------------------------------//
   private void saveFile ()
+  // ---------------------------------------------------------------------------------//
   {
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setInitialFileName (currentFileNode.getDatasetName ());
@@ -207,25 +235,33 @@ public class ReporterNode extends BorderPane
       }
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void paginationChanged (Pagination pagination)
+  // ---------------------------------------------------------------------------------//
   {
     pagination.setPrefWidth (18000);            // need this to make it expand
     setCenter (pagination);
   }
 
+  // ---------------------------------------------------------------------------------//
   private void fireNodeSelected (FileNode fileNode)
+  // ---------------------------------------------------------------------------------//
   {
     nodeSelectionListeners.forEach (l -> l.nodeSelected (fileNode));
   }
 
+  // ---------------------------------------------------------------------------------//
   public void addNodeSelectionListener (NodeSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     if (!nodeSelectionListeners.contains (listener))
       nodeSelectionListeners.add (listener);
   }
 
+  // ---------------------------------------------------------------------------------//
   public void removeNodeSelectionListener (NodeSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     if (nodeSelectionListeners.contains (listener))
       nodeSelectionListeners.remove (listener);

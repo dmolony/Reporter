@@ -6,19 +6,25 @@ import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
+// -----------------------------------------------------------------------------------//
 public class HexReport extends DefaultReportMaker
+// -----------------------------------------------------------------------------------//
 {
   static final int HEX_LINE_SIZE = 16;
   boolean trial = true;
 
+  // ---------------------------------------------------------------------------------//
   public HexReport (boolean newLine, boolean split)
+  // ---------------------------------------------------------------------------------//
   {
     super ("HEX", newLine, split);
     weight = 0.1;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void createPages (ReportScore reportScore)
+  // ---------------------------------------------------------------------------------//
   {
     List<Page> pages = reportScore.getPages ();
     List<Record> records = reportScore.recordMaker.getRecords ();
@@ -116,9 +122,11 @@ public class HexReport extends DefaultReportMaker
   //    reportScore.addPage (firstRecord, records.size () - 1);
   //  }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record, int offset,
       int length)
+  // ---------------------------------------------------------------------------------//
   {
     TextMaker textMaker = reportScore.textMaker;
     StringBuilder text = new StringBuilder ();
@@ -133,7 +141,7 @@ public class HexReport extends DefaultReportMaker
         hexLine.append (String.format ("%02X ", record.buffer[linePtr] & 0xFF));
 
       text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
-                                  textMaker.getText (record.buffer, ptr, lineMax - ptr)));
+          textMaker.getText (record.buffer, ptr, lineMax - ptr)));
     }
 
     if (text.length () > 0)
@@ -142,8 +150,10 @@ public class HexReport extends DefaultReportMaker
     return text.toString ();
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
+  // ---------------------------------------------------------------------------------//
   {
     return getFormattedRecord (reportScore, record, 0, record.length);
     //    TextMaker textMaker = reportScore.textMaker;
@@ -172,8 +182,10 @@ public class HexReport extends DefaultReportMaker
     //    return text.toString ();
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public boolean test (Record record, TextMaker textMaker)
+  // ---------------------------------------------------------------------------------//
   {
     return true;
   }

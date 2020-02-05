@@ -3,18 +3,24 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
+// -----------------------------------------------------------------------------------//
 public class LfRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
+  // ---------------------------------------------------------------------------------//
   public LfRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     super ("LF");
     weight = 0.9;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
-    List<Record> records = new ArrayList<Record> ();
+    List<Record> records = new ArrayList<> ();
     int start = 0;
     int recordNumber = 0;
 
@@ -34,8 +40,10 @@ public class LfRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     int bufferLength = 0;
 

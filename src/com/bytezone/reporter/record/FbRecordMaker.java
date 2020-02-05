@@ -3,12 +3,16 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
+// -----------------------------------------------------------------------------------//
 public class FbRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
   private final int recordLength;
   private final boolean trimNulls;
 
+  // ---------------------------------------------------------------------------------//
   public FbRecordMaker (int recordLength)
+  // ---------------------------------------------------------------------------------//
   {
     super ("FB" + recordLength);
     this.recordLength = recordLength;
@@ -20,13 +24,17 @@ public class FbRecordMaker extends DefaultRecordMaker
       weight = 0.9;
   }
 
+  // ---------------------------------------------------------------------------------//
   public int getRecordLength ()
+  // ---------------------------------------------------------------------------------//
   {
     return recordLength;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
     List<Record> records = new ArrayList<Record> ();
     int recordNumber = 0;
@@ -51,8 +59,10 @@ public class FbRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = new byte[records.size () * recordLength];
     int ptr = 0;

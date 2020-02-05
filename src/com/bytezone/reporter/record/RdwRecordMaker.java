@@ -3,17 +3,23 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
+// -----------------------------------------------------------------------------------//
 public class RdwRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
+  // ---------------------------------------------------------------------------------//
   public RdwRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     super ("RDW");
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
-    List<Record> records = new ArrayList<Record> ();
+    List<Record> records = new ArrayList<> ();
     int ptr = 0;
     int recordNumber = 0;
 
@@ -40,8 +46,10 @@ public class RdwRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     int bufferLength = 0;
     for (Record record : records)

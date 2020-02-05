@@ -2,7 +2,9 @@ package com.bytezone.reporter.record;
 
 import com.bytezone.reporter.text.TextMaker;
 
+// -----------------------------------------------------------------------------------//
 public class Record
+// -----------------------------------------------------------------------------------//
 {
   static final int HEX_LINE_SIZE = 16;
 
@@ -11,7 +13,9 @@ public class Record
   public final int offset;
   public final int length;
 
+  // ---------------------------------------------------------------------------------//
   public Record (byte[] buffer, int offset, int length, int recordNumber)
+  // ---------------------------------------------------------------------------------//
   {
     this.buffer = buffer;
     this.offset = offset;
@@ -19,7 +23,9 @@ public class Record
     this.recordNumber = recordNumber;
   }
 
+  // ---------------------------------------------------------------------------------//
   public int countTrailingNulls ()
+  // ---------------------------------------------------------------------------------//
   {
     int nulls = 0;
     int ptr = offset + length - 1;
@@ -33,7 +39,9 @@ public class Record
     return nulls;
   }
 
+  // ---------------------------------------------------------------------------------//
   public String toHex (TextMaker textMaker)
+  // ---------------------------------------------------------------------------------//
   {
     if (length == 0)
       return String.format ("%06X", offset);
@@ -50,7 +58,7 @@ public class Record
         hexLine.append (String.format ("%02X ", buffer[linePtr] & 0xFF));
 
       text.append (String.format ("%06X  %-48s %s%n", ptr, hexLine.toString (),
-                                  textMaker.getText (buffer, ptr, lineMax - ptr)));
+          textMaker.getText (buffer, ptr, lineMax - ptr)));
     }
 
     if (text.length () > 0)
@@ -59,10 +67,12 @@ public class Record
     return text.toString ();
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     return String.format ("%,5d  %,5d  %,5d  %04X  %04X", recordNumber, offset, length,
-                          offset, length);
+        offset, length);
   }
 }

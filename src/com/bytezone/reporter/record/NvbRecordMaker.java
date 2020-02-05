@@ -6,9 +6,13 @@ import java.util.List;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
 
+// -----------------------------------------------------------------------------------//
 public class NvbRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
+  // ---------------------------------------------------------------------------------//
   public NvbRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     super ("NVB");
   }
@@ -17,10 +21,12 @@ public class NvbRecordMaker extends DefaultRecordMaker
   private static final int SOURCE_SIZE = 94;
   private static final TextMaker ebcdicTextMaker = new EbcdicTextMaker ();
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
-    List<Record> records = new ArrayList<Record> ();
+    List<Record> records = new ArrayList<> ();
     if (buffer.length < 16 || buffer[0] != (byte) 0xFF || buffer[7] != (byte) 0xFF
         || buffer[14] != (byte) 0xFF)
       return records;
@@ -55,8 +61,10 @@ public class NvbRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     int bufferLength = 0;
     for (Record record : records)

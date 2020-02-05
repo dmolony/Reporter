@@ -1,17 +1,21 @@
 package com.bytezone.reporter.text;
 
-import com.bytezone.reporter.record.Record;
-
 import java.io.UnsupportedEncodingException;
 
+import com.bytezone.reporter.record.Record;
+
+// -----------------------------------------------------------------------------------//
 public class EbcdicTextMaker implements TextMaker
+// -----------------------------------------------------------------------------------//
 {
   static final String EBCDIC = "CP1047";
 
   public static final int[] ebc2asc = new int[256];
   public static final int[] asc2ebc = new int[256];
 
+  // ---------------------------------------------------------------------------------//
   static
+  // ---------------------------------------------------------------------------------//
   {
     byte[] values = new byte[256];
     for (int i = 0; i < 256; i++)
@@ -34,19 +38,25 @@ public class EbcdicTextMaker implements TextMaker
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getText (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
   {
     return getStringBuilder (buffer, offset, length).toString ();
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getTextRightTrim (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
   {
     return rightTrim (getStringBuilder (buffer, offset, length)).toString ();
   }
 
+  // ---------------------------------------------------------------------------------//
   private StringBuilder getStringBuilder (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
   {
     final StringBuilder textLine = new StringBuilder ();
 
@@ -62,14 +72,18 @@ public class EbcdicTextMaker implements TextMaker
     return textLine;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public char getChar (int value)
+  // ---------------------------------------------------------------------------------//
   {
     return (char) ebc2asc[value];
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public boolean test (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
   {
     //    if (length == 0)
     //      return false;
@@ -84,8 +98,10 @@ public class EbcdicTextMaker implements TextMaker
     return true;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getText (Record record)
+  // ---------------------------------------------------------------------------------//
   {
     return getText (record.buffer, record.offset, record.length);
   }
@@ -104,8 +120,10 @@ public class EbcdicTextMaker implements TextMaker
     return total;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     return "EBCDIC";
   }

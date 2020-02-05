@@ -1,20 +1,27 @@
 package com.bytezone.reporter.application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bytezone.reporter.file.ReportData;
 import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.RecordMaker;
 import com.bytezone.reporter.reports.ReportMaker;
 import com.bytezone.reporter.text.TextMaker;
+
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-import java.util.ArrayList;
-import java.util.List;
-
+// -----------------------------------------------------------------------------------//
 class FormatBox
+// -----------------------------------------------------------------------------------//
 {
   private final ToggleGroup recordsGroup = new ToggleGroup ();
   private final ToggleGroup encodingsGroup = new ToggleGroup ();
@@ -37,7 +44,9 @@ class FormatBox
 
   private ReportData currentReportData;
 
+  // ---------------------------------------------------------------------------------//
   public FormatBox (PaginationChangeListener changeListener)
+  // ---------------------------------------------------------------------------------//
   {
     // create a temporary ReportData to get the xxxMakers' names
     ReportData reportData = new ReportData ();
@@ -55,13 +64,17 @@ class FormatBox
     this.changeListener = changeListener;
   }
 
+  // ---------------------------------------------------------------------------------//
   public VBox getPanel ()
+  // ---------------------------------------------------------------------------------//
   {
     return formattingBox;
   }
 
   // called from ReporterNode.nodeSelected()
+  // ---------------------------------------------------------------------------------//
   public void setReportData (ReportData reportData)
+  // ---------------------------------------------------------------------------------//
   {
     this.currentReportData = reportData;
 
@@ -73,7 +86,9 @@ class FormatBox
     buttonSelected ();              // force a pagination change
   }
 
+  // ---------------------------------------------------------------------------------//
   private void adjustButtons ()
+  // ---------------------------------------------------------------------------------//
   {
     disableAll (recordMakerButtons);
     disableAll (textMakerButtons);
@@ -90,12 +105,16 @@ class FormatBox
     selectButtons (currentReportData.getSelectedReportScore ());
   }
 
+  // ---------------------------------------------------------------------------------//
   private void disableAll (List<RadioButton> buttons)
+  // ---------------------------------------------------------------------------------//
   {
     buttons.stream ().forEach (button -> button.setDisable (true));
   }
 
+  // ---------------------------------------------------------------------------------//
   private void buttonSelected ()
+  // ---------------------------------------------------------------------------------//
   {
     RecordMaker recordMaker = getSelectedRecordMaker ();
     TextMaker textMaker = getSelectedTextMaker ();
@@ -110,7 +129,8 @@ class FormatBox
     lblSizeText.setText (String.format ("%,10d", recordMaker.getBuffer ().length));
     lblRecordsText.setText (String.format ("%,10d", recordMaker.getRecords ().size ()));
 
-    ReportScore reportScore = currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
+    ReportScore reportScore =
+        currentReportData.setReportScore (recordMaker, textMaker, reportMaker);
 
     if (reportScore != null)
       changeListener.paginationChanged (reportScore.getPagination ());
@@ -118,7 +138,9 @@ class FormatBox
       System.out.println ("no reportscore found");
   }
 
+  // ---------------------------------------------------------------------------------//
   private void selectButtons (ReportScore reportScore)
+  // ---------------------------------------------------------------------------------//
   {
     if (reportScore != null)
     {
@@ -130,7 +152,9 @@ class FormatBox
       System.out.println ("Imperfect ReportScore selected");
   }
 
+  // ---------------------------------------------------------------------------------//
   private void selectButton (List<RadioButton> buttons, Object userData)
+  // ---------------------------------------------------------------------------------//
   {
     for (RadioButton button : buttons)
       if (button.getUserData () == userData)
@@ -140,7 +164,9 @@ class FormatBox
       }
   }
 
+  // ---------------------------------------------------------------------------------//
   private void enableButton (List<RadioButton> buttons, Object userData)
+  // ---------------------------------------------------------------------------------//
   {
     for (RadioButton button : buttons)
       if (button.getUserData () == userData)
@@ -150,25 +176,33 @@ class FormatBox
       }
   }
 
+  // ---------------------------------------------------------------------------------//
   private RecordMaker getSelectedRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     Toggle toggle = recordsGroup.getSelectedToggle ();
     return toggle == null ? null : (RecordMaker) toggle.getUserData ();
   }
 
+  // ---------------------------------------------------------------------------------//
   private TextMaker getSelectedTextMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     Toggle toggle = encodingsGroup.getSelectedToggle ();
     return toggle == null ? null : (TextMaker) toggle.getUserData ();
   }
 
+  // ---------------------------------------------------------------------------------//
   private ReportMaker getSelectedReportMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     Toggle toggle = reportsGroup.getSelectedToggle ();
     return toggle == null ? null : (ReportMaker) toggle.getUserData ();
   }
 
+  // ---------------------------------------------------------------------------------//
   private VBox createFormattingBox ()
+  // ---------------------------------------------------------------------------------//
   {
     Label lblSize = setLabel ("Bytes", 60);
     Label lblRecords = setLabel ("Records", 60);
@@ -195,7 +229,10 @@ class FormatBox
     return vBox2;
   }
 
-  private TitledPane addTitledPane (VBox parent, String text, VBox contents, boolean expanded)
+  // ---------------------------------------------------------------------------------//
+  private TitledPane addTitledPane (VBox parent, String text, VBox contents,
+      boolean expanded)
+  // ---------------------------------------------------------------------------------//
   {
     TitledPane titledPane = new TitledPane (text, contents);
     titledPane.setCollapsible (true);
@@ -204,7 +241,10 @@ class FormatBox
     return titledPane;
   }
 
-  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons, ToggleGroup group)
+  // ---------------------------------------------------------------------------------//
+  private VBox createVBox (List<? extends Object> objects, List<RadioButton> buttons,
+      ToggleGroup group)
+  // ---------------------------------------------------------------------------------//
   {
     VBox vbox = new VBox (10);
     vbox.setPadding (new Insets (10));
@@ -226,22 +266,28 @@ class FormatBox
     return vbox;
   }
 
+  // ---------------------------------------------------------------------------------//
   private void setUserData (List<RadioButton> buttons, List<? extends Object> objects)
+  // ---------------------------------------------------------------------------------//
   {
     assert buttons.size () == objects.size ();
     for (int i = 0; i < buttons.size (); i++)
       buttons.get (i).setUserData (objects.get (i));
   }
 
+  // ---------------------------------------------------------------------------------//
   private Label setLabel (String text, int width)
+  // ---------------------------------------------------------------------------------//
   {
     Label label = new Label (text);
     label.setPrefWidth (width);
     return label;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 

@@ -6,7 +6,9 @@ import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
+// -----------------------------------------------------------------------------------//
 public interface ReportMaker extends Printable
+// -----------------------------------------------------------------------------------//
 {
   public boolean test (Record record, TextMaker textMaker);
 

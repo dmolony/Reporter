@@ -15,7 +15,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// -----------------------------------------------------------------------------------//
 public class ReportScore implements Comparable<ReportScore>
+// -----------------------------------------------------------------------------------//
 {
   private static Font font;
 
@@ -31,7 +33,9 @@ public class ReportScore implements Comparable<ReportScore>
   private Pagination pagination;
   private final TextArea textArea = new TextArea ();
 
+  // ---------------------------------------------------------------------------------//
   static
+  // ---------------------------------------------------------------------------------//
   {
     String[] fontNames = { "Ubuntu Mono", "Menlo", "Courier New", "Monospaced", };
     for (String fontName : fontNames)
@@ -42,8 +46,10 @@ public class ReportScore implements Comparable<ReportScore>
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   ReportScore (RecordMaker recordMaker, TextMaker textMaker, ReportMaker reportMaker,
       double score, int sampleSize)
+  // ---------------------------------------------------------------------------------//
   {
     this.recordMaker = recordMaker;
     this.textMaker = textMaker;
@@ -58,24 +64,32 @@ public class ReportScore implements Comparable<ReportScore>
     textArea.setMinHeight (50);
   }
 
+  // ---------------------------------------------------------------------------------//
   public boolean matches (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
+  // ---------------------------------------------------------------------------------//
   {
     return this.recordMaker == recordMaker && this.textMaker == textMaker
         && this.reportMaker == reportMaker;
   }
 
+  // ---------------------------------------------------------------------------------//
   public boolean isPerfectScore ()
+  // ---------------------------------------------------------------------------------//
   {
     return score == 100.0;
   }
 
+  // ---------------------------------------------------------------------------------//
   public List<Page> getPages ()
+  // ---------------------------------------------------------------------------------//
   {
     return pages;
   }
 
+  // ---------------------------------------------------------------------------------//
   public Pagination getPagination ()
+  // ---------------------------------------------------------------------------------//
   {
     if (pagination == null)
     {
@@ -88,7 +102,9 @@ public class ReportScore implements Comparable<ReportScore>
     return pagination;
   }
 
+  // ---------------------------------------------------------------------------------//
   public Node getFormattedPage (int pageNumber)
+  // ---------------------------------------------------------------------------------//
   {
     if (pageNumber < 0 || pageNumber >= pages.size ())
     {
@@ -144,7 +160,9 @@ public class ReportScore implements Comparable<ReportScore>
     return textArea;
   }
 
+  // ---------------------------------------------------------------------------------//
   private String getSubrecord (Record record, int from, int to)
+  // ---------------------------------------------------------------------------------//
   {
     int offset = 0;
     int length = 0;
@@ -167,7 +185,9 @@ public class ReportScore implements Comparable<ReportScore>
     return reportMaker.getFormattedRecord (this, record, offset, length);
   }
 
+  // ---------------------------------------------------------------------------------//
   public Page addPage (int firstRecord, int lastRecord)
+  // ---------------------------------------------------------------------------------//
   {
     Page page = new Page (recordMaker.getRecords (), firstRecord, lastRecord);
     pages.add (page);
@@ -181,18 +201,22 @@ public class ReportScore implements Comparable<ReportScore>
     return page;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public int compareTo (ReportScore o)
+  // ---------------------------------------------------------------------------------//
   {
     if (this.score == o.score)
       return Double.compare (this.weight, o.weight);
     return Double.compare (this.score, o.score);
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     return String.format ("%-10s %-10s %-10s %6.2f %3d  %4.2f  %s", recordMaker,
-                          textMaker, reportMaker, score, sampleSize, weight, pagination);
+        textMaker, reportMaker, score, sampleSize, weight, pagination);
   }
 }

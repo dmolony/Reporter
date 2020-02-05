@@ -22,12 +22,16 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
+// -----------------------------------------------------------------------------------//
 class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>>
+// -----------------------------------------------------------------------------------//
 {
   private FileNode pendingFileNode;
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public TreeCell<FileNode> call (TreeView<FileNode> treeView)
+  // ---------------------------------------------------------------------------------//
   {
     TreeCell<FileNode> treeCell = new TreeCellFileNode ();
 
@@ -46,7 +50,9 @@ class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>
     return treeCell;
   }
 
+  // ---------------------------------------------------------------------------------//
   private boolean saveFile (FileNode fileNode, File targetFile)
+  // ---------------------------------------------------------------------------------//
   {
     try
     {
@@ -61,7 +67,7 @@ class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>
         Files.write (targetFile.toPath (), fileNode.getReportData ().getBuffer ());
       else                                        // move existing file
         Files.move (sourceFile.toPath (), targetFile.toPath (),
-                    StandardCopyOption.ATOMIC_MOVE);
+            StandardCopyOption.ATOMIC_MOVE);
       return true;
     }
     catch (IOException e)
@@ -71,7 +77,9 @@ class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>
     return false;
   }
 
+  // ---------------------------------------------------------------------------------//
   private boolean showAlert (String message)
+  // ---------------------------------------------------------------------------------//
   {
     Alert alert = new Alert (AlertType.ERROR, message);
     alert.getDialogPane ().setHeaderText (null);
@@ -79,7 +87,9 @@ class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>
     return (result.isPresent () && result.get () == ButtonType.OK);
   }
 
+  // ---------------------------------------------------------------------------------//
   private final class TreeCellFileNode extends TreeCell<FileNode>
+  // ---------------------------------------------------------------------------------//
   {
     @Override
     protected void updateItem (FileNode item, boolean empty)
@@ -98,7 +108,9 @@ class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   private class MouseHandler implements EventHandler<MouseEvent>
+  // ---------------------------------------------------------------------------------//
   {
     private final TreeCell<FileNode> treeCell;
 
@@ -123,7 +135,9 @@ class TreeCellFactory implements Callback<TreeView<FileNode>, TreeCell<FileNode>
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   private class DragHandler implements EventHandler<DragEvent>
+  // ---------------------------------------------------------------------------------//
   {
     private final TreeCell<FileNode> treeCell;
 

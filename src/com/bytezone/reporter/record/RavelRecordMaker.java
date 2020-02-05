@@ -3,18 +3,24 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
+// -----------------------------------------------------------------------------------//
 public class RavelRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
   byte[] temp = new byte[2048];
 
+  // ---------------------------------------------------------------------------------//
   public RavelRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     super ("Ravel");
     weight = 1.1;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
     List<Record> records = new ArrayList<Record> ();
     int ptr = 0;
@@ -60,8 +66,10 @@ public class RavelRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     int bufferLength = 0;
     int[] ravelLengths = new int[records.size ()];
@@ -98,7 +106,9 @@ public class RavelRecordMaker extends DefaultRecordMaker
     return buffer;
   }
 
+  // ---------------------------------------------------------------------------------//
   private int getRavelLength (Record record)
+  // ---------------------------------------------------------------------------------//
   {
     int length = record.length;
     for (int i = record.offset, max = record.offset + record.length; i < max; i++)
@@ -109,7 +119,9 @@ public class RavelRecordMaker extends DefaultRecordMaker
     return length;
   }
 
+  // ---------------------------------------------------------------------------------//
   private int packRecord (Record record, int ptr)
+  // ---------------------------------------------------------------------------------//
   {
     for (int i = record.offset, max = record.offset + record.length; i < max; i++)
     {

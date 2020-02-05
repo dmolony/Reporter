@@ -14,16 +14,22 @@ import com.bytezone.reporter.text.TextMaker;
  * '1:C' - Skip to channel 1-12 (channel 1 is top of page)
  */
 
+// -----------------------------------------------------------------------------------//
 public class AsaReport extends DefaultReportMaker
+// -----------------------------------------------------------------------------------//
 {
+  // ---------------------------------------------------------------------------------//
   public AsaReport (boolean newLine, boolean split)
+  // ---------------------------------------------------------------------------------//
   {
     super ("ASA", newLine, split);
     weight = 1.1;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void createPages (ReportScore reportScore)
+  // ---------------------------------------------------------------------------------//
   {
     List<Page> pages = reportScore.getPages ();
     List<Record> records = reportScore.recordMaker.getRecords ();
@@ -76,19 +82,23 @@ public class AsaReport extends DefaultReportMaker
     reportScore.addPage (firstRecord, records.size () - 1);
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
+  // ---------------------------------------------------------------------------------//
   {
     TextMaker textMaker = reportScore.textMaker;
 
     char c = textMaker.getChar (record.buffer[record.offset] & 0xFF);
     String prefix = c == '0' ? "\n" : c == '-' ? "\n\n" : "";
     return prefix + textMaker.getTextRightTrim (record.buffer, record.offset + 1,
-                                                record.length - 1);
+        record.length - 1);
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public boolean test (Record record, TextMaker textMaker)
+  // ---------------------------------------------------------------------------------//
   {
     if (record.length == 0)
       return true;

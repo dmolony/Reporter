@@ -10,7 +10,9 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+// -----------------------------------------------------------------------------------//
 public class Reporter extends Application
+// -----------------------------------------------------------------------------------//
 {
   private final static String OS = System.getProperty ("os.name", "");
   private final static boolean SYSTEM_MENUBAR = OS.startsWith ("Mac");
@@ -18,8 +20,10 @@ public class Reporter extends Application
   private WindowSaver windowSaver;
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void start (Stage primaryStage) throws Exception
+  // ---------------------------------------------------------------------------------//
   {
     ReporterNode reporterNode = new ReporterNode (prefs);
     MenuBar menuBar = reporterNode.getMenuBar ();
@@ -40,7 +44,9 @@ public class Reporter extends Application
     reporterNode.requestFocus ();
   }
 
+  // ---------------------------------------------------------------------------------//
   public static void main (String[] args)
+  // ---------------------------------------------------------------------------------//
   {
     launch (args);
   }

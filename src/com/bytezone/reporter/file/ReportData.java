@@ -27,7 +27,9 @@ import com.bytezone.reporter.text.AsciiTextMaker;
 import com.bytezone.reporter.text.EbcdicTextMaker;
 import com.bytezone.reporter.text.TextMaker;
 
+// -----------------------------------------------------------------------------------//
 public class ReportData
+// -----------------------------------------------------------------------------------//
 {
   private static final int SAMPLE_SIZE = 1024;
 
@@ -40,45 +42,56 @@ public class ReportData
 
   private byte[] buffer;
 
+  // ---------------------------------------------------------------------------------//
   public ReportData ()
+  // ---------------------------------------------------------------------------------//
   {
-    recordMakers = new ArrayList<> (Arrays
-        .asList (new SingleRecordMaker (), new CrlfRecordMaker (), new CrRecordMaker (),
-                 new LfRecordMaker (), new VbRecordMaker (), new RdwRecordMaker (),
-                 new NvbRecordMaker (), new RavelRecordMaker (), new FbRecordMaker (63),
-                 new FbRecordMaker (80), new FbRecordMaker (132),
-                 new FbRecordMaker (252)));
+    recordMakers = new ArrayList<> (Arrays.asList (new SingleRecordMaker (),
+        new CrlfRecordMaker (), new CrRecordMaker (), new LfRecordMaker (),
+        new VbRecordMaker (), new RdwRecordMaker (), new NvbRecordMaker (),
+        new RavelRecordMaker (), new FbRecordMaker (63), new FbRecordMaker (80),
+        new FbRecordMaker (132), new FbRecordMaker (252)));
     textMakers =
         new ArrayList<> (Arrays.asList (new AsciiTextMaker (), new EbcdicTextMaker ()));
     reportMakers = new ArrayList<> (
         Arrays.asList (new HexReport (true, true), new TextReport (false, false),
-                       new AsaReport (false, true), new NatloadReport (false, false)));
+            new AsaReport (false, true), new NatloadReport (false, false)));
     scores = new ArrayList<> ();
   }
 
   // used for file transfers
+  // ---------------------------------------------------------------------------------//
   public ReportData (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
   {
     this ();
     this.buffer = buffer;
   }
 
+  // ---------------------------------------------------------------------------------//
   public byte[] getBuffer ()
+  // ---------------------------------------------------------------------------------//
   {
     return buffer;
   }
 
+  // ---------------------------------------------------------------------------------//
   public boolean hasData ()
+  // ---------------------------------------------------------------------------------//
   {
     return buffer != null;
   }
 
+  // ---------------------------------------------------------------------------------//
   public boolean hasScores ()
+  // ---------------------------------------------------------------------------------//
   {
     return scores.size () > 0;
   }
 
+  // ---------------------------------------------------------------------------------//
   public void fillBuffer (File file)
+  // ---------------------------------------------------------------------------------//
   {
     assert buffer == null;
     try
@@ -92,7 +105,9 @@ public class ReportData
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   public void createScores ()
+  // ---------------------------------------------------------------------------------//
   {
     assert buffer != null;
     for (RecordMaker recordMaker : recordMakers)
@@ -143,22 +158,30 @@ public class ReportData
         System.out.println (rs);
   }
 
+  // ---------------------------------------------------------------------------------//
   public List<RecordMaker> getRecordMakers ()
+  // ---------------------------------------------------------------------------------//
   {
     return recordMakers;
   }
 
+  // ---------------------------------------------------------------------------------//
   public List<TextMaker> getTextMakers ()
+  // ---------------------------------------------------------------------------------//
   {
     return textMakers;
   }
 
+  // ---------------------------------------------------------------------------------//
   public List<ReportMaker> getReportMakers ()
+  // ---------------------------------------------------------------------------------//
   {
     return reportMakers;
   }
 
+  // ---------------------------------------------------------------------------------//
   public List<ReportScore> getPerfectScores ()
+  // ---------------------------------------------------------------------------------//
   {
     List<ReportScore> perfectScores = new ArrayList<> ();
     for (ReportScore score : scores)
@@ -170,21 +193,27 @@ public class ReportData
     return perfectScores;
   }
 
+  // ---------------------------------------------------------------------------------//
   private ReportScore getBestReportScore ()
+  // ---------------------------------------------------------------------------------//
   {
     assert scores.size () > 0;
     return scores.get (0);
   }
 
+  // ---------------------------------------------------------------------------------//
   public ReportScore getSelectedReportScore ()
+  // ---------------------------------------------------------------------------------//
   {
     if (selectedReportScore == null)
       selectedReportScore = getBestReportScore ();
     return selectedReportScore;
   }
 
+  // ---------------------------------------------------------------------------------//
   public ReportScore setReportScore (RecordMaker recordMaker, TextMaker textMaker,
       ReportMaker reportMaker)
+  // ---------------------------------------------------------------------------------//
   {
     selectedReportScore = null;
 
@@ -198,11 +227,13 @@ public class ReportData
     return selectedReportScore;
   }
 
+  // ---------------------------------------------------------------------------------//
   public boolean isAscii ()
+  // ---------------------------------------------------------------------------------//
   {
     if (selectedReportScore == null)
       return false;
 
-    return selectedReportScore.textMaker.toString ().equals ("ASCII");// fix this
+    return selectedReportScore.textMaker.toString ().equals ("ASCII");      // fix this
   }
 }

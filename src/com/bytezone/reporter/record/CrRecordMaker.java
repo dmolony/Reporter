@@ -3,16 +3,22 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
+// -----------------------------------------------------------------------------------//
 public class CrRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
+  // ---------------------------------------------------------------------------------//
   public CrRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     super ("CR");
     weight = 0.9;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
     List<Record> records = new ArrayList<Record> ();
     int start = 0;
@@ -34,8 +40,10 @@ public class CrRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     int bufferLength = 0;
 

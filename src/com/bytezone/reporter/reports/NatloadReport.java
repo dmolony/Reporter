@@ -6,16 +6,22 @@ import com.bytezone.reporter.file.ReportScore;
 import com.bytezone.reporter.record.Record;
 import com.bytezone.reporter.text.TextMaker;
 
+// -----------------------------------------------------------------------------------//
 public class NatloadReport extends DefaultReportMaker
+// -----------------------------------------------------------------------------------//
 {
+  // ---------------------------------------------------------------------------------//
   public NatloadReport (boolean newLine, boolean split)
+  // ---------------------------------------------------------------------------------//
   {
     super ("Natload", newLine, split);
     weight = 1.1;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public void createPages (ReportScore reportScore)
+  // ---------------------------------------------------------------------------------//
   {
     List<Page> pages = reportScore.getPages ();
     List<Record> records = reportScore.recordMaker.getRecords ();
@@ -63,8 +69,10 @@ public class NatloadReport extends DefaultReportMaker
       pages.add (new Page (records, firstRecord, records.size () - 1));
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFormattedRecord (ReportScore reportScore, Record record)
+  // ---------------------------------------------------------------------------------//
   {
     TextMaker textMaker = reportScore.textMaker;
 
@@ -87,18 +95,19 @@ public class NatloadReport extends DefaultReportMaker
         return null;
       String lines = textMaker.getText (record.buffer, record.offset + 18, 3);
       return String.format ("Library: %-8s  Program: %-8s  Seq: %2d  Lines: %s", library,
-                            program, sequence, lines);
+          program, sequence, lines);
     }
 
     int length = record.length - record.countTrailingNulls ();
     return String.format ("%02X%02X %s", record.buffer[record.offset] & 0xFF,
-                          record.buffer[record.offset + 1] & 0xFF, textMaker
-                              .getText (record.buffer, record.offset + 2, length - 2))
-        .trim ();
+        record.buffer[record.offset + 1] & 0xFF,
+        textMaker.getText (record.buffer, record.offset + 2, length - 2)).trim ();
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   public boolean test (Record record, TextMaker textMaker)
+  // ---------------------------------------------------------------------------------//
   {
     if (record.length < 2 || record.length > 252)
       return false;

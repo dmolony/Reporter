@@ -17,7 +17,9 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
+// -----------------------------------------------------------------------------------//
 class TreePanel
+// -----------------------------------------------------------------------------------//
 {
   private final Set<NodeSelectionListener> nodeSelectionListeners = new HashSet<> ();
   private final TreeView<FileNode> fileTree = new TreeView<> ();
@@ -28,13 +30,17 @@ class TreePanel
   private TreeItem<FileNode> selectedTreeItem;
   private TreeItem<FileNode> unsavedFilesItem;
 
+  // ---------------------------------------------------------------------------------//
   public TreePanel (Preferences prefs)
+  // ---------------------------------------------------------------------------------//
   {
     this.prefs = prefs;
     getLastFile ();
   }
 
+  // ---------------------------------------------------------------------------------//
   public TreeView<FileNode> getTree (Path path)
+  // ---------------------------------------------------------------------------------//
   {
     if (Files.notExists (path) || !Files.isDirectory (path))
     {
@@ -71,12 +77,16 @@ class TreePanel
     return fileTree;
   }
 
+  // ---------------------------------------------------------------------------------//
   public TreeView<FileNode> getTree ()
+  // ---------------------------------------------------------------------------------//
   {
     return fileTree;
   }
 
+  // ---------------------------------------------------------------------------------//
   private TreeItem<FileNode> getTreeItem (TreeItem<FileNode> parent, String childName)
+  // ---------------------------------------------------------------------------------//
   {
     for (TreeItem<FileNode> child : parent.getChildren ())
       if (child.getValue ().getFile ().getName ().equals (childName))
@@ -85,7 +95,9 @@ class TreePanel
     return null;
   }
 
+  // ---------------------------------------------------------------------------------//
   private TreeItem<FileNode> findNode (String siteFolderName, String datasetName)
+  // ---------------------------------------------------------------------------------//
   {
     TreeItem<FileNode> currentNode = getTreeItem (fileTree.getRoot (), siteFolderName);
     String[] segments = FileSaver.getSegments (datasetName);
@@ -99,7 +111,9 @@ class TreePanel
     return currentNode;
   }
 
+  // ---------------------------------------------------------------------------------//
   public void addFile (File file, String siteFolderName)
+  // ---------------------------------------------------------------------------------//
   {
     //    System.out.printf ("Adding file: %s%n", file);
     TreeItem<FileNode> currentNode = findNode (siteFolderName, file.getName ());
@@ -133,7 +147,9 @@ class TreePanel
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   public void addBuffer (String name, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
   {
     if (unsavedFilesItem == null)
     {
@@ -146,7 +162,9 @@ class TreePanel
     fileTree.getSelectionModel ().select (treeItem);
   }
 
+  // ---------------------------------------------------------------------------------//
   private TreeItem<FileNode> findFiles (FileNode directory)
+  // ---------------------------------------------------------------------------------//
   {
     TreeItem<FileNode> treeItem = new TreeItem<> (directory);
     directory.setTreeItem (treeItem);
@@ -182,7 +200,9 @@ class TreePanel
     return treeItem;
   }
 
+  // ---------------------------------------------------------------------------------//
   private TreeItem<FileNode> createTreeItem (File file)
+  // ---------------------------------------------------------------------------------//
   {
     FileNode fileNode = new FileNode (file);
     TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
@@ -190,7 +210,9 @@ class TreePanel
     return newItem;
   }
 
+  // ---------------------------------------------------------------------------------//
   private TreeItem<FileNode> createTreeItem (String name, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
   {
     FileNode fileNode = new FileNode (name, buffer);
     TreeItem<FileNode> newItem = new TreeItem<> (fileNode);
@@ -198,13 +220,17 @@ class TreePanel
     return newItem;
   }
 
+  // ---------------------------------------------------------------------------------//
   public void openDirectory (TreeItem.TreeModificationEvent<FileNode> evt)
+  // ---------------------------------------------------------------------------------//
   {
     TreeItem<FileNode> treeItem = evt.getSource ();
     System.out.println ("Open: " + treeItem);
   }
 
+  // ---------------------------------------------------------------------------------//
   private void selection (TreeItem<FileNode> treeItem)
+  // ---------------------------------------------------------------------------------//
   {
     if (treeItem == null)
     {
@@ -241,35 +267,47 @@ class TreePanel
     }
   }
 
+  // ---------------------------------------------------------------------------------//
   private void fireNodeSelected (FileNode fileNode)
+  // ---------------------------------------------------------------------------------//
   {
     for (NodeSelectionListener listener : nodeSelectionListeners)
       listener.nodeSelected (fileNode);
   }
 
+  // ---------------------------------------------------------------------------------//
   void addNodeSelectionListener (NodeSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     nodeSelectionListeners.add (listener);
   }
 
+  // ---------------------------------------------------------------------------------//
   void removeFileSelectionListener (NodeSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     nodeSelectionListeners.remove (listener);
   }
 
+  // ---------------------------------------------------------------------------------//
   private void getLastFile ()
+  // ---------------------------------------------------------------------------------//
   {
     String fileName = prefs.get ("LastFile", "");
     selectedFile = fileName.isEmpty () ? null : new File (fileName);
   }
 
+  // ---------------------------------------------------------------------------------//
   private void savePrefs ()
+  // ---------------------------------------------------------------------------------//
   {
     String fileName = selectedFile == null ? "" : selectedFile.getAbsolutePath ();
     prefs.put ("LastFile", fileName);
   }
 
+  // ---------------------------------------------------------------------------------//
   private byte[] getMessage ()
+  // ---------------------------------------------------------------------------------//
   {
     Path path = Paths.get (System.getProperty ("user.home"), "dm3270", "files");
     String message1 = "Could not find download folder.\n \n";
@@ -277,7 +315,9 @@ class TreePanel
     return (message1 + message2).getBytes ();
   }
 
+  // ---------------------------------------------------------------------------------//
   TreeView<File> buildFileSystemBrowser ()
+  // ---------------------------------------------------------------------------------//
   {
     TreeItem<File> root = createNode (new File ("/"));
     return new TreeView<File> (root);
@@ -288,7 +328,9 @@ class TreePanel
   // anonymously, but this could be better abstracted by creating a 
   // 'FileTreeItem' subclass of TreeItem. However, this is left as an exercise
   // for the reader.
+  // ---------------------------------------------------------------------------------//
   private TreeItem<File> createNode (final File f)
+  // ---------------------------------------------------------------------------------//
   {
     return new TreeItem<File> (f)
     {

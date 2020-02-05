@@ -3,12 +3,16 @@ package com.bytezone.reporter.record;
 import java.util.ArrayList;
 import java.util.List;
 
+// -----------------------------------------------------------------------------------//
 public class CrlfRecordMaker extends DefaultRecordMaker
+// -----------------------------------------------------------------------------------//
 {
   private final boolean trimNumbers;
   private final boolean trimSpaces;
 
+  // ---------------------------------------------------------------------------------//
   public CrlfRecordMaker ()
+  // ---------------------------------------------------------------------------------//
   {
     super ("CR/LF");
     trimNumbers = false;
@@ -16,8 +20,10 @@ public class CrlfRecordMaker extends DefaultRecordMaker
     weight = 0.95;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected List<Record> split (int length)
+  // ---------------------------------------------------------------------------------//
   {
     List<Record> records = new ArrayList<Record> ();
     int start = 0;
@@ -55,8 +61,10 @@ public class CrlfRecordMaker extends DefaultRecordMaker
     return records;
   }
 
+  // ---------------------------------------------------------------------------------//
   @Override
   protected byte[] join (List<Record> records)
+  // ---------------------------------------------------------------------------------//
   {
     int bufferLength = 0;
 
